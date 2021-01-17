@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="initial_script.js" defer></script>
+    <link rel="stylesheet" href="framework.css" />
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+      integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA=="
+      crossorigin="anonymous"
+    />
+    <title>EveryTracker</title>
+  </head>
+  <body>
+    <nav id="sliding-menu" class="closed">
+      <div class="flex-row full-width flex-jc-e">
+        <i id="menu-close-btn" class="fas fa-times fa-2x btn mx-h my-h"></i>
+      </div>
+    </nav>
+    <!-- Note that an alkternative spatial division has been applied to the params: 
+    two juxtaposed columns, each of whose bottom elements must be toggled. Decide 
+  whethert to just render them unclickable and turn them semi-transparent when 
+N/A, or to hide them altogether.-->
+    <section
+      id="params-container"
+      class="flex-column-all-c fixed-width-100 py-1"
+    >
+      <input
+        id="params-title"
+        type="text"
+        class="input-h3 input-underline px-h"
+        placeholder="What do you want to track?"
+      />
+      <button id="open-menu-btn" class="btn btn-s my-h">Menu</button>
+      <div
+        id="input-container"
+        class="flex-row flex-jc-sb fixed-width-100 quarter-height px-1 py-1"
+      >
+        <div class="flex-column flex-jc-sa flex-ac half-width mx-h">
+          <label for="quantity" class="my-h">Quantity</label>
+          <input
+            name="quantity"
+            type="number"
+            min="1"
+            class="full-width input-underline px-h"
+          />
+          <label for="other-quantity" class="my-h">Other</label>
+          <input
+            name="other-quantity"
+            type="text"
+            class="other-interval-input full-width input-underline px-h"
+          />
+        </div>
+        <div class="flex-column flex-jc-sa flex-ac half-width mx-h">
+          <label for="interval" class="my-h">Interval</label>
+          <select
+            name="interval"
+            type="text"
+            class="full-width input-underline px-h"
+          >
+            <option value="minute">minute</option>
+            <option value="hour">hour</option>
+            <option value="day">day</option>
+            <option value="week">week</option>
+            <option value="month">month</option>
+            <option value="year">year</option>
+            <option value="other">other...</option>
+          </select>
+          <button class="btn btn-s mt-1 mb-h">Apply</button>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>
