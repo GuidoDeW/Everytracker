@@ -5,12 +5,20 @@ const slidingMenu = document.getElementById("sliding-menu"),
   paramsQuantity = document.getElementById("params-quantity"),
   paramsInterval = document.getElementById("params-interval"),
   paramsOtherInterval = document.getElementById("params-other-interval"),
-  allParamsOthers = document.querySelectorAll(".params-other");
+  defaultInputFields = [
+    paramsTitle,
+    paramsQuantity,
+    paramsInterval,
+    paramsOtherInterval,
+  ],
+  allParamsOthers = document.querySelectorAll(".params-other"),
+  applyOthersBtn = document.getElementById("apply-others-btn");
 
 function toggleInputStyle(e) {
   if (
     e.target !== paramsTitle ||
-    (e.target === paramsTitle && e.type == "keydown" && e.keyCode == 13)
+    (e.target === paramsTitle && e.type == "keydown" && e.key == "Enter") ||
+    e.keyCode == 13
   ) {
     if (paramsTitle.value.trim().length == 0) {
       paramsTitle.classList.remove("text-ac");
@@ -20,9 +28,19 @@ function toggleInputStyle(e) {
       paramsTitle.classList.add("text-ac");
       paramsTitle.classList.add("fontw-700");
     }
-    paramsTitle.blur();
   }
 }
+
+defaultInputFields.forEach((field) => {
+  field.addEventListener("keydown", (e) => {
+    if (e.key == "Enter" || e.keyCode === 13) {
+      defaultInputFields.indexOf(e.target) < defaultInputFields.length - 1
+        ? defaultInputFields[defaultInputFields.indexOf(e.target) + 1].focus()
+        : e.target.blur();
+      //Modify function to immediately apply other interval upon enter keypress
+    }
+  });
+});
 
 openMenuBtn.addEventListener("click", () => {
   slidingMenu.classList.remove("closed");
@@ -45,9 +63,17 @@ paramsInterval.addEventListener("input", () => {
     ? allParamsOthers.forEach((param) => {
         param.classList.add("disabled");
         param.setAttribute("disabled", "true");
+        paramsOtherInterval.value = "";
       })
     : allParamsOthers.forEach((param) => {
         param.classList.remove("disabled");
         param.removeAttribute("disabled");
+        paramsOtherInterval.focus();
       });
+});
+
+applyOthersBtn.querySelector("click", () => {
+  if (paramsOtherInterval.value.trim().length > 0) {
+    // Save "applied" boolean (or update DataColumn HTML template, and all existing DataColumns)
+  }
 });

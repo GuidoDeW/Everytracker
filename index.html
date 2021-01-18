@@ -17,7 +17,10 @@
   <body>
     <nav id="sliding-menu" class="closed">
       <div class="flex-row full-width flex-jc-e">
-        <i id="menu-close-btn" class="fas fa-times fa-2x btn mx-h my-h"></i>
+        <i
+          id="menu-close-btn"
+          class="fas fa-times fa-2x btn mx-h my-h light-text"
+        ></i>
       </div>
     </nav>
     <!-- Note that an alkternative spatial division has been applied to the params: 
@@ -28,6 +31,7 @@ N/A, or to hide them altogether.-->
       id="params-container"
       class="flex-column-all-c fixed-width-100 py-1"
     >
+      <h2 class="mb-1">EveryTracker</h2>
       <input
         id="params-title"
         type="text"
@@ -77,11 +81,124 @@ N/A, or to hide them altogether.-->
             <option value="year">year</option>
             <option value="other">other...</option>
           </select>
-          <button class="btn btn-s mt-1 mb-h params-other" disabled="true">
+          <button
+            id="apply-others-btn"
+            class="btn btn-s mt-1 mb-h params-other disabled"
+            disabled="true"
+          >
             Apply
           </button>
         </div>
       </div>
+    </section>
+    <section
+      id="sheet-container"
+      class="flex-row flex-jc-s flex-w fixed-width-100 my-1"
+    >
+      <!-- Data column template-->
+      <div class="data-col">
+        <div class="data-col-bar">
+          <i class="fas fa-times data-col-btn delete"></i>
+        </div>
+        <div class="data-col-bar title-bar">
+          <h3 class="data-col-interval">
+            Day&nbsp;<span class="data-col-count">1</span>
+          </h3>
+          <i class="fas fa-plus-square data-col-btn add"></i>
+        </div>
+        <label for="result">Result</label>
+        <input name="result" type="number" class="data-col-result" />
+        <p>Comments</p>
+        <textarea
+          name="comments"
+          cols="30"
+          rows="5"
+          class="data-col-comments"
+        ></textarea>
+      </div>
+      <!-- Data column template end-->
+      <!-- Test data columns -->
+      <div class="data-col">
+        <div class="data-col-bar">
+          <i class="fas fa-times data-col-btn delete"></i>
+        </div>
+        <div class="data-col-bar title-bar">
+          <h3 class="data-col-interval">
+            Day&nbsp;<span class="data-col-count">1</span>
+          </h3>
+          <i class="fas fa-plus-square data-col-btn add"></i>
+        </div>
+        <label for="result">Result</label>
+        <input name="result" type="number" class="data-col-result" />
+        <p>Comments</p>
+        <textarea
+          name="comments"
+          cols="30"
+          rows="5"
+          class="data-col-comments"
+        ></textarea>
+      </div>
+      <div class="data-col">
+        <div class="data-col-bar">
+          <i class="fas fa-times data-col-btn delete"></i>
+        </div>
+        <div class="data-col-bar title-bar">
+          <h3 class="data-col-interval">
+            Day&nbsp;<span class="data-col-count">1</span>
+          </h3>
+          <i class="fas fa-plus-square data-col-btn add"></i>
+        </div>
+        <label for="result">Result</label>
+        <input name="result" type="number" class="data-col-result" />
+        <p>Comments</p>
+        <textarea
+          name="comments"
+          cols="30"
+          rows="5"
+          class="data-col-comments"
+        ></textarea>
+      </div>
+      <div class="data-col">
+        <div class="data-col-bar">
+          <i class="fas fa-times data-col-btn delete"></i>
+        </div>
+        <div class="data-col-bar title-bar">
+          <h3 class="data-col-interval">
+            Day&nbsp;<span class="data-col-count">1</span>
+          </h3>
+          <i class="fas fa-plus-square data-col-btn add"></i>
+        </div>
+        <label for="result">Result</label>
+        <input name="result" type="number" class="data-col-result" />
+        <p>Comments</p>
+        <textarea
+          name="comments"
+          cols="30"
+          rows="5"
+          class="data-col-comments"
+        ></textarea>
+      </div>
+      <div class="data-col">
+        <div class="data-col-bar">
+          <i class="fas fa-times data-col-btn delete"></i>
+        </div>
+        <div class="data-col-bar title-bar">
+          <h3 class="data-col-interval">
+            Day&nbsp;<span class="data-col-count">1</span>
+          </h3>
+          <i class="fas fa-plus-square data-col-btn add"></i>
+        </div>
+        <label for="result">Result</label>
+        <input name="result" type="number" class="data-col-result" />
+        <p>Comments</p>
+        <textarea
+          name="comments"
+          cols="30"
+          rows="5"
+          class="data-col-comments"
+        ></textarea>
+      </div>
+      <!-- Test data columns end -->
     </section>
   </body>
 </html>
