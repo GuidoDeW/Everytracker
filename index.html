@@ -34,29 +34,37 @@ N/A, or to hide them altogether.-->
         class="input-h3 input-underline px-h"
         placeholder="What do you want to track?"
       />
-      <button id="open-menu-btn" class="btn btn-s my-h">Menu</button>
+      <button id="open-menu-btn" class="btn btn-s my-h no-select">Menu</button>
       <div
         id="input-container"
         class="flex-row flex-jc-sb fixed-width-100 quarter-height px-1 py-1"
       >
         <div class="flex-column flex-jc-sa flex-ac half-width mx-h">
-          <label for="quantity" class="my-h">Quantity</label>
+          <label for="quantity" class="my-h no-select">Quantity</label>
           <input
+            id="params-quantity"
             name="quantity"
             type="number"
             min="1"
             class="full-width input-underline px-h"
           />
-          <label for="other-quantity" class="my-h">Other</label>
+          <label
+            for="other-interval"
+            class="my-h params-other disabled no-select"
+            >Other</label
+          >
           <input
-            name="other-quantity"
+            id="params-other-interval"
+            name="other-interval"
             type="text"
-            class="other-interval-input full-width input-underline px-h"
+            class="other-interval-input full-width input-underline px-h params-other"
+            disabled="true"
           />
         </div>
         <div class="flex-column flex-jc-sa flex-ac half-width mx-h">
-          <label for="interval" class="my-h">Interval</label>
+          <label for="interval" class="my-h no-select">Interval</label>
           <select
+            id="params-interval"
             name="interval"
             type="text"
             class="full-width input-underline px-h"
@@ -69,7 +77,9 @@ N/A, or to hide them altogether.-->
             <option value="year">year</option>
             <option value="other">other...</option>
           </select>
-          <button class="btn btn-s mt-1 mb-h">Apply</button>
+          <button class="btn btn-s mt-1 mb-h params-other" disabled="true">
+            Apply
+          </button>
         </div>
       </div>
     </section>
