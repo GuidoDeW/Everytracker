@@ -23,6 +23,32 @@
         ></i>
       </div>
     </nav>
+    <dialog id="last-col-popup" class="popup">
+      <div class="popup-close-bar">
+        <i class="fas fa-times btn popup-close-btn"></i>
+      </div>
+      <p>Your data sheet must contain at least one column.</p>
+      <div class="popup-btn-container">
+        <button class="btn btn-s popup-btn no-select">Ok</button>
+      </div>
+    </dialog>
+    <dialog id="confirm-delete-popup" class="popup">
+      <div class="popup-close-bar">
+        <i class="fas fa-times btn popup-close-btn"></i>
+      </div>
+      <p>
+        This column contains data. <br />
+        Are you sure you want to remove it?
+      </p>
+      <div class="popup-btn-container">
+        <div id="confirm-delete-btn" class="btn btn-s popup-btn no-select">
+          Yes
+        </div>
+        <div id="cancel-delete-btn" class="btn btn-s popup-btn no-select">
+          No
+        </div>
+      </div>
+    </dialog>
     <!-- Note that an alkternative spatial division has been applied to the params: 
     two juxtaposed columns, each of whose bottom elements must be toggled. Decide 
   whethert to just render them unclickable and turn them semi-transparent when 
@@ -95,16 +121,19 @@ N/A, or to hide them altogether.-->
       id="sheet-container"
       class="flex-row flex-jc-s flex-w fixed-width-100 my-1"
     >
-      <!-- Data column template-->
       <div class="data-col">
         <div class="data-col-bar">
-          <i class="fas fa-times data-col-btn delete"></i>
+          <h3>
+            <i class="fas fa-times data-col-btn delete"></i>
+          </h3>
         </div>
         <div class="data-col-bar title-bar">
           <h3 class="data-col-interval">
             Day&nbsp;<span class="data-col-count">1</span>
           </h3>
-          <i class="fas fa-plus-square data-col-btn add"></i>
+          <h3>
+            <i class="fas fa-plus-square data-col-btn add"></i>
+          </h3>
         </div>
         <label for="result">Result</label>
         <input name="result" type="number" class="data-col-result" />
@@ -116,89 +145,6 @@ N/A, or to hide them altogether.-->
           class="data-col-comments"
         ></textarea>
       </div>
-      <!-- Data column template end-->
-      <!-- Test data columns -->
-      <div class="data-col">
-        <div class="data-col-bar">
-          <i class="fas fa-times data-col-btn delete"></i>
-        </div>
-        <div class="data-col-bar title-bar">
-          <h3 class="data-col-interval">
-            Day&nbsp;<span class="data-col-count">1</span>
-          </h3>
-          <i class="fas fa-plus-square data-col-btn add"></i>
-        </div>
-        <label for="result">Result</label>
-        <input name="result" type="number" class="data-col-result" />
-        <p>Comments</p>
-        <textarea
-          name="comments"
-          cols="30"
-          rows="5"
-          class="data-col-comments"
-        ></textarea>
-      </div>
-      <div class="data-col">
-        <div class="data-col-bar">
-          <i class="fas fa-times data-col-btn delete"></i>
-        </div>
-        <div class="data-col-bar title-bar">
-          <h3 class="data-col-interval">
-            Day&nbsp;<span class="data-col-count">1</span>
-          </h3>
-          <i class="fas fa-plus-square data-col-btn add"></i>
-        </div>
-        <label for="result">Result</label>
-        <input name="result" type="number" class="data-col-result" />
-        <p>Comments</p>
-        <textarea
-          name="comments"
-          cols="30"
-          rows="5"
-          class="data-col-comments"
-        ></textarea>
-      </div>
-      <div class="data-col">
-        <div class="data-col-bar">
-          <i class="fas fa-times data-col-btn delete"></i>
-        </div>
-        <div class="data-col-bar title-bar">
-          <h3 class="data-col-interval">
-            Day&nbsp;<span class="data-col-count">1</span>
-          </h3>
-          <i class="fas fa-plus-square data-col-btn add"></i>
-        </div>
-        <label for="result">Result</label>
-        <input name="result" type="number" class="data-col-result" />
-        <p>Comments</p>
-        <textarea
-          name="comments"
-          cols="30"
-          rows="5"
-          class="data-col-comments"
-        ></textarea>
-      </div>
-      <div class="data-col">
-        <div class="data-col-bar">
-          <i class="fas fa-times data-col-btn delete"></i>
-        </div>
-        <div class="data-col-bar title-bar">
-          <h3 class="data-col-interval">
-            Day&nbsp;<span class="data-col-count">1</span>
-          </h3>
-          <i class="fas fa-plus-square data-col-btn add"></i>
-        </div>
-        <label for="result">Result</label>
-        <input name="result" type="number" class="data-col-result" />
-        <p>Comments</p>
-        <textarea
-          name="comments"
-          cols="30"
-          rows="5"
-          class="data-col-comments"
-        ></textarea>
-      </div>
-      <!-- Test data columns end -->
     </section>
   </body>
 </html>

@@ -13,6 +13,10 @@
   --dark-text: rgb(0, 0, 0);
   --select-text: rgb(255, 215, 85);
   --select-text-shade: rgb(255, 215, 85, 0.5);
+  --warning-color: rgb(200, 0, 0);
+  --warning-color-light: rgb(255, 50, 50);
+  --succes-color: rgba(0, 200, 0);
+  --succes-color-light: rgba(50, 200, 50);
   /*Transition vars*/
   --swift-color-change: 0.2s;
   --intermediate-color-change: 0.5s;
