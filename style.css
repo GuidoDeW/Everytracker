@@ -3,19 +3,7 @@
   min-width: 80%;
 }
 
-#sliding-menu {
-  position: fixed;
-  top: 0;
-  left: 0;
-  min-width: 50vw;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: rgb(125, 125, 125);
-  transition: transform var(--intermediate-transform);
-}
-
-#menu-close-btn {
+#close-menu-btn {
   transition: transform var(--swift-transform);
 }
 
@@ -23,8 +11,77 @@
   transform: translateX(-50vw);
 }
 
+#sliding-menu,
+#sheet-list,
+#nav-btns-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#sliding-menu {
+  position: fixed;
+  justify-content: flex-start;
+  top: 0;
+  left: 0;
+  min-width: 50vw;
+  min-height: 100vh;
+  height: 100vh;
+  background-color: var(--secondary-bg);
+  transition: transform var(--intermediate-transform);
+}
+
+#nav-btns-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: auto;
+}
+
+#sheet-list {
+  width: 90%;
+  height: 50%;
+  margin-bottom: 1rem;
+  /* min-height: 50%;
+  max-height: 50%; */
+  margin-top: auto;
+  align-items: center;
+  justify-content: space-between;
+  /* overflow: scroll; */
+  overflow-x: hidden;
+  border-radius: 15px;
+  background-color: var(--light-color);
+}
+
+/* #sheet-list::-webkit-scrollbar-button {
+  display: none;
+} */
+#sheet-list::-webkit-scrollbar-track {
+  margin-bottom: 10px;
+}
+
+#sheet-list::-webkit-scrollbar-track-piece {
+  margin-top: 10px;
+}
+
+#sheet-list::-webkit-scrollbar-track {
+  border-radius: 50px;
+}
+
+#sheet-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+#sheet-list::-webkit-scrollbar-thumb {
+  border-radius: 15px;
+  width: 5px;
+  background-color: var(--dark-shade);
+}
+
 .popup {
-  background-color: var(--warning-color-light);
+  background-color: var(--warning-color);
   position: fixed;
   top: 50%;
   left: 50%;
@@ -55,7 +112,7 @@
 }
 
 .popup * {
-  color: var(--light-text);
+  color: var(--light-color);
 }
 
 .popup-close-bar {
@@ -72,12 +129,12 @@
 }
 
 .popup-btn {
-  background-color: var(--light-text);
+  background-color: var(--light-color);
   color: var(--dark-text);
 }
 
 @media (hover: hover) {
-  #menu-close-btn:hover {
+  #close-menu-btn:hover {
     transform: rotateZ(-90deg);
   }
 }
@@ -106,7 +163,8 @@ input[type="number"] {
 }
 
 input:disabled,
-.disabled:not(.btn) {
+.btn:disabled,
+label.disabled {
   background: var(--main-bg);
   color: var(--dark-shade);
 }
@@ -151,11 +209,11 @@ input:disabled,
 }
 
 .data-col-btn.add {
-  color: rgb(70, 145, 40);
+  color: var(--succes-color);
 }
 
 .data-col-btn.delete {
-  color: rgb(200, 0, 0);
+  color: var(--warning-color);
 }
 
 .data-col-comments,

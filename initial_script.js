@@ -1,6 +1,6 @@
 const slidingMenu = document.getElementById("sliding-menu"),
   openMenuBtn = document.getElementById("open-menu-btn"),
-  menuCloseBtn = document.getElementById("menu-close-btn"),
+  closeMenuBtn = document.getElementById("close-menu-btn"),
   paramsTitle = document.getElementById("params-title"),
   paramsQuantity = document.getElementById("params-quantity"),
   paramsInterval = document.getElementById("params-interval"),
@@ -38,6 +38,10 @@ function toggleInputStyle(e) {
   }
 }
 
+function closeSlidingMenu() {
+  slidingMenu.classList.add("closed");
+}
+
 defaultInputFields.forEach((field) => {
   field.addEventListener("keydown", (e) => {
     if (e.key == "Enter" || e.keyCode === 13) {
@@ -50,12 +54,10 @@ defaultInputFields.forEach((field) => {
 });
 
 openMenuBtn.addEventListener("click", () => {
-  slidingMenu.classList.remove("closed");
+  slidingMenu.classList.toggle("closed");
 });
 
-menuCloseBtn.addEventListener("click", () => {
-  slidingMenu.classList.add("closed");
-});
+closeMenuBtn.addEventListener("click", closeSlidingMenu);
 
 paramsTitle.addEventListener("focus", (e) => {
   e.target.placeholder = "";
@@ -64,7 +66,9 @@ paramsTitle.addEventListener("focus", (e) => {
 });
 
 document.addEventListener("click", toggleInputStyle);
+
 paramsTitle.addEventListener("keydown", toggleInputStyle);
+
 paramsInterval.addEventListener("input", () => {
   paramsInterval.selectedIndex < 6
     ? allParamsOthers.forEach((param) => {
@@ -88,6 +92,7 @@ applyOthersBtn.querySelector("click", () => {
 //DataColumn functionality
 
 function displayPopup(popup) {
+  closeSlidingMenu();
   popup.style.transform = "translate(-50%, -50%)";
 }
 
@@ -113,9 +118,9 @@ function deleteColumn(column, bool) {
       column.querySelector(".data-col-comments").value.trim() !== "") &&
     !bool
   ) {
-    function popupDeleteColumn() {
+    const popupDeleteColumn = () => {
       deleteColumn(column, true);
-    }
+    };
     confirmDeleteBtn.addEventListener("click", popupDeleteColumn);
 
     confirmDeletePopup.querySelectorAll(".btn").forEach((btn) => {
@@ -134,39 +139,45 @@ function deleteColumn(column, bool) {
   } else {
     sheetContainer.removeChild(column);
     let columnCount = 1;
-    document.querySelectorAll(".data-col").forEach((column) => {
+    const allCols = document.querySelectorAll(".data-col");
+    allCols.forEach((column) => {
       column.querySelector(".data-col-count").innerText = `${columnCount}`;
       columnCount++;
     });
-    document
-      .querySelectorAll(".data-col")
-      [document.querySelectorAll(".data-col").length - 1].querySelector(
-        ".data-col-btn.add"
-      ).style.visibility = "visible";
+    const lastCol = allCols[allCols.length - 1];
+    lastCol.querySelector(".data-col-btn.add").style.visibility = "visible";
+    //Scrolling into view upon removal may not be user-friendly; users may want to
+    // remove multiple adjacent columns
+    /*
+    scroll({
+      top:
+        lastCol.offsetTop -
+        (window.innerHeight - lastCol.getBoundingClientRect().height),
+      behavior: "smooth",
+    }); 
+    */
   }
 }
 
 // Invoke this function whenever a new sheet is created
 function createColumn() {
-  const newColumn = document.createElement("div");
-  newColumn.innerHTML = document.querySelectorAll(".data-col")[
+  const column = document.createElement("div");
+  column.innerHTML = document.querySelectorAll(".data-col")[
     document.querySelectorAll(".data-col").length - 1
   ].innerHTML;
-  newColumn.querySelector(".data-col-count").innerText =
+  column.querySelector(".data-col-count").innerText =
     document.querySelectorAll(".data-col").length + 1;
-  newColumn.querySelector(".data-col-result").value = "";
-  newColumn.querySelector(".data-col-comments").value = "";
-  newColumn
-    .querySelector(".data-col-btn.delete")
-    .addEventListener("click", () => {
-      deleteColumn(newColumn, false);
-    });
-  newColumn
+  column.querySelector(".data-col-result").value = "";
+  column.querySelector(".data-col-comments").value = "";
+  column.querySelector(".data-col-btn.delete").addEventListener("click", () => {
+    deleteColumn(column, false);
+  });
+  column
     .querySelector(".data-col-btn.add")
     .addEventListener("click", addColumn);
 
-  newColumn.classList.add("data-col");
-  return newColumn;
+  column.classList.add("data-col");
+  return column;
 }
 
 function addColumn() {
@@ -175,6 +186,13 @@ function addColumn() {
     column.querySelector(".data-col-btn.add").style.visibility = "hidden";
   });
   sheetContainer.appendChild(newColumn);
+  // Scroll new column into view
+  scroll({
+    top:
+      newColumn.offsetTop -
+      (window.innerHeight - newColumn.getBoundingClientRect().height),
+    behavior: "smooth",
+  });
 }
 
 // Update this function once bogus API has been created (insert columns based on sheet object)
