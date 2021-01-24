@@ -19,7 +19,53 @@ const slidingMenu = document.getElementById("sliding-menu"),
   lastColumnPopupBtns = lastColumnPopup.querySelectorAll(".btn"),
   confirmDeletePopup = document.getElementById("confirm-delete-popup"),
   confirmDeleteBtn = document.getElementById("confirm-delete-btn"),
-  cancelDeleteBtn = document.getElementById("cancel-delete-btn");
+  cancelDeleteBtn = document.getElementById("cancel-delete-btn"),
+  canvas = document.getElementById("graph"),
+  canvasContext = canvas.getContext("2d");
+
+function drawGraph() {
+  canvasContext.clearRect(
+    0,
+    0,
+    canvasContext.canvas.width,
+    canvasContext.canvas.height
+  );
+  const interval = Math.round(canvasContext.canvas.width / 10);
+  const zeroY = canvasContext.canvas.height;
+  const allResults = Array.from(document.querySelectorAll(".data-col")).map(
+    (column) => {
+      return Number(column.querySelector(".data-col-result").value);
+    }
+  );
+  let highestValue = allResults[0];
+  for (let i = 0; i < allResults.length; i++) {
+    if (allResults[i] > highestValue) {
+      highestValue = allResults[i];
+    }
+  }
+
+  const scale = highestValue / zeroY;
+
+  canvasContext.beginPath();
+  for (let j = 1; j < allResults.length; j++) {
+    canvasContext.moveTo((j - 1) * interval, zeroY - allResults[j - 1] / scale);
+    canvasContext.lineTo(j * interval, zeroY - allResults[j] / scale);
+  }
+  canvasContext.stroke();
+}
+
+// canvasContext.beginPath();
+// canvasContext.moveTo(0, 0);
+// canvasContext.lineTo(canvasContext.canvas.width, canvasContext.canvas.height);
+// canvasContext.lineTo(30, 100);
+// canvasContext.lineTo(40, 0);
+// canvasContext.stroke();
+
+document.addEventListener("keydown", (e) => {
+  if (e.key == "Enter" || e.keyCode == 13) {
+    hidePopup(lastColumnPopup);
+  }
+});
 
 function toggleInputStyle(e) {
   if (
@@ -92,8 +138,15 @@ applyOthersBtn.querySelector("click", () => {
 //DataColumn functionality
 
 function displayPopup(popup) {
-  closeSlidingMenu();
+  // closeSlidingMenu();
   popup.style.transform = "translate(-50%, -50%)";
+  if (
+    !slidingMenu.classList.contains("closed") &&
+    popup.getBoundingClientRect().left <
+      slidingMenu.getBoundingClientRect().right
+  ) {
+    closeSlidingMenu();
+  }
 }
 
 function hidePopup(popup) {
