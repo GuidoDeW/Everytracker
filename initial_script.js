@@ -15,8 +15,8 @@ const slidingMenu = document.getElementById("sliding-menu"),
   applyOthersBtn = document.getElementById("apply-others-btn"),
   sheetContainer = document.getElementById("sheet-container"),
   dataColumnsArray = Array.from(document.querySelectorAll(".data-col")),
-  lastColumnPopup = document.getElementById("last-col-popup"),
-  lastColumnPopupBtns = lastColumnPopup.querySelectorAll(".btn"),
+  columnLimitPopup = document.getElementById("col-limit-popup"),
+  columnLimitPopupBtns = columnLimitPopup.querySelectorAll(".btn"),
   confirmDeletePopup = document.getElementById("confirm-delete-popup"),
   confirmDeleteBtn = document.getElementById("confirm-delete-btn"),
   cancelDeleteBtn = document.getElementById("cancel-delete-btn"),
@@ -25,12 +25,18 @@ const slidingMenu = document.getElementById("sliding-menu"),
 // canvasContext.lineWidth = 1;
 // canvasContext.shadowBlur = 5;
 
+// Shortcut for easy testing
+document.addEventListener("keydown", (e) => {
+  if (e.key == "d") {
+    drawGraph();
+  }
+});
+
 function drawGraph(color) {
   // Solve blurry lines issue
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
   const canvasContext = canvas.getContext("2d");
-
   canvasContext.clearRect(
     0,
     0,
@@ -38,13 +44,17 @@ function drawGraph(color) {
     canvasContext.canvas.height
   );
 
-  const interval = Math.round(canvasContext.canvas.width / 10);
   const zeroY = canvasContext.canvas.height;
   const allResults = Array.from(document.querySelectorAll(".data-col")).map(
     (column) => {
       return Number(column.querySelector(".data-col-result").value);
     }
   );
+
+  const interval =
+    allResults.length <= 10
+      ? Math.round(canvasContext.canvas.width / 10)
+      : Math.round(canvasContext.canvas.width / (allResults.length - 1));
 
   let highestValue = allResults[0];
   for (let i = 0; i < allResults.length; i++) {
@@ -66,7 +76,7 @@ function drawGraph(color) {
 
 document.addEventListener("keydown", (e) => {
   if (e.key == "Enter" || e.keyCode == 13) {
-    hidePopup(lastColumnPopup);
+    hidePopup(columnLimitPopup);
   }
 });
 
@@ -140,8 +150,12 @@ applyOthersBtn.querySelector("click", () => {
 
 //DataColumn functionality
 
-function displayPopup(popup) {
-  // closeSlidingMenu();
+function displayPopup(popup, max) {
+  if (popup === columnLimitPopup) {
+    columnLimitPopup.querySelector("p").innerText = max
+      ? "You can track a maximum of 30 intervals per data sheet."
+      : "Your data sheet must contain at least one column.";
+  }
   popup.style.transform = "translate(-50%, -50%)";
   if (
     !slidingMenu.classList.contains("closed") &&
@@ -156,9 +170,9 @@ function hidePopup(popup) {
   popup.style.transform = "translate(-1000%, -1000%)";
 }
 
-lastColumnPopupBtns.forEach((btn) => {
+columnLimitPopupBtns.forEach((btn) => {
   btn.addEventListener("click", () => {
-    hidePopup(lastColumnPopup);
+    hidePopup(columnLimitPopup);
   });
 });
 
@@ -168,7 +182,7 @@ confirmDeleteBtn.addEventListener("click", () => {
 
 function deleteColumn(column, bool) {
   if (document.querySelectorAll(".data-col").length === 1) {
-    displayPopup(lastColumnPopup);
+    displayPopup(columnLimitPopup, false);
   } else if (
     (column.querySelector(".data-col-result").value.trim() !== "" ||
       column.querySelector(".data-col-comments").value.trim() !== "") &&
@@ -237,18 +251,23 @@ function createColumn() {
 }
 
 function addColumn() {
-  const newColumn = createColumn();
-  document.querySelectorAll(".data-col").forEach((column) => {
-    column.querySelector(".data-col-btn.add").style.visibility = "hidden";
-  });
-  sheetContainer.appendChild(newColumn);
-  // Scroll new column into view
-  scroll({
-    top:
-      newColumn.offsetTop -
-      (window.innerHeight - newColumn.getBoundingClientRect().height),
-    behavior: "smooth",
-  });
+  const allColumns = document.querySelectorAll(".data-col");
+  if (allColumns.length >= 30) {
+    displayPopup(columnLimitPopup, true);
+  } else {
+    const newColumn = createColumn();
+    allColumns.forEach((column) => {
+      column.querySelector(".data-col-btn.add").style.visibility = "hidden";
+    });
+    sheetContainer.appendChild(newColumn);
+    // Scroll new column into view
+    scroll({
+      top:
+        newColumn.offsetTop -
+        (window.innerHeight - newColumn.getBoundingClientRect().height),
+      behavior: "smooth",
+    });
+  }
 }
 
 // Update this function once bogus API has been created (insert columns based on sheet object)

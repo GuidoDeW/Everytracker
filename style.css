@@ -37,6 +37,7 @@
   justify-content: space-between;
   width: 100%;
   height: auto;
+  margin-bottom: 1rem;
 }
 
 #sheet-list {
@@ -213,11 +214,12 @@ label.disabled {
 #graph-container {
   display: flex;
   justify-content: center;
-  width: 100%;
+  max-width: 100%;
   margin-bottom: 1rem;
 }
 
 #graph {
+  display: inline-block;
   border: 1px solid var(--dark-shade);
   width: 90vw;
   overflow-x: scroll;
