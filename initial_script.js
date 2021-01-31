@@ -180,7 +180,7 @@ confirmDeleteBtn.addEventListener("click", () => {
   hidePopup(confirmDeletePopup);
 });
 
-function deleteColumn(column, bool) {
+function removeColumn(column, bool) {
   if (document.querySelectorAll(".data-col").length === 1) {
     displayPopup(columnLimitPopup, false);
   } else if (
@@ -189,7 +189,7 @@ function deleteColumn(column, bool) {
     !bool
   ) {
     const popupDeleteColumn = () => {
-      deleteColumn(column, true);
+      removeColumn(column, true);
     };
     confirmDeleteBtn.addEventListener("click", popupDeleteColumn);
 
@@ -230,8 +230,12 @@ function deleteColumn(column, bool) {
 }
 
 // Invoke this function whenever a new sheet is created
-function createColumn() {
+function createColumn(column) {
+  addColumn();
   const column = document.createElement("div");
+  column.id = getCurrentSheet().columns[
+    getCurrentSheet().columns.length - 1
+  ].id;
   column.innerHTML = document.querySelectorAll(".data-col")[
     document.querySelectorAll(".data-col").length - 1
   ].innerHTML;
@@ -240,7 +244,7 @@ function createColumn() {
   column.querySelector(".data-col-result").value = "";
   column.querySelector(".data-col-comments").value = "";
   column.querySelector(".data-col-btn.delete").addEventListener("click", () => {
-    deleteColumn(column, false);
+    removeColumn(column, false);
   });
   column
     .querySelector(".data-col-btn.add")
@@ -250,14 +254,14 @@ function createColumn() {
   return column;
 }
 
-function addColumn() {
+function insertColumn(column) {
   const allColumns = document.querySelectorAll(".data-col");
   if (allColumns.length >= 30) {
     displayPopup(columnLimitPopup, true);
   } else {
-    const newColumn = createColumn();
-    allColumns.forEach((column) => {
-      column.querySelector(".data-col-btn.add").style.visibility = "hidden";
+    const newColumn = createColumn(column);
+    allColumns.forEach((item) => {
+      item.querySelector(".data-col-btn.add").style.visibility = "hidden";
     });
     sheetContainer.appendChild(newColumn);
     // Scroll new column into view
@@ -273,9 +277,9 @@ function addColumn() {
 // Update this function once bogus API has been created (insert columns based on sheet object)
 document.querySelectorAll(".data-col").forEach((column) => {
   column.querySelector(".data-col-btn.delete").addEventListener("click", () => {
-    deleteColumn(column, false);
+    removeColumn(column, false);
   });
   column
     .querySelector(".data-col-btn.add")
-    .addEventListener("click", addColumn);
+    .addEventListener("click", insertColumn);
 });
