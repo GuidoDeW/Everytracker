@@ -556,6 +556,8 @@ function loadCurrentSheet() {
   if (currentSheet.interval_index == 6) {
     switchOtherParams(true);
     paramsOtherInterval.value = currentSheet.interval;
+  } else {
+    switchOtherParams(false);
   }
   loadAllColumns();
 }
