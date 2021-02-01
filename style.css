@@ -45,7 +45,7 @@
   height: 50%;
   margin-bottom: 1rem;
   margin-top: auto;
-  justify-content: space-between;
+  justify-content: flex-start;
   overflow-x: hidden;
   border-radius: 15px;
   border: 1px solid var(--dark-shade);
@@ -74,6 +74,10 @@
   border-radius: 15px;
   width: 5px;
   background-color: var(--dark-shade);
+}
+
+.sheet-btn.current {
+  background-color: var(--default-color-light);
 }
 
 .popup {

@@ -3,6 +3,7 @@
 const slidingMenu = document.getElementById("sliding-menu"),
   openMenuBtn = document.getElementById("open-menu-btn"),
   closeMenuBtn = document.getElementById("close-menu-btn"),
+  sheetList = document.getElementById("sheet-list"),
   newSheetBtn = document.getElementById("new-sheet-btn"),
   deleteSheetBtn = document.getElementById("delete-sheet-btn"),
   compareBtn = document.getElementById("compare-btn"),
@@ -106,6 +107,7 @@ function addSheet() {
     tracker.new_sheet_id,
     tracker.last_title,
     tracker.last_quantity,
+    tracker.last_interval_index,
     tracker.last_interval
   );
   tracker.sheets.push(newSheet);
@@ -321,8 +323,14 @@ paramsTitle.addEventListener("keydown", toggleInputStyle);
 
 paramsTitle.addEventListener("input", (e) => {
   const currentSheet = getCurrentSheet();
-  currentSheet.title =
+  console.log(getTracker().sheets);
+  const newTitle =
     e.target.value.trim().length > 0 ? capitalize(e.target.value) : "";
+  currentSheet.title = newTitle;
+  //Not the problem
+  document.getElementById(`sheet-btn-${currentSheet.id}`).innerText = newTitle;
+  // When run on the first sheet (i.e. not added by the user), this somehow causes other
+  // sheets in LS to take on id 1 as well.
   updateSheet(getTracker(), currentSheet);
 });
 
@@ -469,8 +477,6 @@ function loadColumn(column) {
   const newColumn = document.createElement("div");
   const allLoadedColumns = sheetContainer.querySelectorAll(".data-col");
   const sheetInterval = capitalize(getCurrentSheet().interval);
-  console.log(column.comments);
-  console.log(column.comments.length);
   newColumn.id = `data-col-${column.id}`;
   newColumn.className = "data-col";
   newColumn.innerHTML = `<div class="data-col-bar">
@@ -526,6 +532,9 @@ function loadColumn(column) {
 // Load columns from "API"
 function loadAllColumns() {
   const currentSheet = getCurrentSheet();
+  sheetContainer.querySelectorAll(".data-col").forEach((column) => {
+    sheetContainer.removeChild(column);
+  });
   currentSheet.columns.forEach((column) => {
     loadColumn(column);
   });
@@ -546,6 +555,47 @@ function loadCurrentSheet() {
   }
   loadAllColumns();
 }
-//Init app
+
+newSheetBtn.addEventListener("click", () => {
+  addSheet();
+
+  loadCurrentSheet();
+  insertSheetBtn(getCurrentSheet());
+  highlightCurrentBtn();
+});
+
+function insertSheetBtn(sheet) {
+  const sheetBtn = document.createElement("button");
+  const newSheetId = sheet.id;
+  sheetBtn.id = `sheet-btn-${newSheetId}`;
+  sheetBtn.className =
+    "sheet-btn btn btn-s btn-default half-width sheet-link mt-1";
+  sheetBtn.innerText = sheet.title.length > 0 ? sheet.title : "Sheet";
+  sheetBtn.addEventListener("click", () => {
+    setCurrentSheet(newSheetId);
+
+    highlightCurrentBtn();
+    loadCurrentSheet();
+  });
+  sheetList.appendChild(sheetBtn);
+}
+
+function highlightCurrentBtn() {
+  document.querySelectorAll(".sheet-btn").forEach((btn) => {
+    Number(btn.id.replace("sheet-btn-", "")) == getCurrentSheet().id
+      ? btn.classList.add("current")
+      : btn.classList.remove("current");
+  });
+}
+
+function loadMenu() {
+  getTracker().sheets.forEach((sheet) => {
+    insertSheetBtn(sheet);
+  });
+  highlightCurrentBtn();
+}
 
 loadCurrentSheet();
+loadMenu();
+//Not the problem
+updateSheet(getTracker(), getCurrentSheet());
