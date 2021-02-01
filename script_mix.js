@@ -3,6 +3,9 @@
 const slidingMenu = document.getElementById("sliding-menu"),
   openMenuBtn = document.getElementById("open-menu-btn"),
   closeMenuBtn = document.getElementById("close-menu-btn"),
+  newSheetBtn = document.getElementById("new-sheet-btn"),
+  deleteSheetBtn = document.getElementById("delete-sheet-btn"),
+  compareBtn = document.getElementById("compare-btn"),
   paramsTitle = document.getElementById("params-title"),
   paramsQuantity = document.getElementById("params-quantity"),
   paramsInterval = document.getElementById("params-interval"),
@@ -32,21 +35,29 @@ class Tracker {
     //Consider if this is necessary (benefit: save configuration for new sheets)
     this.last_title = "";
     this.last_quantity = 1;
+    this.last_interval_index = 2;
     this.last_interval = "day";
     this.sheets = [
-      new DataSheet(1, this.last_title, this.last_quantity, this.last_interval),
+      new DataSheet(
+        1,
+        this.last_title,
+        this.last_quantity,
+        this.last_interval_index,
+        this.last_interval
+      ),
     ];
   }
 }
 
 class DataSheet {
   // Create DataSheet with new DataSheet(new_sheet_id), and update new_sheet_id in "API" function.
-  constructor(id, title, quantity, interval) {
+  constructor(id, title, quantity, interval_index, interval) {
     this.id = id;
     this.new_col_id = 2;
     this.columns = [new DataColumn(this.id, 1)];
     this.title = title;
     this.quantity = quantity;
+    this.interval_index = interval_index;
     this.interval = interval;
   }
 }
@@ -66,7 +77,7 @@ function getTracker() {
     : new Tracker();
 }
 
-function setTracker(item) {
+function updateTracker(item) {
   localStorage.setItem("everytracker", JSON.stringify(item));
 }
 
@@ -78,7 +89,7 @@ function setCurrentSheet(id) {
     }).length > 0
   ) {
     tracker.current_sheet_id = id;
-    setTracker(tracker);
+    updateTracker(tracker);
   }
 }
 
@@ -100,7 +111,7 @@ function addSheet() {
   tracker.sheets.push(newSheet);
   tracker.current_sheet_id = newSheet.id;
   tracker.new_sheet_id++;
-  setTracker(tracker);
+  updateTracker(tracker);
 }
 
 function updateSheet(tracker, sheet) {
@@ -110,7 +121,7 @@ function updateSheet(tracker, sheet) {
   tracker.last_title = sheet.title;
   tracker.last_quantity = sheet.quantity;
   tracker.last_interval = sheet.interval;
-  setTracker(tracker);
+  updateTracker(tracker);
 }
 
 function deleteSheet(id) {
@@ -118,7 +129,7 @@ function deleteSheet(id) {
   tracker.sheets = tracker.sheets.filter((sheet) => {
     return sheet.id !== id;
   });
-  setTracker(tracker);
+  updateTracker(tracker);
 }
 
 function addColumn() {
@@ -230,25 +241,55 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+function applyInputStyle() {
+  paramsTitle.classList.add("text-ac");
+  paramsTitle.classList.add("fontw-700");
+}
+
+function removeInputStyle() {
+  paramsTitle.classList.remove("text-ac");
+  paramsTitle.classList.remove("fontw-700");
+  paramsTitle.placeholder = "What do you want to track?";
+}
+
 function toggleInputStyle(e) {
   if (
     e.target !== paramsTitle ||
-    (e.target === paramsTitle && e.type == "keydown" && e.key == "Enter") ||
-    e.keyCode == 13
+    (e.target === paramsTitle &&
+      e.type == "keydown" &&
+      (e.key == "Enter" || e.keyCode == 13))
   ) {
     if (paramsTitle.value.trim().length == 0) {
-      paramsTitle.classList.remove("text-ac");
-      paramsTitle.classList.remove("fontw-700");
-      paramsTitle.placeholder = "What do you want to track?";
+      removeInputStyle();
     } else {
-      paramsTitle.classList.add("text-ac");
-      paramsTitle.classList.add("fontw-700");
+      applyInputStyle();
     }
   }
 }
 
 function closeSlidingMenu() {
   slidingMenu.classList.add("closed");
+}
+
+function capitalize(str) {
+  return `${
+    str.trim().split("")[0].toUpperCase() +
+    str.split("").slice(1, str.length).join("")
+  }`;
+}
+
+function applyOtherInterval() {
+  if (paramsOtherInterval.value.trim().length > 0) {
+    const otherInterval = capitalize(paramsOtherInterval.value);
+    document.querySelectorAll(".data-col").forEach((column) => {
+      column.querySelector(".data-col-interval").innerText = otherInterval;
+    });
+    const currentSheet = getCurrentSheet();
+    currentSheet.interval = otherInterval;
+    currentSheet.interval_index = 6;
+    updateSheet(getTracker(), currentSheet);
+    // Save "applied" boolean (or update DataColumn HTML template, and all existing DataColumns)
+  }
 }
 
 defaultInputFields.forEach((field) => {
@@ -278,35 +319,54 @@ document.addEventListener("click", toggleInputStyle);
 
 paramsTitle.addEventListener("keydown", toggleInputStyle);
 
-paramsInterval.addEventListener("input", (e) => {
-  paramsInterval.selectedIndex < 6
-    ? allParamsOthers.forEach((param) => {
-        param.classList.add("disabled");
-        param.setAttribute("disabled", "true");
-        paramsOtherInterval.value = "";
-      })
-    : allParamsOthers.forEach((param) => {
-        param.classList.remove("disabled");
-        param.removeAttribute("disabled");
-        paramsOtherInterval.focus();
-      });
+paramsTitle.addEventListener("input", (e) => {
   const currentSheet = getCurrentSheet();
-  currentSheet.interval = e.value;
+  currentSheet.title =
+    e.target.value.trim().length > 0 ? capitalize(e.target.value) : "";
   updateSheet(getTracker(), currentSheet);
 });
 
-applyOthersBtn.querySelector("click", () => {
-  if (paramsOtherInterval.value.trim().length > 0) {
-    document.querySelectorAll(".data-col").forEach((column) => {
-      column.querySelector(".data-col-interval").innerText =
-        paramsInterval.value;
+function switchOtherParams(bool) {
+  if (bool) {
+    allParamsOthers.forEach((param) => {
+      param.classList.remove("disabled");
+      param.removeAttribute("disabled");
     });
-    const sheet = getCurrentSheet();
-    sheet.interval = paramsInterval.value;
-    updateSheet(getTracker(), sheet);
-    // Save "applied" boolean (or update DataColumn HTML template, and all existing DataColumns)
+  } else {
+    allParamsOthers.forEach((param) => {
+      param.classList.add("disabled");
+      param.setAttribute("disabled", "true");
+    });
+    paramsOtherInterval.value = "";
+  }
+}
+
+paramsInterval.addEventListener("input", (e) => {
+  if (paramsInterval.selectedIndex < 6) {
+    switchOtherParams(false);
+    const currentSheet = getCurrentSheet();
+    currentSheet.interval = e.target.value;
+    currentSheet.interval_index = paramsInterval.selectedIndex;
+    updateSheet(getTracker(), currentSheet);
+    const sheetInterval = capitalize(paramsInterval.value);
+    sheetContainer.querySelectorAll(".data-col").forEach((column) => {
+      column.querySelector(".data-col-interval").innerText = sheetInterval;
+    });
+  } else {
+    switchOtherParams(true);
+    paramsOtherInterval.focus();
   }
 });
+
+applyOthersBtn.addEventListener("click", applyOtherInterval);
+
+paramsOtherInterval.addEventListener("keydown", (e) => {
+  if (e.key == "Enter" || e.keyCode == 13) {
+    applyOtherInterval();
+  }
+});
+
+// Popup visuals
 
 function displayPopup(popup, max) {
   if (popup === columnLimitPopup) {
@@ -324,7 +384,6 @@ function displayPopup(popup, max) {
   }
 }
 
-// Popup visuals
 function hidePopup(popup) {
   popup.style.transform = "translate(-1000%, -1000%)";
 }
@@ -409,12 +468,7 @@ function createColumn() {
 function loadColumn(column) {
   const newColumn = document.createElement("div");
   const allLoadedColumns = sheetContainer.querySelectorAll(".data-col");
-  const sheetInterval =
-    getCurrentSheet().interval.split("")[0].toUpperCase() +
-    getCurrentSheet()
-      .interval.split("")
-      .slice(1, getCurrentSheet().interval.length)
-      .join("");
+  const sheetInterval = capitalize(getCurrentSheet().interval);
   console.log(column.comments);
   console.log(column.comments.length);
   newColumn.id = `data-col-${column.id}`;
@@ -425,8 +479,8 @@ function loadColumn(column) {
                               </h3>
                             </div>
                             <div class="data-col-bar title-bar">
-                              <h3 class="data-col-interval">
-                                ${sheetInterval}&nbsp;<span class="data-col-count">
+                              <h3 class="data-col-interval-text">
+                                <span class="data-col-interval">${sheetInterval}</span>&nbsp;<span class="data-col-count">
                                 ${allLoadedColumns.length + 1}
                                 </span>
                               </h3>
@@ -477,5 +531,21 @@ function loadAllColumns() {
   });
 }
 
+function loadCurrentSheet() {
+  //Select appropriate sheet button
+  const currentSheet = getCurrentSheet();
+  paramsTitle.value = currentSheet.title;
+  if (currentSheet.title.length > 0) {
+    applyInputStyle();
+  }
+  paramsQuantity.value = currentSheet.quantity;
+  paramsInterval.selectedIndex = currentSheet.interval_index;
+  if (currentSheet.interval_index == 6) {
+    switchOtherParams(true);
+    paramsOtherInterval.value = currentSheet.interval;
+  }
+  loadAllColumns();
+}
 //Init app
-loadAllColumns();
+
+loadCurrentSheet();

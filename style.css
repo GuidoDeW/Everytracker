@@ -190,6 +190,10 @@ label.disabled {
   justify-content: space-between;
 }
 
+.data-col-interval-text > * {
+  font-size: inherit;
+}
+
 @media (hover: hover) {
   .data-col-btn:hover {
     cursor: pointer;
