@@ -116,7 +116,10 @@ function addSheet() {
 
 function updateSheet(tracker, sheet) {
   //Replace old sheet with updated version
-  tracker.sheets.splice(tracker.sheets.indexOf(sheet), 1, sheet);
+  tracker.sheets = tracker.sheets.map((item) => {
+    return item.id == sheet.id ? sheet : item;
+  });
+  // tracker.sheets.splice(tracker.sheets.indexOf(sheet), 1, sheet);
   //Update tracker props for new sheet according to current sheet param updates (if any)
   tracker.last_title = sheet.title;
   tracker.last_quantity = sheet.quantity;
@@ -469,8 +472,6 @@ function loadColumn(column) {
   const newColumn = document.createElement("div");
   const allLoadedColumns = sheetContainer.querySelectorAll(".data-col");
   const sheetInterval = capitalize(getCurrentSheet().interval);
-  console.log(column.comments);
-  console.log(column.comments.length);
   newColumn.id = `data-col-${column.id}`;
   newColumn.className = "data-col";
   newColumn.innerHTML = `<div class="data-col-bar">
