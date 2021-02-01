@@ -118,7 +118,10 @@ function addSheet() {
 
 function updateSheet(tracker, sheet) {
   //Replace old sheet with updated version
-  tracker.sheets.splice(tracker.sheets.indexOf(sheet), 1, sheet);
+  tracker.sheets = tracker.sheets.map((item) => {
+    return item.id == sheet.id ? sheet : item;
+  });
+  // tracker.sheets.splice(tracker.sheets.indexOf(sheet), 1, sheet);
   //Update tracker props for new sheet according to current sheet param updates (if any)
   tracker.last_title = sheet.title;
   tracker.last_quantity = sheet.quantity;
@@ -328,7 +331,8 @@ paramsTitle.addEventListener("input", (e) => {
     e.target.value.trim().length > 0 ? capitalize(e.target.value) : "";
   currentSheet.title = newTitle;
   //Not the problem
-  document.getElementById(`sheet-btn-${currentSheet.id}`).innerText = newTitle;
+  document.getElementById(`sheet-btn-${currentSheet.id}`).innerText =
+    e.target.value.length > 0 ? newTitle : "Sheet";
   // When run on the first sheet (i.e. not added by the user), this somehow causes other
   // sheets in LS to take on id 1 as well.
   updateSheet(getTracker(), currentSheet);
