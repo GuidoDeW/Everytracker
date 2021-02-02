@@ -1,4 +1,5 @@
 //To do: save params to tracker. Enable or disable "other" category on DOM load based on presence of "other" value
+import * as Store from "./classes.js";
 
 const slidingMenu = document.getElementById("sliding-menu"),
   openMenuBtn = document.getElementById("open-menu-btn"),
@@ -29,165 +30,6 @@ const slidingMenu = document.getElementById("sliding-menu"),
   canvas = document.getElementById("graph");
 
 //Class "module starts here"
-class Tracker {
-  constructor() {
-    this.new_sheet_id = 2;
-    this.current_sheet_id = 1;
-    //Consider if this is necessary (benefit: save configuration for new sheets)
-    this.last_title = "";
-    this.last_quantity = 1;
-    this.last_interval_index = 2;
-    this.last_interval = "day";
-    this.sheets = [
-      new DataSheet(
-        1,
-        this.last_title,
-        this.last_quantity,
-        this.last_interval_index,
-        this.last_interval
-      ),
-    ];
-  }
-}
-
-class DataSheet {
-  // Create DataSheet with new DataSheet(new_sheet_id), and update new_sheet_id in "API" function.
-  constructor(id, title, quantity, interval_index, interval) {
-    this.id = id;
-    this.new_col_id = 2;
-    this.columns = [new DataColumn(this.id, 1)];
-    this.title = title;
-    this.quantity = quantity;
-    this.interval_index = interval_index;
-    this.interval = interval;
-  }
-}
-
-class DataColumn {
-  constructor(sheet_id, id) {
-    this.sheet_id = sheet_id;
-    this.id = id;
-    this.result = "";
-    this.comments = "";
-  }
-}
-
-function getTracker() {
-  return localStorage.getItem("everytracker")
-    ? JSON.parse(localStorage.getItem("everytracker"))
-    : new Tracker();
-}
-
-function updateTracker(item) {
-  localStorage.setItem("everytracker", JSON.stringify(item));
-}
-
-function setCurrentSheet(id) {
-  const tracker = getTracker();
-  if (
-    tracker.sheets.filter((sheet) => {
-      return sheet.id === id;
-    }).length > 0
-  ) {
-    tracker.current_sheet_id = id;
-    updateTracker(tracker);
-  }
-}
-
-function getCurrentSheet() {
-  const tracker = getTracker();
-  return getTracker().sheets.filter((sheet) => {
-    return sheet.id === tracker.current_sheet_id;
-  })[0];
-}
-
-function addSheet() {
-  const tracker = getTracker();
-  const newSheet = new DataSheet(
-    tracker.new_sheet_id,
-    tracker.last_title,
-    tracker.last_quantity,
-    tracker.last_interval_index,
-    tracker.last_interval
-  );
-  tracker.sheets.push(newSheet);
-  tracker.current_sheet_id = newSheet.id;
-  tracker.new_sheet_id++;
-  updateTracker(tracker);
-}
-
-function updateSheet(tracker, sheet) {
-  //Replace old sheet with updated version
-  tracker.sheets = tracker.sheets.map((item) => {
-    return item.id == sheet.id ? sheet : item;
-  });
-  // tracker.sheets.splice(tracker.sheets.indexOf(sheet), 1, sheet);
-  //Update tracker props for new sheet according to current sheet param updates (if any)
-  tracker.last_title = sheet.title;
-  tracker.last_quantity = sheet.quantity;
-  tracker.last_interval = sheet.interval;
-  updateTracker(tracker);
-}
-
-function deleteSheet(id) {
-  const tracker = getTracker();
-  tracker.sheets = tracker.sheets.filter((sheet) => {
-    return sheet.id !== id;
-  });
-  updateTracker(tracker);
-}
-
-function addColumn() {
-  const currentSheet = getCurrentSheet();
-  const newColumn = new DataColumn(currentSheet.id, currentSheet.new_col_id);
-  currentSheet.columns.push(newColumn);
-  currentSheet.new_col_id++;
-  updateSheet(getTracker(), currentSheet);
-}
-
-function getColumn(id) {
-  return getCurrentSheet().columns.filter((column) => {
-    return column.id === id;
-  })[0];
-}
-
-function updateColumnProp(id, key, value) {
-  const column = getColumn(id);
-  if (column.hasOwnProperty(key) && key !== "sheet_id" && key !== "id") {
-    column[key] = value;
-  }
-  updateColumn(column);
-}
-
-function updateColumn(column) {
-  const currentSheet = getCurrentSheet();
-  currentSheet.columns.forEach((item, index) => {
-    if (item.id === column.id) {
-      currentSheet.columns.splice(index, 1, column);
-    }
-  });
-  updateSheet(getTracker(), currentSheet);
-}
-
-function deleteColumn(id) {
-  const currentSheet = getCurrentSheet();
-  currentSheet.columns = currentSheet.columns.filter((column) => {
-    return column.id !== id;
-  });
-  updateSheet(getTracker(), currentSheet);
-}
-
-function updateSheetProp(key, value) {
-  const currentSheet = getCurrentSheet();
-  if (
-    currentSheet.hasOwnProperty(key) &&
-    key !== "id" &&
-    key !== "new_col_id"
-  ) {
-    currentSheet[key] = value;
-  }
-  updateSheet(getTracker(), currentSheet);
-}
 
 function updateUI() {
   //Add button to sheet list for each sheet
@@ -195,7 +37,7 @@ function updateUI() {
   //Add current sheet columns to UI
 }
 
-// To init app, run getCurrentSheet(), and load it into the UI.
+// To init app, run tracker.getCurrentSheet(), and load it into the UI.
 // Class "module" ends here
 
 function drawGraph(color) {
@@ -289,10 +131,10 @@ function applyOtherInterval() {
     document.querySelectorAll(".data-col").forEach((column) => {
       column.querySelector(".data-col-interval").innerText = otherInterval;
     });
-    const currentSheet = getCurrentSheet();
+    const currentSheet = Store.getCurrentSheet();
     currentSheet.interval = otherInterval;
     currentSheet.interval_index = 6;
-    updateSheet(getTracker(), currentSheet);
+    Store.updateSheet(Store.getTracker(), currentSheet);
     // Save "applied" boolean (or update DataColumn HTML template, and all existing DataColumns)
   }
 }
@@ -325,8 +167,7 @@ document.addEventListener("click", toggleInputStyle);
 paramsTitle.addEventListener("keydown", toggleInputStyle);
 
 paramsTitle.addEventListener("input", (e) => {
-  const currentSheet = getCurrentSheet();
-  console.log(getTracker().sheets);
+  const currentSheet = Store.getCurrentSheet();
   const newTitle =
     e.target.value.trim().length > 0 ? capitalize(e.target.value) : "";
   currentSheet.title = newTitle;
@@ -335,7 +176,7 @@ paramsTitle.addEventListener("input", (e) => {
     e.target.value.length > 0 ? newTitle : "Sheet";
   // When run on the first sheet (i.e. not added by the user), this somehow causes other
   // sheets in LS to take on id 1 as well.
-  updateSheet(getTracker(), currentSheet);
+  Store.updateSheet(Store.getTracker(), currentSheet);
 });
 
 function switchOtherParams(bool) {
@@ -356,10 +197,10 @@ function switchOtherParams(bool) {
 paramsInterval.addEventListener("input", (e) => {
   if (paramsInterval.selectedIndex < 6) {
     switchOtherParams(false);
-    const currentSheet = getCurrentSheet();
+    const currentSheet = Store.getCurrentSheet();
     currentSheet.interval = e.target.value;
     currentSheet.interval_index = paramsInterval.selectedIndex;
-    updateSheet(getTracker(), currentSheet);
+    Store.updateSheet(Store.getTracker(), currentSheet);
     const sheetInterval = capitalize(paramsInterval.value);
     sheetContainer.querySelectorAll(".data-col").forEach((column) => {
       column.querySelector(".data-col-interval").innerText = sheetInterval;
@@ -442,7 +283,7 @@ function removeColumn(column, bool) {
     //Update UI based on remaining columns
     //Save remaining columns
     const deleteId = Number(column.id.replace("data-col-", ""));
-    deleteColumn(deleteId);
+    Store.deleteColumn(deleteId);
 
     sheetContainer.querySelectorAll(".data-col").forEach((column) => {
       sheetContainer.removeChild(column);
@@ -456,9 +297,9 @@ function createColumn() {
   if (allColumns.length >= 30) {
     displayPopup(columnLimitPopup, true);
   } else {
-    addColumn();
-    const newColumn = getCurrentSheet().columns[
-      getCurrentSheet().columns.length - 1
+    Store.addColumn();
+    const newColumn = Store.getCurrentSheet().columns[
+      Store.getCurrentSheet().columns.length - 1
     ];
     allColumns.forEach((item) => {
       item.querySelector(".data-col-btn.add").style.visibility = "hidden";
@@ -480,7 +321,7 @@ function createColumn() {
 function loadColumn(column) {
   const newColumn = document.createElement("div");
   const allLoadedColumns = sheetContainer.querySelectorAll(".data-col");
-  const sheetInterval = capitalize(getCurrentSheet().interval);
+  const sheetInterval = capitalize(Store.getCurrentSheet().interval);
   newColumn.id = `data-col-${column.id}`;
   newColumn.className = "data-col";
   newColumn.innerHTML = `<div class="data-col-bar">
@@ -520,12 +361,12 @@ function loadColumn(column) {
     .querySelector(".data-col-btn.add")
     .addEventListener("click", createColumn);
   newColumn.querySelector(".data-col-result").addEventListener("input", (e) => {
-    updateColumnProp(column.id, "result", e.target.value);
+    Store.updateColumnProp(column.id, "result", e.target.value);
   });
   newColumn
     .querySelector(".data-col-comments")
     .addEventListener("input", (e) => {
-      updateColumnProp(column.id, "comments", e.target.value);
+      Store.updateColumnProp(column.id, "comments", e.target.value);
     });
   allLoadedColumns.forEach((column) => {
     column.querySelector(".data-col-btn.add").style.visibility = "hidden";
@@ -535,7 +376,7 @@ function loadColumn(column) {
 
 // Load columns from "API"
 function loadAllColumns() {
-  const currentSheet = getCurrentSheet();
+  const currentSheet = Store.getCurrentSheet();
   sheetContainer.querySelectorAll(".data-col").forEach((column) => {
     sheetContainer.removeChild(column);
   });
@@ -546,7 +387,7 @@ function loadAllColumns() {
 
 function loadCurrentSheet() {
   //Select appropriate sheet button
-  const currentSheet = getCurrentSheet();
+  const currentSheet = Store.getCurrentSheet();
   paramsTitle.value = currentSheet.title;
   if (currentSheet.title.length > 0) {
     applyInputStyle();
@@ -563,10 +404,10 @@ function loadCurrentSheet() {
 }
 
 newSheetBtn.addEventListener("click", () => {
-  addSheet();
+  Store.addSheet();
 
   loadCurrentSheet();
-  insertSheetBtn(getCurrentSheet());
+  insertSheetBtn(Store.getCurrentSheet());
   highlightCurrentBtn();
 });
 
@@ -578,7 +419,7 @@ function insertSheetBtn(sheet) {
     "sheet-btn btn btn-s btn-default half-width sheet-link mt-1";
   sheetBtn.innerText = sheet.title.length > 0 ? sheet.title : "Sheet";
   sheetBtn.addEventListener("click", () => {
-    setCurrentSheet(newSheetId);
+    Store.setCurrentSheet(newSheetId);
 
     highlightCurrentBtn();
     loadCurrentSheet();
@@ -588,14 +429,14 @@ function insertSheetBtn(sheet) {
 
 function highlightCurrentBtn() {
   document.querySelectorAll(".sheet-btn").forEach((btn) => {
-    Number(btn.id.replace("sheet-btn-", "")) == getCurrentSheet().id
+    Number(btn.id.replace("sheet-btn-", "")) == Store.getCurrentSheet().id
       ? btn.classList.add("current")
       : btn.classList.remove("current");
   });
 }
 
 function loadMenu() {
-  getTracker().sheets.forEach((sheet) => {
+  Store.getTracker().sheets.forEach((sheet) => {
     insertSheetBtn(sheet);
   });
   highlightCurrentBtn();
@@ -604,4 +445,4 @@ function loadMenu() {
 loadCurrentSheet();
 loadMenu();
 //Not the problem
-updateSheet(getTracker(), getCurrentSheet());
+Store.updateSheet(Store.getTracker(), Store.getCurrentSheet());

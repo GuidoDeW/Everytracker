@@ -1,38 +1,33 @@
-export class Tracker {
+// Either pull an existing tracker from LS (the mock API) or create a new Object literal
+// Consider whether this variable only serves as an initial model, or will in fact be constantly
+// updated as the user interacts with the interface.
+class Tracker {
   constructor() {
     this.new_sheet_id = 2;
     this.current_sheet_id = 1;
     //Consider if this is necessary (benefit: save configuration for new sheets)
     this.last_title = "";
     this.last_quantity = 1;
-    this.last_interval_index = 2;
     this.last_interval = "day";
     this.sheets = [
-      new DataSheet(
-        1,
-        this.last_title,
-        this.last_quantity,
-        this.last_interval_index,
-        this.last_interval
-      ),
+      new DataSheet(1, this.last_title, this.last_quantity, this.last_interval),
     ];
   }
 }
 
-export class DataSheet {
+class DataSheet {
   // Create DataSheet with new DataSheet(new_sheet_id), and update new_sheet_id in "API" function.
-  constructor(id, title, quantity, interval_index, interval) {
+  constructor(id, title, quantity, interval) {
     this.id = id;
     this.new_col_id = 2;
     this.columns = [new DataColumn(this.id, 1)];
     this.title = title;
     this.quantity = quantity;
-    this.interval_index = interval_index;
     this.interval = interval;
   }
 }
 
-export class DataColumn {
+class DataColumn {
   constructor(sheet_id, id) {
     this.sheet_id = sheet_id;
     this.id = id;
@@ -41,17 +36,17 @@ export class DataColumn {
   }
 }
 
-export function getTracker() {
+function getTracker() {
   return localStorage.getItem("everytracker")
     ? JSON.parse(localStorage.getItem("everytracker"))
     : new Tracker();
 }
 
-export function updateTracker(item) {
+function setTracker(item) {
   localStorage.setItem("everytracker", JSON.stringify(item));
 }
 
-export function setCurrentSheet(id) {
+function setCurrentSheet(id) {
   const tracker = getTracker();
   if (
     tracker.sheets.filter((sheet) => {
@@ -59,54 +54,50 @@ export function setCurrentSheet(id) {
     }).length > 0
   ) {
     tracker.current_sheet_id = id;
-    updateTracker(tracker);
+    setTracker(tracker);
   }
 }
 
-export function getCurrentSheet() {
+function getCurrentSheet() {
   const tracker = getTracker();
   return getTracker().sheets.filter((sheet) => {
     return sheet.id === tracker.current_sheet_id;
   })[0];
 }
 
-export function addSheet() {
+function addSheet() {
   const tracker = getTracker();
   const newSheet = new DataSheet(
     tracker.new_sheet_id,
     tracker.last_title,
     tracker.last_quantity,
-    tracker.last_interval_index,
     tracker.last_interval
   );
   tracker.sheets.push(newSheet);
   tracker.current_sheet_id = newSheet.id;
   tracker.new_sheet_id++;
-  updateTracker(tracker);
+  setTracker(tracker);
 }
 
-export function updateSheet(tracker, sheet) {
+function updateSheet(tracker, sheet) {
   //Replace old sheet with updated version
-  tracker.sheets = tracker.sheets.map((item) => {
-    return item.id == sheet.id ? sheet : item;
-  });
-  // tracker.sheets.splice(tracker.sheets.indexOf(sheet), 1, sheet);
+  tracker.sheets.splice(tracker.sheets.indexOf(sheet), 1, sheet);
   //Update tracker props for new sheet according to current sheet param updates (if any)
   tracker.last_title = sheet.title;
   tracker.last_quantity = sheet.quantity;
   tracker.last_interval = sheet.interval;
-  updateTracker(tracker);
+  setTracker(tracker);
 }
 
-export function deleteSheet(id) {
+function deleteSheet(id) {
   const tracker = getTracker();
   tracker.sheets = tracker.sheets.filter((sheet) => {
     return sheet.id !== id;
   });
-  updateTracker(tracker);
+  setTracker(tracker);
 }
 
-export function addColumn() {
+function addColumn() {
   const currentSheet = getCurrentSheet();
   const newColumn = new DataColumn(currentSheet.id, currentSheet.new_col_id);
   currentSheet.columns.push(newColumn);
@@ -114,13 +105,13 @@ export function addColumn() {
   updateSheet(getTracker(), currentSheet);
 }
 
-export function getColumn(id) {
+function getColumn(id) {
   return getCurrentSheet().columns.filter((column) => {
     return column.id === id;
   })[0];
 }
 
-export function updateColumnProp(id, key, value) {
+function updateColumnProp(id, key, value) {
   const column = getColumn(id);
   if (column.hasOwnProperty(key) && key !== "sheet_id" && key !== "id") {
     column[key] = value;
@@ -128,17 +119,25 @@ export function updateColumnProp(id, key, value) {
   updateColumn(column);
 }
 
-export function updateColumn(column) {
+function updateColumnComments(id, value) {
+  const column = getColumn(id);
+  column.comments = value;
+  updateColumn(column);
+}
+
+function updateColumnResult(id, value) {
+  const column = getColumn(id);
+  column.result = value;
+  updateColumn(column);
+}
+
+function updateColumn(column) {
   const currentSheet = getCurrentSheet();
-  currentSheet.columns.forEach((item, index) => {
-    if (item.id === column.id) {
-      currentSheet.columns.splice(index, 1, column);
-    }
-  });
+  currentSheet.columns.splice(currentSheet.columns.indexOf(column), 1, column);
   updateSheet(getTracker(), currentSheet);
 }
 
-export function deleteColumn(id) {
+function deleteColumn(id) {
   const currentSheet = getCurrentSheet();
   currentSheet.columns = currentSheet.columns.filter((column) => {
     return column.id !== id;
@@ -146,7 +145,7 @@ export function deleteColumn(id) {
   updateSheet(getTracker(), currentSheet);
 }
 
-export function updateSheetProp(key, value) {
+function updateSheetProp(key, value) {
   const currentSheet = getCurrentSheet();
   if (
     currentSheet.hasOwnProperty(key) &&
@@ -158,6 +157,10 @@ export function updateSheetProp(key, value) {
   updateSheet(getTracker(), currentSheet);
 }
 
-export function test() {
-  console.log("It worked");
+function updateUI() {
+  //Add button to sheet list for each sheet
+  //Add current sheet info to UI params
+  //Add current sheet columns to UI
 }
+
+// To init app, run getCurrentSheet(), and load it into the UI.
