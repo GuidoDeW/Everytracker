@@ -47,8 +47,10 @@ export function getTracker() {
     : new Tracker();
 }
 
-export function updateTracker(item) {
-  localStorage.setItem("everytracker", JSON.stringify(item));
+// Consider if passing the updated sheet to this function as a second parameter
+// would decrease the net number of "requests" to the mock API
+export function updateTracker(tracker) {
+  localStorage.setItem("everytracker", JSON.stringify(tracker));
 }
 
 export function setCurrentSheet(id) {
@@ -90,11 +92,15 @@ export function updateSheet(tracker, sheet) {
   tracker.sheets = tracker.sheets.map((item) => {
     return item.id == sheet.id ? sheet : item;
   });
-  // tracker.sheets.splice(tracker.sheets.indexOf(sheet), 1, sheet);
   //Update tracker props for new sheet according to current sheet param updates (if any)
-  tracker.last_title = sheet.title;
-  tracker.last_quantity = sheet.quantity;
-  tracker.last_interval = sheet.interval;
+  //Condition to safeguard against updates to sheets other than the current sheet
+  //affecting new sheet parameters (less expensive than calling getCurrentSheet())
+  if (sheet.id == tracker.current_sheet_id) {
+    tracker.last_title = sheet.title;
+    tracker.last_quantity = sheet.quantity;
+    tracker.last_interval = sheet.interval;
+    tracker.last_interval_index = sheet.interval_index;
+  }
   updateTracker(tracker);
 }
 

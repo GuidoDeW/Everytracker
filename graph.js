@@ -14,6 +14,16 @@ export default function drawGraph(sheets) {
 
   const zeroY = canvasContext.canvas.height;
 
+  // To draw the graph based on screen values instead of "API" values,
+  // adapt the function to take in an array, and pass in
+  // [...document.querySelectorAll(".data-col")].map(
+  //   (column) => {
+  //     return Number(column.querySelector(".data-col-result").value);
+  //   }
+  // as its argument.
+  // Perhaps passing in the array as a parameter is the best option anyway,
+  // as it would allow for using UI data for a single-sheet graph,
+  // and for "API"-based plotting when comparing multiple sheets.
   const allResults = Array.from(Store.getCurrentSheet().columns).map(
     (column) => {
       return Number(column.result);

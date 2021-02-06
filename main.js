@@ -141,7 +141,6 @@ function applyOtherInterval() {
     currentSheet.interval = otherInterval;
     currentSheet.interval_index = 6;
     Store.updateSheet(Store.getTracker(), currentSheet);
-    // Save "applied" boolean (or update DataColumn HTML template, and all existing DataColumns)
   }
 }
 
@@ -414,6 +413,9 @@ function loadCurrentSheet() {
   }
   loadAllColumns();
   highlightCurrentBtn();
+  // Set tracker values for new sheet to those of last selected sheet, so values
+  // are copied to newly added sheets
+  Store.updateSheet(Store.getTracker(), currentSheet);
 }
 
 newSheetBtn.addEventListener("click", () => {
