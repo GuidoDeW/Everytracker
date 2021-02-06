@@ -226,7 +226,7 @@ label.disabled {
   margin-bottom: 1rem;
 }
 
-#graph {
+#graph-canvas {
   display: inline-block;
   border: 1px solid var(--dark-shade);
   width: 90vw;

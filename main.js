@@ -1,5 +1,6 @@
 //To do: save params to tracker. Enable or disable "other" category on DOM load based on presence of "other" value
 import * as Store from "./classes.js";
+import drawBars from "./bar_chart.js";
 
 const slidingMenu = document.getElementById("sliding-menu"),
   openMenuBtn = document.getElementById("open-menu-btn"),
@@ -30,7 +31,7 @@ const slidingMenu = document.getElementById("sliding-menu"),
     "confirm-sheet-delete-popup"
   ),
   confirmSheetDeleteBtn = document.getElementById("confirm-sheet-delete-btn"),
-  canvas = document.getElementById("graph");
+  canvas = document.getElementById("graph-canvas");
 
 //Class "module starts here"
 
@@ -42,6 +43,16 @@ function updateUI() {
 
 // To init app, run tracker.getCurrentSheet(), and load it into the UI.
 // Class "module" ends here
+
+//Graph drawing test function
+document.body.addEventListener("keypress", (e) => {
+  if (e.key == "e") {
+    const allResults = Store.getCurrentSheet().columns.map((column) => {
+      return Number(column.result);
+    });
+    drawBars(canvas, allResults);
+  }
+});
 
 function drawGraph(color) {
   // Solve blurry lines issue

@@ -1,6 +1,6 @@
 import * as Store from "./classes.js/";
 
-export default function drawGraph(sheets) {
+export default function drawGraph(canvas, sheets) {
   // Solve blurry lines issue
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
