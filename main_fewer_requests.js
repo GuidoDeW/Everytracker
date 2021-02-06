@@ -21,15 +21,12 @@ const slidingMenu = document.getElementById("sliding-menu"),
   allParamsOthers = document.querySelectorAll(".params-other"),
   applyOthersBtn = document.getElementById("apply-others-btn"),
   sheetContainer = document.getElementById("sheet-container"),
-  dataColumnsArray = [...document.querySelectorAll(".data-col")],
+  dataColumnsArray = Array.from(document.querySelectorAll(".data-col")),
   columnLimitPopup = document.getElementById("col-limit-popup"),
-  // columnLimitPopupBtns = columnLimitPopup.querySelectorAll(".btn"),
+  columnLimitPopupBtns = columnLimitPopup.querySelectorAll(".btn"),
   confirmDeletePopup = document.getElementById("confirm-delete-popup"),
   confirmDeleteBtn = document.getElementById("confirm-delete-btn"),
-  confirmSheetDeletePopup = document.getElementById(
-    "confirm-sheet-delete-popup"
-  ),
-  confirmSheetDeleteBtn = document.getElementById("confirm-sheet-delete-btn"),
+  cancelDeleteBtn = document.getElementById("cancel-delete-btn"),
   canvas = document.getElementById("graph");
 
 //Class "module starts here"
@@ -56,7 +53,7 @@ function drawGraph(color) {
   );
 
   const zeroY = canvasContext.canvas.height;
-  const allResults = [...document.querySelectorAll(".data-col")].map(
+  const allResults = Array.from(document.querySelectorAll(".data-col")).map(
     (column) => {
       return Number(column.querySelector(".data-col-result").value);
     }
@@ -86,11 +83,8 @@ function drawGraph(color) {
 }
 
 document.addEventListener("keydown", (e) => {
-  if (
-    (e.key == "Enter" || e.keyCode == 13) &&
-    columnLimitPopup.classList.contains("current-popup")
-  ) {
-    hidePopup();
+  if (e.key == "Enter" || e.keyCode == 13) {
+    hidePopup(columnLimitPopup);
   }
 });
 
@@ -228,7 +222,6 @@ paramsOtherInterval.addEventListener("keydown", (e) => {
 // Popup visuals
 
 function displayPopup(popup, max) {
-  popup.classList.add("current-popup");
   if (popup === columnLimitPopup) {
     columnLimitPopup.querySelector("p").innerText = max
       ? "You can track a maximum of 30 intervals per data sheet."
@@ -244,29 +237,19 @@ function displayPopup(popup, max) {
   }
 }
 
-function hidePopup() {
-  document.querySelectorAll(".popup").forEach((popup) => {
-    if (popup.classList.contains("current-popup")) {
-      popup.style.transform = "translate(-1000%, -1000%)";
-      popup.classList.remove("current-popup");
-    }
-  });
+function hidePopup(popup) {
+  popup.style.transform = "translate(-1000%, -1000%)";
 }
 
-// columnLimitPopupBtns.forEach((btn) => {
-//   btn.addEventListener("click", () => {
-//     hidePopup(columnLimitPopup);
-//   });
-// });
-
-document.querySelectorAll(".popup").forEach((popup) => {
-  popup.querySelectorAll(".btn").forEach((btn) => {
-    btn.addEventListener("click", hidePopup);
+columnLimitPopupBtns.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    hidePopup(columnLimitPopup);
   });
 });
-// confirmDeleteBtn.addEventListener("click", () => {
-//   hidePopup();
-// });
+
+confirmDeleteBtn.addEventListener("click", () => {
+  hidePopup(confirmDeletePopup);
+});
 
 function removeColumn(column, bool) {
   if (document.querySelectorAll(".data-col").length === 1) {
@@ -287,6 +270,7 @@ function removeColumn(column, bool) {
           "click",
           () => {
             confirmDeleteBtn.removeEventListener("click", popupDeleteColumn);
+            hidePopup(confirmDeletePopup);
           },
           { once: true }
         );
@@ -304,7 +288,7 @@ function removeColumn(column, bool) {
     sheetContainer.querySelectorAll(".data-col").forEach((column) => {
       sheetContainer.removeChild(column);
     });
-    loadAllColumns();
+    loadAllColumns(Store.getCurrentSheet());
   }
 }
 
@@ -391,54 +375,44 @@ function loadColumn(column) {
 }
 
 // Load columns from "API"
-function loadAllColumns() {
-  const currentSheet = Store.getCurrentSheet();
+function loadAllColumns(sheet) {
   sheetContainer.querySelectorAll(".data-col").forEach((column) => {
     sheetContainer.removeChild(column);
   });
-  currentSheet.columns.forEach((column) => {
+  sheet.columns.forEach((column) => {
     loadColumn(column);
   });
 }
 
-function loadCurrentSheet() {
+function loadSheet(sheet) {
   //Select appropriate sheet button
-  const currentSheet = Store.getCurrentSheet();
-  paramsTitle.value = currentSheet.title;
-  if (currentSheet.title.length > 0) {
+  paramsTitle.value = sheet.title;
+  if (sheet.title.length > 0) {
     applyInputStyle();
   }
-  paramsQuantity.value = currentSheet.quantity;
-  paramsInterval.selectedIndex = currentSheet.interval_index;
-  if (currentSheet.interval_index == 6) {
+  paramsQuantity.value = sheet.quantity;
+  paramsInterval.selectedIndex = sheet.interval_index;
+  if (sheet.interval_index == 6) {
     switchOtherParams(true);
-    paramsOtherInterval.value = currentSheet.interval;
+    paramsOtherInterval.value = sheet.interval;
   } else {
     switchOtherParams(false);
   }
-  loadAllColumns();
+  loadAllColumns(sheet);
+}
+
+function changeCurrentSheet(bool) {
+  const currentSheet = Store.getCurrentSheet();
+  loadSheet(currentSheet);
+  if (bool) {
+    insertSheetBtn(currentSheet);
+  }
+  highlightCurrentBtn();
 }
 
 newSheetBtn.addEventListener("click", () => {
   Store.addSheet();
-
-  loadCurrentSheet();
-  insertSheetBtn(Store.getCurrentSheet());
-  highlightCurrentBtn();
-});
-
-deleteSheetBtn.addEventListener("click", () => {
-  displayPopup(confirmSheetDeletePopup);
-});
-
-confirmSheetDeleteBtn.addEventListener("click", () => {
-  const currentSheet = Store.getCurrentSheet();
-  Store.deleteSheet(currentSheet.id);
-  loadCurrentSheet();
-  sheetList.removeChild(
-    document.getElementById(`sheet-btn-${currentSheet.id}`)
-  );
-  highlightCurrentBtn();
+  changeCurrentSheet(true);
 });
 
 function insertSheetBtn(sheet) {
@@ -450,9 +424,7 @@ function insertSheetBtn(sheet) {
   sheetBtn.innerText = sheet.title.length > 0 ? sheet.title : "Sheet";
   sheetBtn.addEventListener("click", () => {
     Store.setCurrentSheet(newSheetId);
-
-    highlightCurrentBtn();
-    loadCurrentSheet();
+    changeCurrentSheet(false);
   });
   sheetList.appendChild(sheetBtn);
 }
@@ -472,7 +444,7 @@ function loadMenu() {
   highlightCurrentBtn();
 }
 
-loadCurrentSheet();
+loadSheet(Store.getCurrentSheet());
 loadMenu();
 //Not the problem
 Store.updateSheet(Store.getTracker(), Store.getCurrentSheet());

@@ -65,7 +65,7 @@ export function setCurrentSheet(id) {
 
 export function getCurrentSheet() {
   const tracker = getTracker();
-  return getTracker().sheets.filter((sheet) => {
+  return tracker.sheets.filter((sheet) => {
     return sheet.id === tracker.current_sheet_id;
   })[0];
 }
@@ -100,9 +100,19 @@ export function updateSheet(tracker, sheet) {
 
 export function deleteSheet(id) {
   const tracker = getTracker();
-  tracker.sheets = tracker.sheets.filter((sheet) => {
-    return sheet.id !== id;
+  const deleteIndex = tracker.sheets.findIndex((sheet) => {
+    return sheet.id === id;
   });
+  console.log(
+    `Id of the sheet to be deleted: ${id}. Found deleteIndex: ${deleteIndex}.`
+  );
+  console.log(deleteIndex);
+  tracker.sheets.splice(deleteIndex, 1);
+  tracker.current_sheet_id =
+    deleteIndex > 0
+      ? tracker.sheets[deleteIndex - 1].id
+      : tracker.sheets[deleteIndex + 1].id;
+  console.log(tracker.current_sheet_id);
   updateTracker(tracker);
 }
 
