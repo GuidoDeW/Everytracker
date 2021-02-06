@@ -107,11 +107,12 @@ export function deleteSheet(id) {
     `Id of the sheet to be deleted: ${id}. Found deleteIndex: ${deleteIndex}.`
   );
   console.log(deleteIndex);
-  tracker.sheets.splice(deleteIndex, 1);
+
   tracker.current_sheet_id =
     deleteIndex > 0
       ? tracker.sheets[deleteIndex - 1].id
       : tracker.sheets[deleteIndex + 1].id;
+  tracker.sheets.splice(deleteIndex, 1);
   console.log(tracker.current_sheet_id);
   updateTracker(tracker);
 }
@@ -166,8 +167,4 @@ export function updateSheetProp(key, value) {
     currentSheet[key] = value;
   }
   updateSheet(getTracker(), currentSheet);
-}
-
-export function test() {
-  console.log("It worked");
 }

@@ -22,8 +22,8 @@ const slidingMenu = document.getElementById("sliding-menu"),
   applyOthersBtn = document.getElementById("apply-others-btn"),
   sheetContainer = document.getElementById("sheet-container"),
   dataColumnsArray = [...document.querySelectorAll(".data-col")],
-  columnLimitPopup = document.getElementById("col-limit-popup"),
-  // columnLimitPopupBtns = columnLimitPopup.querySelectorAll(".btn"),
+  limitPopup = document.getElementById("limit-popup"),
+  // limitPopupBtns = limitPopup.querySelectorAll(".btn"),
   confirmDeletePopup = document.getElementById("confirm-delete-popup"),
   confirmDeleteBtn = document.getElementById("confirm-delete-btn"),
   confirmSheetDeletePopup = document.getElementById(
@@ -88,7 +88,7 @@ function drawGraph(color) {
 document.addEventListener("keydown", (e) => {
   if (
     (e.key == "Enter" || e.keyCode == 13) &&
-    columnLimitPopup.classList.contains("current-popup")
+    limitPopup.classList.contains("current-popup")
   ) {
     hidePopup();
   }
@@ -227,12 +227,17 @@ paramsOtherInterval.addEventListener("keydown", (e) => {
 
 // Popup visuals
 
-function displayPopup(popup, max) {
+function displayPopup(popup, sheet, max) {
   popup.classList.add("current-popup");
-  if (popup === columnLimitPopup) {
-    columnLimitPopup.querySelector("p").innerText = max
-      ? "You can track a maximum of 30 intervals per data sheet."
-      : "Your data sheet must contain at least one column.";
+  if (popup === limitPopup) {
+    if (sheet) {
+      limitPopup.querySelector("p").innerText =
+        "The minimal number of sheets is 1.";
+    } else {
+      limitPopup.querySelector("p").innerText = max
+        ? "You can track a maximum of 30 intervals per data sheet."
+        : "Your data sheet must contain at least one column.";
+    }
   }
   popup.style.transform = "translate(-50%, -50%)";
   if (
@@ -253,24 +258,15 @@ function hidePopup() {
   });
 }
 
-// columnLimitPopupBtns.forEach((btn) => {
-//   btn.addEventListener("click", () => {
-//     hidePopup(columnLimitPopup);
-//   });
-// });
-
 document.querySelectorAll(".popup").forEach((popup) => {
   popup.querySelectorAll(".btn").forEach((btn) => {
     btn.addEventListener("click", hidePopup);
   });
 });
-// confirmDeleteBtn.addEventListener("click", () => {
-//   hidePopup();
-// });
 
 function removeColumn(column, bool) {
   if (document.querySelectorAll(".data-col").length === 1) {
-    displayPopup(columnLimitPopup, false);
+    displayPopup(limitPopup, false, false);
   } else if (
     (column.querySelector(".data-col-result").value.trim() !== "" ||
       column.querySelector(".data-col-comments").value.trim() !== "") &&
@@ -311,7 +307,7 @@ function removeColumn(column, bool) {
 function createColumn() {
   const allColumns = document.querySelectorAll(".data-col");
   if (allColumns.length >= 30) {
-    displayPopup(columnLimitPopup, true);
+    displayPopup(limitPopup, false, true);
   } else {
     Store.addColumn();
     const newColumn = Store.getCurrentSheet().columns[
@@ -417,18 +413,19 @@ function loadCurrentSheet() {
     switchOtherParams(false);
   }
   loadAllColumns();
+  highlightCurrentBtn();
 }
 
 newSheetBtn.addEventListener("click", () => {
   Store.addSheet();
-
-  loadCurrentSheet();
   insertSheetBtn(Store.getCurrentSheet());
-  highlightCurrentBtn();
+  loadCurrentSheet();
 });
 
 deleteSheetBtn.addEventListener("click", () => {
-  displayPopup(confirmSheetDeletePopup);
+  Store.getTracker().sheets.length > 1
+    ? displayPopup(confirmSheetDeletePopup, true)
+    : displayPopup(limitPopup, true);
 });
 
 confirmSheetDeleteBtn.addEventListener("click", () => {
@@ -438,7 +435,6 @@ confirmSheetDeleteBtn.addEventListener("click", () => {
   sheetList.removeChild(
     document.getElementById(`sheet-btn-${currentSheet.id}`)
   );
-  highlightCurrentBtn();
 });
 
 function insertSheetBtn(sheet) {
@@ -451,7 +447,6 @@ function insertSheetBtn(sheet) {
   sheetBtn.addEventListener("click", () => {
     Store.setCurrentSheet(newSheetId);
 
-    highlightCurrentBtn();
     loadCurrentSheet();
   });
   sheetList.appendChild(sheetBtn);
@@ -474,5 +469,5 @@ function loadMenu() {
 
 loadCurrentSheet();
 loadMenu();
-//Not the problem
-Store.updateSheet(Store.getTracker(), Store.getCurrentSheet());
+
+// Store.updateSheet(Store.getTracker(), Store.getCurrentSheet());

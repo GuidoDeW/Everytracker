@@ -14,6 +14,7 @@ export default function drawGraph(sheets) {
 
     const zeroY = canvasContext.canvas.height;
 
+    //Is this necessary? sheet.columns is already an array
     const allResults = Array.from(sheet.columns).map((column) => {
       return Number(column.result);
     });
