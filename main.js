@@ -1,6 +1,10 @@
-//To do: save params to tracker. Enable or disable "other" category on DOM load based on presence of "other" value
+//To do:
+// -decide whether to automatically redraw charts on sheets that were left with rendered charts, or to
+//have the user manually request a re-render any time they switch between sheets.
+//-Make chart collapsible (similar to the menu bar) and add draw and wipe buttons
+//- Redraw chart (IF chart render has been requested by user) on window resize! (/On window move?)
 import * as Store from "./classes.js";
-import drawBars from "./bar_chart.js";
+import drawBars, { wipeChart } from "./bar_chart.js";
 
 const slidingMenu = document.getElementById("sliding-menu"),
   openMenuBtn = document.getElementById("open-menu-btn"),
@@ -40,9 +44,6 @@ function updateUI() {
   //Add current sheet info to UI params
   //Add current sheet columns to UI
 }
-
-// To init app, run tracker.getCurrentSheet(), and load it into the UI.
-// Class "module" ends here
 
 //Graph drawing test function
 document.body.addEventListener("keypress", (e) => {
@@ -433,6 +434,7 @@ newSheetBtn.addEventListener("click", () => {
   Store.addSheet();
   insertSheetBtn(Store.getCurrentSheet());
   loadCurrentSheet();
+  wipeChart(canvas.getContext("2d"));
 });
 
 deleteSheetBtn.addEventListener("click", () => {
