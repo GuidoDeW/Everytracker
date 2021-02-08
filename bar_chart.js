@@ -9,53 +9,25 @@ export default function drawBars(canvas, results) {
   wipeChart(canvasContext);
 
   const zeroY = canvasContext.canvas.height;
-  // const allResults = [...Store.getCurrentSheet().columns].map((column) => {
-  //   return Number(column.result);
-  // });
 
-  // const barWidth = (function () {
-  //   if (window.innerWidth <= 568) {
-  //     return results.length <= 10
-  //       ? canvasContext.canvas.width / 10
-  //       : canvasContext.canvas.width / results.length;
-  //   } else if (window.innerWidth <= 1200) {
-  //     return results.length <= 15
-  //       ? canvasContext.canvas.width / 15
-  //       : canvasContext.canvas.width / results.length;
-  //   } else {
-  //     return results.length <= 20
-  //       ? 50
-  //       : canvasContext.canvas.width / results.length;
-  //   }
-  // })();
-
-  // if (window.innerWidth <= 568) {
-  //   barWidth =
-  //     results.length <= 10
-  //       ? canvasContext.canvas.width / 10
-  //       : canvasContext.canvas.width / results.length;
-  // } else if (window.innerWidth <= 1600) {
-  //   barWidth = Math.min(50, canvasContext.canvas.width / results.length);
-  // } else {
-  //   barWidth =
-  //     results.length <= 20 ? 50 : canvasContext.canvas.width / results.length;
-  // }
-
+  const viewportWidth = document.body.clientWidth;
   let barWidth;
 
-  if (window.innerWidth <= 568) {
+  if (viewportWidth <= 568) {
     barWidth =
       results.length <= 10
         ? canvasContext.canvas.width / 10
-        : canvasContext.canvas.width / results.length;
-  } else if (window.innerWidth <= 1200) {
+        : canvasContext.canvas.width / (results.length + 1);
+  } else if (viewportWidth <= 1200) {
     barWidth =
       results.length <= 15
         ? canvasContext.canvas.width / 15
-        : canvasContext.canvas.width / results.length;
+        : canvasContext.canvas.width / (results.length + 1);
   } else {
     barWidth =
-      results.length <= 20 ? 50 : canvasContext.canvas.width / results.length;
+      results.length <= 20
+        ? 50
+        : canvasContext.canvas.width / (results.length + 1);
   }
 
   let highestValue = results[0];
@@ -66,42 +38,81 @@ export default function drawBars(canvas, results) {
     }
   });
 
+  canvasContext.font = `${viewportWidth <= 1200 ? 10 : 12}px Arial`;
+
+  const mostDigits = Math.round(highestValue).toString().length;
+
+  for (let i = 0; i <= 10; i++) {
+    const drawY =
+      canvasContext.canvas.height -
+      ((canvasContext.canvas.height - 50) / 10) * i;
+    let textSpace = barWidth;
+    if (viewportWidth >= 768) {
+      const barInterval = Math.round(highestValue / 10) * i;
+      const spaces = " ".repeat(mostDigits - barInterval.toString().length);
+      canvasContext.strokeStyle = "rgb(0, 0, 0)";
+      canvasContext.strokeText(`${spaces + barInterval}`, 0, drawY);
+    } else {
+      textSpace = 0;
+    }
+    canvasContext.strokeStyle = "rgba(0, 0, 0, 0.5)";
+    canvasContext.moveTo(textSpace, drawY);
+    canvasContext.lineTo(canvasContext.canvas.width, drawY);
+  }
+
+  canvasContext.stroke();
+
   canvasContext.fillStyle = "rgb(100, 100, 255)";
   canvasContext.strokeStyle = "rgb(100, 255, 235)";
   //Number-popup related
-  canvasContext.font = "16px Arial";
 
   for (let j = 0; j < results.length; j++) {
     const resultValue = results[j];
     const barHeight =
-      (resultValue / highestValue) * canvasContext.canvas.height - 25;
-    const barX = j * barWidth;
+      (resultValue / highestValue) * canvasContext.canvas.height - 50;
+    const barX = viewportWidth >= 768 ? (j + 1) * barWidth : j * barWidth;
     const inverseY = zeroY - barHeight;
     canvasContext.fillRect(barX, inverseY, barWidth, barHeight);
-
     canvasContext.strokeRect(barX, inverseY, barWidth, barHeight);
-    // Number-popup relatede
-    canvas.addEventListener("click", (e) => {
-      const canvasRect = e.target.getBoundingClientRect();
-      if (
-        e.clientX - canvasRect.left > barX &&
-        e.clientX - canvasRect.left < barX + barWidth &&
-        e.clientY - canvasRect.top > inverseY
-      ) {
-        canvasContext.clearRect(0, 0, canvasContext.canvas.width, 25);
-        canvasContext.strokeStyle = "rgb(0, 0, 0)";
-        //Add number of empty spaces behind text to shift it to the middle?
-        canvasContext.strokeText(resultValue, barX, 16);
-      }
-    });
   }
-
-  //Alternative: use spread operator to pass in all parameters required for drawing bars
-
-  // const barParams = [
-  //   j * barWidth,
-  //   zeroY - ((results[j] / highestValue) * canvasContext.canvas.height - 25),
-  //   barWidth,
-  //   (results[j] / highestValue) * canvasContext.canvas.height - 25,
-  // ];
 }
+
+// Take highest value
+// Divide by ten
+//At 10% height, stroke 10% of highest value
+//...etc.
+
+//At highest point - 50, draw highest value
+// Go down 10% (of total height - 50), and draw highestvalue - 10%
+
+// etc.
+
+// for (let k = highestValue; k > 1; k--) {
+//   canvasContext.strokeText(
+//     `${(highestValue / 10) * k}`,
+//     0,
+//     (canvasContext.canvas.height / 10) * k
+//   );
+// }
+
+//Alternative: use spread operator to pass in all parameters required for drawing bars
+
+// const barParams = [
+//   j * barWidth,
+//   zeroY - ((results[j] / highestValue) * canvasContext.canvas.height - 25),
+//   barWidth,
+//   (results[j] / highestValue) * canvasContext.canvas.height - 25,
+// ];
+
+// canvas.addEventListener("click", (e) => {
+//   const canvasRect = e.target.getBoundingClientRect();
+//   if (
+//     e.clientX - canvasRect.left > barX &&
+//     e.clientX - canvasRect.left < barX + barWidth &&
+//     e.clientY - canvasRect.top > inverseY
+//   ) {
+//     canvasContext.clearRect(0, 0, canvasContext.canvas.width, 25);
+//     canvasContext.strokeStyle = "rgb(0, 0, 0)";
+//     canvasContext.strokeText(resultValue, barX, 16);
+//   }
+// });

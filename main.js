@@ -3,6 +3,13 @@
 //have the user manually request a re-render any time they switch between sheets.
 //-Make chart collapsible (similar to the menu bar) and add draw and wipe buttons
 //- Redraw chart (IF chart render has been requested by user) on window resize! (/On window move?)
+
+//-Abandon the chart legend idea; instead, recalculate the bar variables to make room for x and y axes
+// (the interval on the x axis can be shown at the top of the chart rather than the bottom)
+// simply subtract the space you want to reserve for the value measure from the total width, render the bars
+// across the remaining width, and render the values where the first bar would normally be rendered.
+// Dynamically adapt the number of and vertical space between the shown intervals based on the range of values
+// in the data input.
 import * as Store from "./classes.js";
 import drawBars, { wipeChart } from "./bar_chart.js";
 
