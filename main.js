@@ -4,14 +4,11 @@
 //-Make chart collapsible (similar to the menu bar) and add draw and wipe buttons
 //- Redraw chart (IF chart render has been requested by user) on window resize! (/On window move?)
 
-//-Abandon the chart legend idea; instead, recalculate the bar variables to make room for x and y axes
-// (the interval on the x axis can be shown at the top of the chart rather than the bottom)
-// simply subtract the space you want to reserve for the value measure from the total width, render the bars
-// across the remaining width, and render the values where the first bar would normally be rendered.
-// Dynamically adapt the number of and vertical space between the shown intervals based on the range of values
-// in the data input.
+//Adjust chart control button display based on window dimensions (make responsive)
+//Create line chart and mixed chart functions (modularize further if necessary)
 import * as Store from "./classes.js";
-import drawBars, { wipeChart } from "./bar_chart.js";
+import { clearChart, setGrid } from "./chart_utils.js";
+import drawBars from "./bar_chart.js";
 
 const slidingMenu = document.getElementById("sliding-menu"),
   openMenuBtn = document.getElementById("open-menu-btn"),
@@ -42,6 +39,10 @@ const slidingMenu = document.getElementById("sliding-menu"),
     "confirm-sheet-delete-popup"
   ),
   confirmSheetDeleteBtn = document.getElementById("confirm-sheet-delete-btn"),
+  clearChartBtn = document.getElementById("clear-chart-btn"),
+  barChartBtn = document.getElementById("bar-chart-btn"),
+  lineChartBtn = document.getElementById("line-chart-btn"),
+  mixedChartBtn = document.getElementById("mixed-chart-btn"),
   canvas = document.getElementById("graph-canvas");
 
 //Class "module starts here"
@@ -52,57 +53,46 @@ function updateUI() {
   //Add current sheet columns to UI
 }
 
-//Graph drawing test function
-document.body.addEventListener("keypress", (e) => {
-  if (e.key == "e") {
-    const allResults = Store.getCurrentSheet().columns.map((column) => {
-      return Number(column.result);
-    });
-    drawBars(canvas, allResults);
-  }
-});
+// function drawGraph(color) {
+//   canvas.width = canvas.clientWidth;
+//   canvas.height = canvas.clientHeight;
+//   const canvasContext = canvas.getContext("2d");
+//   canvasContext.clearRect(
+//     0,
+//     0,
+//     canvasContext.canvas.width,
+//     canvasContext.canvas.height
+//   );
 
-function drawGraph(color) {
-  // Solve blurry lines issue
-  canvas.width = canvas.clientWidth;
-  canvas.height = canvas.clientHeight;
-  const canvasContext = canvas.getContext("2d");
-  canvasContext.clearRect(
-    0,
-    0,
-    canvasContext.canvas.width,
-    canvasContext.canvas.height
-  );
+//   const zeroY = canvasContext.canvas.height;
+//   const allResults = [...document.querySelectorAll(".data-col")].map(
+//     (column) => {
+//       return Number(column.querySelector(".data-col-result").value);
+//     }
+//   );
 
-  const zeroY = canvasContext.canvas.height;
-  const allResults = [...document.querySelectorAll(".data-col")].map(
-    (column) => {
-      return Number(column.querySelector(".data-col-result").value);
-    }
-  );
+//   const interval =
+//     allResults.length <= 10
+//       ? Math.round(canvasContext.canvas.width / 10)
+//       : Math.round(canvasContext.canvas.width / (allResults.length - 1));
 
-  const interval =
-    allResults.length <= 10
-      ? Math.round(canvasContext.canvas.width / 10)
-      : Math.round(canvasContext.canvas.width / (allResults.length - 1));
+//   let highestValue = allResults[0];
+//   for (let i = 0; i < allResults.length; i++) {
+//     if (allResults[i] > highestValue) {
+//       highestValue = allResults[i];
+//     }
+//   }
 
-  let highestValue = allResults[0];
-  for (let i = 0; i < allResults.length; i++) {
-    if (allResults[i] > highestValue) {
-      highestValue = allResults[i];
-    }
-  }
-
-  const scale = highestValue / zeroY;
-  canvasContext.strokeStyle = color ? color : "black";
-  canvasContext.shadowColor = color ? color : "black";
-  canvasContext.beginPath();
-  for (let j = 1; j < allResults.length; j++) {
-    canvasContext.moveTo((j - 1) * interval, zeroY - allResults[j - 1] / scale);
-    canvasContext.lineTo(j * interval, zeroY - allResults[j] / scale);
-  }
-  canvasContext.stroke();
-}
+//   const scale = highestValue / zeroY;
+//   canvasContext.strokeStyle = color ? color : "black";
+//   canvasContext.shadowColor = color ? color : "black";
+//   canvasContext.beginPath();
+//   for (let j = 1; j < allResults.length; j++) {
+//     canvasContext.moveTo((j - 1) * interval, zeroY - allResults[j - 1] / scale);
+//     canvasContext.lineTo(j * interval, zeroY - allResults[j] / scale);
+//   }
+//   canvasContext.stroke();
+// }
 
 document.addEventListener("keydown", (e) => {
   if (
@@ -441,7 +431,7 @@ newSheetBtn.addEventListener("click", () => {
   Store.addSheet();
   insertSheetBtn(Store.getCurrentSheet());
   loadCurrentSheet();
-  wipeChart(canvas.getContext("2d"));
+  clearChart(canvas.getContext("2d"));
 });
 
 deleteSheetBtn.addEventListener("click", () => {
@@ -457,6 +447,17 @@ confirmSheetDeleteBtn.addEventListener("click", () => {
   sheetList.removeChild(
     document.getElementById(`sheet-btn-${currentSheet.id}`)
   );
+});
+
+clearChartBtn.addEventListener("click", () => {
+  clearChart(canvas);
+});
+
+barChartBtn.addEventListener("click", () => {
+  const allResults = Store.getCurrentSheet().columns.map((column) => {
+    return Number(column.result);
+  });
+  drawBars(canvas, allResults);
 });
 
 function insertSheetBtn(sheet) {

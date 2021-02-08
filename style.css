@@ -223,9 +223,17 @@ label.disabled {
 
 #graph-container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
   max-width: 100%;
   margin-bottom: 1rem;
+}
+
+#graph-controls {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
 }
 
 #graph-canvas {

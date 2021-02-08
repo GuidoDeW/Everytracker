@@ -16,6 +16,8 @@
   --light-color: #fff;
   --default-color: rgb(100, 100, 255);
   --default-color-light: rgb(150, 150, 255);
+  --info-color: rgb(255, 200, 50);
+  --info-color-light: rgb(255, 225, 75);
   --warning-color: rgb(255, 50, 50);
   --warning-color-light: rgb(255, 100, 100);
   --succes-color: rgb(50, 200, 50);
@@ -800,6 +802,15 @@ h6 {
 
 .btn-default:hover {
   background-color: var(--default-color-light);
+}
+
+.btn-info {
+  background-color: var(--info-color);
+  color: var(--light-color);
+}
+
+.btn-info:hover {
+  background-color: var(--info-color-light);
 }
 
 .btn-warning {

@@ -165,9 +165,25 @@ N/A, or to hide them altogether.-->
     ></section>
     <!-- Placeholder for scrolling and layout tests -->
     <section id="graph-container">
-      <div id="graph-y"></div>
+      <div id="graph-controls">
+        <div class="flex-row flex-jc-sb full-width mb-1">
+          <button id="clear-chart-btn" class="btn btn-s btn-warning">
+            Clear Chart
+          </button>
+        </div>
+        <div class="flex-row flex-jc-sb full-width mb-1">
+          <button id="bar-chart-btn" class="btn btn-s btn-default">
+            Bar Chart
+          </button>
+          <button id="line-chart-btn" class="btn btn-s btn-success">
+            Line Chart
+          </button>
+          <button id="mixed-chart--btn" class="btn btn-s btn-info">
+            Mixed Chart
+          </button>
+        </div>
+      </div>
       <canvas id="graph-canvas"> </canvas>
-      <div id="graph-x"></div>
     </section>
   </body>
 </html>
