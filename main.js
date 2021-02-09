@@ -7,7 +7,7 @@
 //Adjust chart control button display based on window dimensions (make responsive)
 //Create line chart and mixed chart functions (modularize further if necessary)
 import * as Store from "./classes.js";
-import { clearChart, setGrid } from "./chart_utils.js";
+import { clearChart, createGrid } from "./chart_utils.js";
 import drawBars from "./bar_chart.js";
 
 const slidingMenu = document.getElementById("sliding-menu"),
@@ -372,6 +372,11 @@ function loadColumn(column) {
                             >${
                               column.comments.length > 0 ? column.comments : ""
                             }</textarea>`;
+  newColumn.querySelector(".data-col-result").addEventListener("input", (e) => {
+    if (Number(e.target.value) >= 1000000000) {
+      e.target.value = 1000000000;
+    }
+  });
   newColumn
     .querySelector(".data-col-btn.delete")
     .addEventListener("click", () => {
@@ -457,7 +462,7 @@ barChartBtn.addEventListener("click", () => {
   const allResults = Store.getCurrentSheet().columns.map((column) => {
     return Number(column.result);
   });
-  drawBars(canvas, allResults);
+  drawBars(canvas, allResults, "Arial");
 });
 
 function insertSheetBtn(sheet) {

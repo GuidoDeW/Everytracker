@@ -1,11 +1,9 @@
-import { clearChart, setGrid } from "./chart_utils.js";
+import { unBlur, clearChart, createGrid, styleNumber } from "./chart_utils.js";
 
-export default function drawBars(canvas, results) {
-  canvas.width = canvas.clientWidth;
-  canvas.height = canvas.clientHeight;
-  const canvasContext = canvas.getContext("2d");
+export default function drawBars(canvas, results, font) {
+  unBlur(canvas);
   clearChart(canvas);
-
+  const canvasContext = canvas.getContext("2d");
   const zeroY = canvasContext.canvas.height;
 
   const viewportWidth = document.body.clientWidth;
@@ -38,33 +36,39 @@ export default function drawBars(canvas, results) {
     }
   });
 
-  canvasContext.font = `${viewportWidth <= 1200 ? 10 : 12}px Arial`;
-
-  const mostDigits = Math.round(highestValue).toString().length;
+  let mostDigits = 0;
+  const legendNums = [];
 
   for (let i = 0; i <= 10; i++) {
-    const drawY = zeroY - ((zeroY * 0.9) / 10) * i;
-    const stroke = i == 10 ? true : false;
-    let textSpace = 0;
+    const numText = styleNumber(Math.round((highestValue / 10) * i));
+    if (numText.length > mostDigits) {
+      mostDigits = numText.length;
+    }
+    legendNums.push(numText);
+  }
+
+  canvasContext.font = `${viewportWidth <= 1200 ? 10 : 12}px ${font}`;
+
+  for (let j = 0; j <= 10; j++) {
+    const drawY = zeroY - ((zeroY * 0.9) / 10) * j;
+    canvasContext.strokeStyle = "rgb(0, 0, 0, 0.5)";
+
     if (viewportWidth >= 768) {
-      const barInterval = Math.round(highestValue / 10) * i;
-      const spaces = " ".repeat(mostDigits - barInterval.toString().length);
-      canvasContext.strokeStyle = "rgb(0, 0, 0)";
-      canvasContext.strokeText(`${spaces + barInterval}`, 0, drawY);
-      textSpace = barWidth;
+      const spaces = " ".repeat(mostDigits - legendNums[j].length);
+      canvasContext.strokeText(`${spaces + legendNums[j]}`, 0, drawY);
     }
 
-    setGrid(canvas, textSpace, drawY, stroke);
+    const stroke = j == 10 ? true : false;
+    createGrid(canvas, canvasContext.strokeStyle, 0, drawY, stroke);
   }
 
   canvasContext.fillStyle = "rgba(100, 100, 255, 0.8)";
   canvasContext.strokeStyle = "rgb(100, 255, 235)";
-  //Number-popup related
 
-  for (let j = 0; j < results.length; j++) {
-    const resultValue = results[j];
+  for (let k = 0; k < results.length; k++) {
+    const resultValue = results[k];
     const barHeight = (resultValue / highestValue) * zeroY * 0.9;
-    const barX = viewportWidth >= 768 ? (j + 1) * barWidth : j * barWidth;
+    const barX = viewportWidth >= 768 ? (k + 1) * barWidth : k * barWidth;
     const inverseY = zeroY - barHeight;
     canvasContext.fillRect(barX, inverseY, barWidth, barHeight);
     canvasContext.strokeRect(barX, inverseY, barWidth, barHeight);
