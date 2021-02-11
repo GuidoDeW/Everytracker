@@ -8,7 +8,7 @@
 //Create line chart and mixed chart functions (modularize further if necessary)
 import * as Store from "./classes.js";
 import { clearChart, createGrid } from "./chart_utils.js";
-import drawBars from "./bar_chart.js";
+import drawChart from "./charts.js";
 
 const slidingMenu = document.getElementById("sliding-menu"),
   openMenuBtn = document.getElementById("open-menu-btn"),
@@ -432,6 +432,12 @@ function loadCurrentSheet() {
   Store.updateSheet(Store.getTracker(), currentSheet);
 }
 
+function getAllResults() {
+  return Store.getCurrentSheet().columns.map((column) => {
+    return Number(column.result);
+  });
+}
+
 newSheetBtn.addEventListener("click", () => {
   Store.addSheet();
   insertSheetBtn(Store.getCurrentSheet());
@@ -459,10 +465,15 @@ clearChartBtn.addEventListener("click", () => {
 });
 
 barChartBtn.addEventListener("click", () => {
-  const allResults = Store.getCurrentSheet().columns.map((column) => {
-    return Number(column.result);
-  });
-  drawBars(canvas, allResults, "Arial");
+  drawChart(canvas, getAllResults(), true, false, "Arial");
+});
+
+lineChartBtn.addEventListener("click", () => {
+  drawChart(canvas, getAllResults(), false, true, "Arial");
+});
+
+mixedChartBtn.addEventListener("click", () => {
+  drawChart(canvas, getAllResults(), true, true, "Arial");
 });
 
 function insertSheetBtn(sheet) {

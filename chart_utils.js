@@ -28,7 +28,9 @@ export function getSignificantDecs(num, max) {
     let divisor = Math.pow(10, max);
     let multiplied = num * divisor;
     rounded = Math.round(multiplied) / divisor;
-    if (rounded >= Math.floor(multiplied) / divisor) return rounded;
+    if (rounded >= Math.floor(multiplied) / divisor) {
+      return rounded;
+    }
   }
 }
 
