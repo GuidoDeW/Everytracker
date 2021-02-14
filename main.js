@@ -7,7 +7,7 @@
 //Adjust chart control button display based on window dimensions (make responsive)
 //Create line chart and mixed chart functions (modularize further if necessary)
 import * as Store from "./classes.js";
-import { clearChart, createGrid } from "./chart_utils.js";
+import { clearChart } from "./chart_utils.js";
 import drawChart from "./charts.js";
 
 const slidingMenu = document.getElementById("sliding-menu"),
@@ -43,56 +43,14 @@ const slidingMenu = document.getElementById("sliding-menu"),
   barChartBtn = document.getElementById("bar-chart-btn"),
   lineChartBtn = document.getElementById("line-chart-btn"),
   mixedChartBtn = document.getElementById("mixed-chart-btn"),
-  canvas = document.getElementById("graph-canvas");
-
-//Class "module starts here"
+  canvas = document.getElementById("graph-canvas"),
+  canvasContext = canvas.getContext("2d");
 
 function updateUI() {
   //Add button to sheet list for each sheet
   //Add current sheet info to UI params
   //Add current sheet columns to UI
 }
-
-// function drawGraph(color) {
-//   canvas.width = canvas.clientWidth;
-//   canvas.height = canvas.clientHeight;
-//   const canvasContext = canvas.getContext("2d");
-//   canvasContext.clearRect(
-//     0,
-//     0,
-//     canvasContext.canvas.width,
-//     canvasContext.canvas.height
-//   );
-
-//   const zeroY = canvasContext.canvas.height;
-//   const allResults = [...document.querySelectorAll(".data-col")].map(
-//     (column) => {
-//       return Number(column.querySelector(".data-col-result").value);
-//     }
-//   );
-
-//   const interval =
-//     allResults.length <= 10
-//       ? Math.round(canvasContext.canvas.width / 10)
-//       : Math.round(canvasContext.canvas.width / (allResults.length - 1));
-
-//   let highestValue = allResults[0];
-//   for (let i = 0; i < allResults.length; i++) {
-//     if (allResults[i] > highestValue) {
-//       highestValue = allResults[i];
-//     }
-//   }
-
-//   const scale = highestValue / zeroY;
-//   canvasContext.strokeStyle = color ? color : "black";
-//   canvasContext.shadowColor = color ? color : "black";
-//   canvasContext.beginPath();
-//   for (let j = 1; j < allResults.length; j++) {
-//     canvasContext.moveTo((j - 1) * interval, zeroY - allResults[j - 1] / scale);
-//     canvasContext.lineTo(j * interval, zeroY - allResults[j] / scale);
-//   }
-//   canvasContext.stroke();
-// }
 
 document.addEventListener("keydown", (e) => {
   if (
@@ -298,10 +256,6 @@ function removeColumn(column, bool) {
     });
     displayPopup(confirmDeletePopup);
   } else {
-    //Work id into column node
-    //Get sheet and remove column based on id
-    //Update UI based on remaining columns
-    //Save remaining columns
     const deleteId = Number(column.id.replace("data-col-", ""));
     Store.deleteColumn(deleteId);
 
@@ -442,7 +396,7 @@ newSheetBtn.addEventListener("click", () => {
   Store.addSheet();
   insertSheetBtn(Store.getCurrentSheet());
   loadCurrentSheet();
-  clearChart(canvas.getContext("2d"));
+  clearChart(canvasContext);
 });
 
 deleteSheetBtn.addEventListener("click", () => {
@@ -461,7 +415,7 @@ confirmSheetDeleteBtn.addEventListener("click", () => {
 });
 
 clearChartBtn.addEventListener("click", () => {
-  clearChart(canvas);
+  clearChart(canvasContext);
 });
 
 barChartBtn.addEventListener("click", () => {
@@ -508,5 +462,3 @@ function loadMenu() {
 
 loadCurrentSheet();
 loadMenu();
-
-// Store.updateSheet(Store.getTracker(), Store.getCurrentSheet());

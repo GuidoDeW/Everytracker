@@ -3,23 +3,31 @@ export function unBlur(canvas) {
   canvas.height = canvas.clientHeight;
 }
 
-export function clearChart(canvas) {
-  const canvasContext = canvas.getContext("2d");
-  canvasContext.clearRect(
-    0,
-    0,
-    canvasContext.canvas.width,
-    canvasContext.canvas.height
-  );
+export function clearChart(context) {
+  context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 }
 
-export function createGrid(canvas, color, clearSpace, drawY, stroke) {
-  const canvasContext = canvas.getContext("2d");
-  canvasContext.strokeStyle = color;
+export function getHighestValue(arr) {
+  if (arr.length < 40) {
+    return Math.max(...arr);
+  } else if (arr.length < 4000) {
+    return Math.max.apply(null, arr);
+  } else {
+    let highest = arr[0];
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i] > highest) {
+        highest = arr[i];
+      }
+    }
+    return highest;
+  }
+}
 
-  canvasContext.moveTo(clearSpace, drawY);
-  canvasContext.lineTo(canvasContext.canvas.width, drawY);
-  if (stroke) canvasContext.stroke();
+export function buildGrid(context, color, clearSpace, drawY, stroke) {
+  context.strokeStyle = color;
+  context.moveTo(clearSpace, drawY);
+  context.lineTo(context.canvas.width, drawY);
+  if (stroke) context.stroke();
 }
 
 export function getSignificantDecs(num, max) {
@@ -47,85 +55,98 @@ export function styleNumber(num) {
   }
 }
 
-// let suffix;
-// if (magnitude < 6) {
-//   suffix = "k";
-// } else if (magnitude < 9) {
-//   suffix = "m";
-// } else if (magnitude < 12) {
-//   suffix = "b";
-// }
-// return `${prefix}${suffix}`;
+export function drawGrid(
+  context,
+  canvasHeight,
+  viewportWidth,
+  breakpointWidth,
+  highest,
+  number,
+  font,
+  style
+) {
+  const legendNums = [];
+  let mostDigits = 0;
 
-// const prefix = factor.toFixed(
-//   Math.max(
-//     0,
-//     Math.max(
-//       Math.round(
-//         Number(factor.toFixed(2)) - Number(Math.floor(factor.toFixed(2)))
-//       ) * 10,
-//       Math.round(
-//         Number(factor.toFixed(1)) - Number(Math.floor(factor.toFixed(1)))
-//       )
-//     )
-//   )
-// );
+  for (let i = 0; i <= number; i++) {
+    const numText = styleNumber(Math.round((highest / number) * i));
+    if (numText.length > mostDigits) {
+      mostDigits = numText.length;
+    }
+    legendNums.push(numText);
+  }
 
-// const prefix = factor.toFixed(
-//   Math.max(
-//     0,
-//     Math.round(
-//       Number(factor.toFixed(1)) - Number(Math.floor(factor.toFixed(1)))
-//     ),
-//     Math.round(
-//       Number(factor.toFixed(2)) - Math.floor(Number(factor.toFixed(2)))
-//     )
-//   )
-// );
+  context.font = `${viewportWidth <= breakpointWidth ? 10 : 12}px ${font}`;
+  context.strokeStyle = style;
 
-// const prefix = factor.toFixed(
-//   Math.max(
-//     0,
+  context.beginPath();
+  for (let j = 0; j <= 10; j++) {
+    const drawY = canvasHeight - ((canvasHeight * 0.9) / number) * j;
 
-//     Math.round(
-//       Number(factor.toFixed(1)) - Number(Math.floor(factor).toFixed(0))
-//     ),
+    if (viewportWidth >= breakpointWidth) {
+      const spaces = " ".repeat(mostDigits - legendNums[j].length);
+      context.strokeText(`${spaces + legendNums[j]}`, 0, drawY);
+    }
 
-//     Number(factor.toFixed(2)) - Number(Math.floor(factor).toFixed(1))
-//   ) * 20
-// );
+    // const stroke = j == number ? true : false;
+    buildGrid(context, context.strokeStyle, 0, drawY, j === number);
+  }
+  context.closePath();
+}
 
-// let prefix;
+export function drawBars(
+  context,
+  canvasHeight,
+  viewportWidth,
+  breakpointWidth,
+  highest,
+  arr,
+  fillStyle,
+  strokeStyle,
+  sectionWidth
+) {
+  context.fillStyle = fillStyle;
+  context.strokeStyle = strokeStyle;
 
-// if (
-//   Number(factor.toFixed(2)) - Number(Math.floor(factor).toFixed(2)) >=
-//   0.05
-//   //I.e. if Math.round(factor * Math.pow(10, 2) / Math.pow(10, 2) > Math.floor(factor * Math.pow(10, 2) / Math.pow(10, 2))
-// ) {
-//   prefix = factor.toFixed(2);
-// } else if (
-//   Number(factor.toFixed(1)) - Number(Math.floor(factor).toFixed(1)) >=
-//   0.5
-// ) {
-//   prefix = factor.toFixed(1);
-// } else {
-//   prefix = factor.toFixed(0);
-// }
+  for (let i = 0; i < arr.length; i++) {
+    const resultValue = arr[i];
+    const barHeight = (resultValue / highest) * canvasHeight * 0.9;
+    const barX =
+      viewportWidth >= breakpointWidth
+        ? (i + 1) * sectionWidth
+        : i * sectionWidth;
+    const inverseY = canvasHeight - barHeight;
+    context.fillRect(barX, inverseY, sectionWidth, barHeight);
+    context.strokeRect(barX, inverseY, sectionWidth, barHeight);
+  }
+}
 
-// let prefix;
-
-// if (
-//   Math.round((factor * Math.pow(10, 2)) / Math.pow(10, 2)) >=
-//   Math.floor((factor * Math.pow(10, 2)) / Math.pow(10, 2))
-
-//   //I.e. if Math.round(factor * Math.pow(10, 2) / Math.pow(10, 2) > Math.floor(factor * Math.pow(10, 2) / Math.pow(10, 2))
-// ) {
-//   prefix = Math.round(factor * Math.pow(10, 2)) / Math.pow(10, 2);
-// } else if (
-//   Math.round(factor * Math.round(10, 1)) / Math.pow(10, 1) >=
-//   Math.floor(factor * Math.pow(10, 1)) / Math.pow(10, 1)
-// ) {
-//   prefix = Math.round(factor * Math.pow(10, 1)) / Math.pow(10, 1);
-// } else {
-//   prefix = Math.round(factor);
-// }
+export function drawLines(
+  context,
+  canvasHeight,
+  viewportWidth,
+  breakpointWidth,
+  highestValue,
+  arr,
+  style,
+  lineWidth,
+  sectionWidth
+) {
+  context.beginPath();
+  context.strokeStyle = style;
+  context.lineWidth = `${lineWidth}`;
+  const offSet =
+    viewportWidth >= breakpointWidth ? sectionWidth * 1.5 : sectionWidth / 2;
+  for (let i = 1; i < arr.length; i++) {
+    context.moveTo(
+      (i - 1) * sectionWidth + offSet,
+      canvasHeight - (arr[i - 1] / highestValue) * canvasHeight * 0.9
+    );
+    context.lineTo(
+      i * sectionWidth + offSet,
+      canvasHeight - (arr[i] / highestValue) * canvasHeight * 0.9
+    );
+  }
+  context.stroke();
+  context.closePath();
+}
