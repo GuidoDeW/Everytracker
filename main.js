@@ -7,7 +7,8 @@
 //Adjust chart control button display based on window dimensions (make responsive)
 //Create line chart and mixed chart functions (modularize further if necessary)
 import * as Store from "./classes.js";
-import { clearChart } from "./chart_utils.js";
+import * as UI from "./ui_utils.js";
+import { chartState, clearChart } from "./chart_utils.js";
 import drawChart from "./charts.js";
 
 const slidingMenu = document.getElementById("sliding-menu"),
@@ -30,9 +31,7 @@ const slidingMenu = document.getElementById("sliding-menu"),
   allParamsOthers = document.querySelectorAll(".params-other"),
   applyOthersBtn = document.getElementById("apply-others-btn"),
   sheetContainer = document.getElementById("sheet-container"),
-  dataColumnsArray = [...document.querySelectorAll(".data-col")],
   limitPopup = document.getElementById("limit-popup"),
-  // limitPopupBtns = limitPopup.querySelectorAll(".btn"),
   confirmDeletePopup = document.getElementById("confirm-delete-popup"),
   confirmDeleteBtn = document.getElementById("confirm-delete-btn"),
   confirmSheetDeletePopup = document.getElementById(
@@ -46,12 +45,6 @@ const slidingMenu = document.getElementById("sliding-menu"),
   canvas = document.getElementById("graph-canvas"),
   canvasContext = canvas.getContext("2d");
 
-function updateUI() {
-  //Add button to sheet list for each sheet
-  //Add current sheet info to UI params
-  //Add current sheet columns to UI
-}
-
 document.addEventListener("keydown", (e) => {
   if (
     (e.key == "Enter" || e.keyCode == 13) &&
@@ -61,17 +54,6 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-function applyInputStyle() {
-  paramsTitle.classList.add("text-ac");
-  paramsTitle.classList.add("fontw-700");
-}
-
-function removeInputStyle() {
-  paramsTitle.classList.remove("text-ac");
-  paramsTitle.classList.remove("fontw-700");
-  paramsTitle.placeholder = "What do you want to track?";
-}
-
 function toggleInputStyle(e) {
   if (
     e.target !== paramsTitle ||
@@ -80,9 +62,9 @@ function toggleInputStyle(e) {
       (e.key == "Enter" || e.keyCode == 13))
   ) {
     if (paramsTitle.value.trim().length == 0) {
-      removeInputStyle();
+      UI.removeInputStyle(paramsTitle, "What do you want to track?");
     } else {
-      applyInputStyle();
+      UI.applyInputStyle(paramsTitle);
     }
   }
 }
@@ -91,16 +73,9 @@ function closeSlidingMenu() {
   slidingMenu.classList.add("closed");
 }
 
-function capitalize(str) {
-  return `${
-    str.trim().split("")[0].toUpperCase() +
-    str.split("").slice(1, str.length).join("")
-  }`;
-}
-
 function applyOtherInterval() {
   if (paramsOtherInterval.value.trim().length > 0) {
-    const otherInterval = capitalize(paramsOtherInterval.value);
+    const otherInterval = UI.capitalize(paramsOtherInterval.value);
     document.querySelectorAll(".data-col").forEach((column) => {
       column.querySelector(".data-col-interval").innerText = otherInterval;
     });
@@ -117,7 +92,6 @@ defaultInputFields.forEach((field) => {
       defaultInputFields.indexOf(e.target) < defaultInputFields.length - 1
         ? defaultInputFields[defaultInputFields.indexOf(e.target) + 1].focus()
         : e.target.blur();
-      //Modify function to immediately apply other interval upon enter keypress
     }
   });
 });
@@ -129,9 +103,7 @@ openMenuBtn.addEventListener("click", () => {
 closeMenuBtn.addEventListener("click", closeSlidingMenu);
 
 paramsTitle.addEventListener("focus", (e) => {
-  e.target.placeholder = "";
-  e.target.classList.remove("text-ac");
-  e.target.classList.remove("fontw-700");
+  UI.removeInputStyle(e.target, "");
 });
 
 document.addEventListener("click", toggleInputStyle);
@@ -141,13 +113,10 @@ paramsTitle.addEventListener("keydown", toggleInputStyle);
 paramsTitle.addEventListener("input", (e) => {
   const currentSheet = Store.getCurrentSheet();
   const newTitle =
-    e.target.value.trim().length > 0 ? capitalize(e.target.value) : "";
+    e.target.value.trim().length > 0 ? UI.capitalize(e.target.value) : "";
   currentSheet.title = newTitle;
-  //Not the problem
   document.getElementById(`sheet-btn-${currentSheet.id}`).innerText =
     e.target.value.length > 0 ? newTitle : "Sheet";
-  // When run on the first sheet (i.e. not added by the user), this somehow causes other
-  // sheets in LS to take on id 1 as well.
   Store.updateSheet(Store.getTracker(), currentSheet);
 });
 
@@ -173,7 +142,7 @@ paramsInterval.addEventListener("input", (e) => {
     currentSheet.interval = e.target.value;
     currentSheet.interval_index = paramsInterval.selectedIndex;
     Store.updateSheet(Store.getTracker(), currentSheet);
-    const sheetInterval = capitalize(paramsInterval.value);
+    const sheetInterval = UI.capitalize(paramsInterval.value);
     sheetContainer.querySelectorAll(".data-col").forEach((column) => {
       column.querySelector(".data-col-interval").innerText = sheetInterval;
     });
@@ -190,8 +159,6 @@ paramsOtherInterval.addEventListener("keydown", (e) => {
     applyOtherInterval();
   }
 });
-
-// Popup visuals
 
 function displayPopup(popup, sheet, max) {
   popup.classList.add("current-popup");
@@ -293,39 +260,14 @@ function createColumn() {
 }
 
 function loadColumn(column) {
-  const newColumn = document.createElement("div");
   const allLoadedColumns = sheetContainer.querySelectorAll(".data-col");
-  const sheetInterval = capitalize(Store.getCurrentSheet().interval);
-  newColumn.id = `data-col-${column.id}`;
-  newColumn.className = "data-col";
-  newColumn.innerHTML = `<div class="data-col-bar">
-                              <h3>
-                                <i class="fas fa-times data-col-btn delete"></i>
-                              </h3>
-                            </div>
-                            <div class="data-col-bar title-bar">
-                              <h3 class="data-col-interval-text">
-                                <span class="data-col-interval">${sheetInterval}</span>&nbsp;<span class="data-col-count">
-                                ${allLoadedColumns.length + 1}
-                                </span>
-                              </h3>
-                              <h3>
-                                <i class="fas fa-plus-square data-col-btn add"></i>
-                              </h3>
-                            </div>
-                            <label for="result">Result</label>
-                            <input name="result" type="number" class="data-col-result" value="${
-                              column.result.length > 0 ? column.result : ""
-                            }"/>
-                            <p>Comments</p>
-                            <textarea
-                              name="comments"
-                              cols="30"
-                              rows="5"
-                              class="data-col-comments"
-                            >${
-                              column.comments.length > 0 ? column.comments : ""
-                            }</textarea>`;
+  const newColumn = UI.createColumnElement(
+    column.id,
+    UI.capitalize(Store.getCurrentSheet().interval),
+    allLoadedColumns.length + 1,
+    column.result,
+    column.comments
+  );
   newColumn.querySelector(".data-col-result").addEventListener("input", (e) => {
     if (Number(e.target.value) >= 1000000000) {
       e.target.value = 1000000000;
@@ -353,7 +295,6 @@ function loadColumn(column) {
   sheetContainer.appendChild(newColumn);
 }
 
-// Load columns from "API"
 function loadAllColumns() {
   const currentSheet = Store.getCurrentSheet();
   sheetContainer.querySelectorAll(".data-col").forEach((column) => {
@@ -365,11 +306,10 @@ function loadAllColumns() {
 }
 
 function loadCurrentSheet() {
-  //Select appropriate sheet button
   const currentSheet = Store.getCurrentSheet();
   paramsTitle.value = currentSheet.title;
   if (currentSheet.title.length > 0) {
-    applyInputStyle();
+    UI.applyInputStyle(paramsTitle);
   }
   paramsQuantity.value = currentSheet.quantity;
   paramsInterval.selectedIndex = currentSheet.interval_index;
@@ -380,21 +320,22 @@ function loadCurrentSheet() {
     switchOtherParams(false);
   }
   loadAllColumns();
-  highlightCurrentBtn();
-  // Set tracker values for new sheet to those of last selected sheet, so values
-  // are copied to newly added sheets
+  UI.highlightCurrentBtn();
   Store.updateSheet(Store.getTracker(), currentSheet);
 }
 
-function getAllResults() {
-  return Store.getCurrentSheet().columns.map((column) => {
-    return Number(column.result);
+function loadMenu() {
+  Store.getTracker().sheets.forEach((sheet) => {
+    sheetList.appendChild(UI.createSheetBtnEl(sheet, loadCurrentSheet));
   });
+  UI.highlightCurrentBtn();
 }
 
 newSheetBtn.addEventListener("click", () => {
   Store.addSheet();
-  insertSheetBtn(Store.getCurrentSheet());
+  sheetList.appendChild(
+    UI.createSheetBtnEl(Store.getCurrentSheet(), loadCurrentSheet)
+  );
   loadCurrentSheet();
   clearChart(canvasContext);
 });
@@ -414,51 +355,33 @@ confirmSheetDeleteBtn.addEventListener("click", () => {
   );
 });
 
+window.addEventListener("resize", () => {
+  if (chartState.checkDrawn()) {
+    drawChart(
+      canvas,
+      Store.getAllResults(),
+      chartState.checkBars(),
+      chartState.checkLines(),
+      "Arial"
+    );
+  }
+});
+
 clearChartBtn.addEventListener("click", () => {
   clearChart(canvasContext);
 });
 
 barChartBtn.addEventListener("click", () => {
-  drawChart(canvas, getAllResults(), true, false, "Arial");
+  drawChart(canvas, Store.getAllResults(), true, false, "Arial");
 });
 
 lineChartBtn.addEventListener("click", () => {
-  drawChart(canvas, getAllResults(), false, true, "Arial");
+  drawChart(canvas, Store.getAllResults(), false, true, "Arial");
 });
 
 mixedChartBtn.addEventListener("click", () => {
-  drawChart(canvas, getAllResults(), true, true, "Arial");
+  drawChart(canvas, Store.getAllResults(), true, true, "Arial");
 });
-
-function insertSheetBtn(sheet) {
-  const sheetBtn = document.createElement("button");
-  const newSheetId = sheet.id;
-  sheetBtn.id = `sheet-btn-${newSheetId}`;
-  sheetBtn.className =
-    "sheet-btn btn btn-s btn-default half-width sheet-link mt-1";
-  sheetBtn.innerText = sheet.title.length > 0 ? sheet.title : "Sheet";
-  sheetBtn.addEventListener("click", () => {
-    Store.setCurrentSheet(newSheetId);
-
-    loadCurrentSheet();
-  });
-  sheetList.appendChild(sheetBtn);
-}
-
-function highlightCurrentBtn() {
-  document.querySelectorAll(".sheet-btn").forEach((btn) => {
-    Number(btn.id.replace("sheet-btn-", "")) == Store.getCurrentSheet().id
-      ? btn.classList.add("current")
-      : btn.classList.remove("current");
-  });
-}
-
-function loadMenu() {
-  Store.getTracker().sheets.forEach((sheet) => {
-    insertSheetBtn(sheet);
-  });
-  highlightCurrentBtn();
-}
 
 loadCurrentSheet();
 loadMenu();

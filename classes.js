@@ -174,3 +174,9 @@ export function updateSheetProp(key, value) {
   }
   updateSheet(getTracker(), currentSheet);
 }
+
+export function getAllResults() {
+  return getCurrentSheet().columns.map((column) => {
+    return Number(column.result);
+  });
+}

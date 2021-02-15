@@ -1,4 +1,5 @@
 import {
+  chartState,
   unBlur,
   clearChart,
   getHighestValue,
@@ -63,4 +64,8 @@ export default function drawChart(canvas, results, bars, lines, font) {
       sectionWidth
     );
   }
+
+  chartState.setDrawn(true);
+  chartState.setBars(bars);
+  chartState.setLines(lines);
 }

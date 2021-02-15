@@ -1,3 +1,31 @@
+export const chartState = (function () {
+  let drawn = false;
+  let bars = false;
+  let lines = false;
+  return {
+    setDrawn: (bool) => {
+      console.log("I ran");
+      drawn = bool;
+      console.log(drawn);
+    },
+    setBars: (bool) => {
+      bars = bool;
+    },
+    setLines: (bool) => {
+      lines = bool;
+    },
+    checkDrawn: () => {
+      return drawn;
+    },
+    checkBars: () => {
+      return bars;
+    },
+    checkLines: () => {
+      return lines;
+    },
+  };
+})();
+
 export function unBlur(canvas) {
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
@@ -5,6 +33,7 @@ export function unBlur(canvas) {
 
 export function clearChart(context) {
   context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+  chartState.setDrawn(false);
 }
 
 export function getHighestValue(arr) {
@@ -23,14 +52,13 @@ export function getHighestValue(arr) {
   }
 }
 
-export function buildGrid(context, color, clearSpace, drawY, stroke) {
+function buildGrid(context, color, clearSpace, drawY) {
   context.strokeStyle = color;
   context.moveTo(clearSpace, drawY);
   context.lineTo(context.canvas.width, drawY);
-  if (stroke) context.stroke();
 }
 
-export function getSignificantDecs(num, max) {
+function getSignificantDecs(num, max) {
   let rounded;
   for (let i = 0; i <= max; i++) {
     let divisor = Math.pow(10, max);
@@ -42,7 +70,7 @@ export function getSignificantDecs(num, max) {
   }
 }
 
-export function styleNumber(num) {
+function styleNumber(num) {
   const magnitude = Math.floor(Math.log10(num));
   if (magnitude < 3) {
     return `${num}`;
@@ -88,9 +116,9 @@ export function drawGrid(
       context.strokeText(`${spaces + legendNums[j]}`, 0, drawY);
     }
 
-    // const stroke = j == number ? true : false;
-    buildGrid(context, context.strokeStyle, 0, drawY, j === number);
+    buildGrid(context, context.strokeStyle, 0, drawY);
   }
+  context.stroke();
   context.closePath();
 }
 
