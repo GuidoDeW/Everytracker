@@ -1,31 +1,3 @@
-export const chartState = (function () {
-  let drawn = false;
-  let bars = false;
-  let lines = false;
-  return {
-    setDrawn: (bool) => {
-      console.log("I ran");
-      drawn = bool;
-      console.log(drawn);
-    },
-    setBars: (bool) => {
-      bars = bool;
-    },
-    setLines: (bool) => {
-      lines = bool;
-    },
-    checkDrawn: () => {
-      return drawn;
-    },
-    checkBars: () => {
-      return bars;
-    },
-    checkLines: () => {
-      return lines;
-    },
-  };
-})();
-
 export function unBlur(canvas) {
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
@@ -33,7 +5,6 @@ export function unBlur(canvas) {
 
 export function clearChart(context) {
   context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-  chartState.setDrawn(false);
 }
 
 export function getHighestValue(arr) {

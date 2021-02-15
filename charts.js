@@ -1,5 +1,6 @@
+import { getAllResults } from "./classes.js";
+import * as chartState from "./chart_state.js";
 import {
-  chartState,
   unBlur,
   clearChart,
   getHighestValue,
@@ -8,8 +9,9 @@ import {
   drawLines,
 } from "./chart_utils.js";
 
-export default function drawChart(canvas, results, bars, lines, font) {
+export default function drawChart(canvas, font) {
   const canvasContext = canvas.getContext("2d");
+  const results = getAllResults();
   unBlur(canvas);
   clearChart(canvasContext);
   const canvasWidth = canvasContext.canvas.width;
@@ -45,7 +47,7 @@ export default function drawChart(canvas, results, bars, lines, font) {
 
   drawGrid(...sharedArgs, 10, font, "rgb(0, 0, 0, 0.5)");
 
-  if (bars) {
+  if (chartState.hasBars()) {
     drawBars(
       ...sharedArgs,
       results,
@@ -55,7 +57,7 @@ export default function drawChart(canvas, results, bars, lines, font) {
     );
   }
 
-  if (lines) {
+  if (chartState.hasLines()) {
     drawLines(
       ...sharedArgs,
       results,
@@ -64,8 +66,4 @@ export default function drawChart(canvas, results, bars, lines, font) {
       sectionWidth
     );
   }
-
-  chartState.setDrawn(true);
-  chartState.setBars(bars);
-  chartState.setLines(lines);
 }

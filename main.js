@@ -4,11 +4,12 @@
 //-Make chart collapsible (similar to the menu bar) and add draw and wipe buttons
 //- Redraw chart (IF chart render has been requested by user) on window resize! (/On window move?)
 
-//Adjust chart control button display based on window dimensions (make responsive)
-//Create line chart and mixed chart functions (modularize further if necessary)
+//Get font from css, and pass down to chart state. Remove font as an argument from chart drawing function,
+//and instead get the font directly from the chart state module.
 import * as Store from "./classes.js";
 import * as UI from "./ui_utils.js";
-import { chartState, clearChart } from "./chart_utils.js";
+import * as chartState from "./chart_state.js";
+import { clearChart } from "./chart_utils.js";
 import drawChart from "./charts.js";
 
 const slidingMenu = document.getElementById("sliding-menu"),
@@ -356,31 +357,33 @@ confirmSheetDeleteBtn.addEventListener("click", () => {
 });
 
 window.addEventListener("resize", () => {
-  if (chartState.checkDrawn()) {
-    drawChart(
-      canvas,
-      Store.getAllResults(),
-      chartState.checkBars(),
-      chartState.checkLines(),
-      "Arial"
-    );
-  }
+  if (chartState.isDrawn()) drawChart(canvas, "Arial");
 });
 
 clearChartBtn.addEventListener("click", () => {
+  chartState.setDrawn(false);
   clearChart(canvasContext);
 });
 
 barChartBtn.addEventListener("click", () => {
-  drawChart(canvas, Store.getAllResults(), true, false, "Arial");
+  chartState.setDrawn(true);
+  chartState.setBars(true);
+  chartState.setLines(false);
+  drawChart(canvas, "Arial");
 });
 
 lineChartBtn.addEventListener("click", () => {
-  drawChart(canvas, Store.getAllResults(), false, true, "Arial");
+  chartState.setDrawn(true);
+  chartState.setBars(false);
+  chartState.setLines(true);
+  drawChart(canvas, "Arial");
 });
 
 mixedChartBtn.addEventListener("click", () => {
-  drawChart(canvas, Store.getAllResults(), true, true, "Arial");
+  chartState.setDrawn(true);
+  chartState.setBars(true);
+  chartState.setLines(true);
+  drawChart(canvas, "Arial");
 });
 
 loadCurrentSheet();
