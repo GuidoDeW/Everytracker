@@ -220,28 +220,43 @@ label.disabled {
   outline: none;
 }
 
-#graph-container {
+#chart-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   max-width: 100%;
   margin-bottom: 1rem;
+  border-left: 1px solid var(--dark-shade);
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  background-color: var(--light-shade-thick);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: transform var(--intermediate-transform);
 }
 
-#graph-controls {
+#chart-controls {
+  /* background-color: #fff; */
   display: flex;
   flex-direction: column;
   width: 90%;
 }
 
-#graph-canvas {
+#chart-canvas {
+  background-color: #fff;
   display: inline-block;
   border: 1px solid var(--dark-shade);
   width: 90vw;
   overflow-x: scroll;
   height: 300px;
   /* margin: 1rem; */
+}
+
+#chart-container.closed {
+  transform: translate(50%, -50%);
 }
 
 @media screen and (min-width: 568px) {

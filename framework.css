@@ -6,6 +6,7 @@
   --main-bg: rgba(255, 255, 255);
   --dark-shade: rgba(0, 0, 0, 0.5);
   --light-shade: rgba(255, 255, 255, 0.5);
+  --light-shade-thick: rgba(255, 255, 255, 0.8);
   --disabled-color: rgb(200, 200, 200, 0.5);
   /* --no-bg-shade: rgba(75, 40, 110, 0.8); */
   --secondary-bg: rgb(225, 225, 225);
@@ -15,6 +16,8 @@
   --default-color-light: rgb(150, 150, 255);
   --info-color: rgb(255, 200, 50);
   --info-color-light: rgb(255, 225, 75);
+  --neutral-color: rgb(180, 180, 180);
+  --neutral-color-light: rgb(200, 200, 200);
   --warning-color: rgb(255, 50, 50);
   --warning-color-light: rgb(255, 100, 100);
   --succes-color: rgb(50, 200, 50);
@@ -799,6 +802,15 @@ h6 {
 
 .btn-default:hover {
   background-color: var(--default-color-light);
+}
+
+.btn-neutral {
+  background-color: var(--neutral-color);
+  color: var(--light-color);
+}
+
+.btn-neutral:hover {
+  background-color: var(--neutral-color-light);
 }
 
 .btn-info {

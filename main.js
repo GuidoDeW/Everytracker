@@ -18,7 +18,7 @@ const slidingMenu = document.getElementById("sliding-menu"),
   sheetList = document.getElementById("sheet-list"),
   newSheetBtn = document.getElementById("new-sheet-btn"),
   deleteSheetBtn = document.getElementById("delete-sheet-btn"),
-  compareBtn = document.getElementById("compare-btn"),
+  openChartBtn = document.getElementById("open-chart-btn"),
   paramsTitle = document.getElementById("params-title"),
   paramsQuantity = document.getElementById("params-quantity"),
   paramsInterval = document.getElementById("params-interval"),
@@ -39,11 +39,13 @@ const slidingMenu = document.getElementById("sliding-menu"),
     "confirm-sheet-delete-popup"
   ),
   confirmSheetDeleteBtn = document.getElementById("confirm-sheet-delete-btn"),
+  chartContainer = document.getElementById("chart-container"),
+  hideChartBtn = document.getElementById("hide-chart-btn"),
   clearChartBtn = document.getElementById("clear-chart-btn"),
   barChartBtn = document.getElementById("bar-chart-btn"),
   lineChartBtn = document.getElementById("line-chart-btn"),
   mixedChartBtn = document.getElementById("mixed-chart-btn"),
-  canvas = document.getElementById("graph-canvas"),
+  canvas = document.getElementById("chart-canvas"),
   canvasContext = canvas.getContext("2d");
 
 function toggleInputStyle(e) {
@@ -93,6 +95,15 @@ openMenuBtn.addEventListener("click", () => {
 });
 
 closeMenuBtn.addEventListener("click", closeSlidingMenu);
+
+openChartBtn.addEventListener("click", () => {
+  closeSlidingMenu();
+  chartContainer.classList.remove("closed");
+});
+
+hideChartBtn.addEventListener("click", () => {
+  chartContainer.classList.add("closed");
+});
 
 paramsTitle.addEventListener("focus", (e) => {
   UI.removeInputStyle(e.target, "");

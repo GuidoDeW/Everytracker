@@ -29,8 +29,8 @@
         <button id="delete-sheet-btn" class="btn btn-s btn-warning mt-1">
           Delete sheet
         </button>
-        <button id="compare-btn" class="btn btn-s btn-default mt-1">
-          Compare results
+        <button id="open-chart-btn" class="btn btn-s btn-default mt-1">
+          Results chart
         </button>
       </div>
 
@@ -154,11 +154,14 @@ N/A, or to hide them altogether.-->
       class="flex-row flex-jc-s flex-w fixed-width-100 my-1"
     ></section>
     <!-- Placeholder for scrolling and layout tests -->
-    <section id="graph-container">
-      <div id="graph-controls">
+    <section id="chart-container" class="closed">
+      <div id="chart-controls">
         <div class="flex-row flex-jc-sb full-width mb-1">
           <button id="clear-chart-btn" class="btn btn-s btn-warning no-select">
             Clear Chart
+          </button>
+          <button id="hide-chart-btn" class="btn btn-s btn-neutral no-select">
+            Hide Chart
           </button>
         </div>
         <div class="flex-row flex-jc-sb full-width mb-1">
@@ -173,7 +176,7 @@ N/A, or to hide them altogether.-->
           </button>
         </div>
       </div>
-      <canvas id="graph-canvas"> </canvas>
+      <canvas id="chart-canvas"> </canvas>
     </section>
   </body>
 </html>
