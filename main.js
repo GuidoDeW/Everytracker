@@ -46,15 +46,6 @@ const slidingMenu = document.getElementById("sliding-menu"),
   canvas = document.getElementById("graph-canvas"),
   canvasContext = canvas.getContext("2d");
 
-document.addEventListener("keydown", (e) => {
-  if (
-    (e.key == "Enter" || e.keyCode == 13) &&
-    limitPopup.classList.contains("current-popup")
-  ) {
-    hidePopup();
-  }
-});
-
 function toggleInputStyle(e) {
   if (
     e.target !== paramsTitle ||
@@ -198,6 +189,15 @@ document.querySelectorAll(".popup").forEach((popup) => {
   });
 });
 
+document.addEventListener("keydown", (e) => {
+  if (
+    (e.key == "Enter" || e.keyCode == 13) &&
+    limitPopup.classList.contains("current-popup")
+  ) {
+    hidePopup();
+  }
+});
+
 function removeColumn(column, bool) {
   if (document.querySelectorAll(".data-col").length === 1) {
     displayPopup(limitPopup, false, false);
@@ -270,9 +270,8 @@ function loadColumn(column) {
     column.comments
   );
   newColumn.querySelector(".data-col-result").addEventListener("input", (e) => {
-    if (Number(e.target.value) >= 1000000000) {
-      e.target.value = 1000000000;
-    }
+    if (Number(e.target.value) >= 1000000000) e.target.value = 1000000000;
+    if (Number(e.target.value) < 0) e.target.value = 0;
   });
   newColumn
     .querySelector(".data-col-btn.delete")
@@ -350,11 +349,13 @@ deleteSheetBtn.addEventListener("click", () => {
 confirmSheetDeleteBtn.addEventListener("click", () => {
   const currentSheet = Store.getCurrentSheet();
   Store.deleteSheet(currentSheet.id);
-  loadCurrentSheet();
   sheetList.removeChild(
     document.getElementById(`sheet-btn-${currentSheet.id}`)
   );
+  loadCurrentSheet();
 });
+
+chartState.setFont(paramsTitle.style.fontFamily);
 
 window.addEventListener("resize", () => {
   if (chartState.isDrawn()) drawChart(canvas, "Arial");
@@ -366,21 +367,18 @@ clearChartBtn.addEventListener("click", () => {
 });
 
 barChartBtn.addEventListener("click", () => {
-  chartState.setDrawn(true);
   chartState.setBars(true);
   chartState.setLines(false);
   drawChart(canvas, "Arial");
 });
 
 lineChartBtn.addEventListener("click", () => {
-  chartState.setDrawn(true);
   chartState.setBars(false);
   chartState.setLines(true);
   drawChart(canvas, "Arial");
 });
 
 mixedChartBtn.addEventListener("click", () => {
-  chartState.setDrawn(true);
   chartState.setBars(true);
   chartState.setLines(true);
   drawChart(canvas, "Arial");

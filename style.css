@@ -1,4 +1,9 @@
 /* Styles labelled "FW?" might be suited incorporation into the framework sheet. incrop*/
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+* {
+  font-family: "Roboto", "Arial";
+}
+
 #params-title {
   min-width: 80%;
 }
@@ -97,14 +102,6 @@
   border-radius: 5px;
 }
 
-/* .popup:before {
-  content: "";
-  position: absolute;
-  width: 100vw;
-  height: 100vh;
-  background-color: transparent;
-} */
-
 .popup p {
   text-align: center;
 }
@@ -145,6 +142,8 @@
 .input-underline {
   /* FW? */
   outline: none;
+  /* border-width: 0px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); */
   border-width: 0px 0px 1px 0px;
 }
 

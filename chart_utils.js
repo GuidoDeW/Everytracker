@@ -1,3 +1,5 @@
+import { getFont as getChartFont } from "./chart_state.js";
+
 export function unBlur(canvas) {
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
@@ -61,7 +63,6 @@ export function drawGrid(
   breakpointWidth,
   highest,
   number,
-  font,
   style
 ) {
   const legendNums = [];
@@ -75,7 +76,9 @@ export function drawGrid(
     legendNums.push(numText);
   }
 
-  context.font = `${viewportWidth <= breakpointWidth ? 10 : 12}px ${font}`;
+  context.font = `${
+    viewportWidth <= breakpointWidth ? 10 : 12
+  }px ${getChartFont()}`;
   context.strokeStyle = style;
 
   context.beginPath();
