@@ -6,6 +6,9 @@
 
 //Get font from css, and pass down to chart state. Remove font as an argument from chart drawing function,
 //and instead get the font directly from the chart state module.
+
+//Consider using requestAnimationFrame (which can probably check for overlap between different DOM
+// elements, and adjust the next animation frame based on that input)
 import * as Store from "./classes.js";
 import * as UI from "./ui_utils.js";
 import * as chartState from "./chart_state.js";
@@ -106,7 +109,24 @@ openMenuBtn.addEventListener("click", () => {
 closeMenuBtn.addEventListener("click", closeSlidingMenu);
 
 openChartBtn.addEventListener("click", () => {
-  closeSlidingMenu();
+  if (
+    getComputedStyle(chartContainer).transitionTimingFunction === "linear" &&
+    getComputedStyle(slidingMenu).transitionTimingFunction === "linear"
+  ) {
+    const animationTime =
+      Number(getComputedStyle(chartContainer).transitionDuration.slice(0, -1)) *
+      1000;
+    const delay =
+      ((window.innerWidth - slidingMenu.getBoundingClientRect().width) /
+        window.innerWidth) *
+      animationTime;
+
+    setTimeout(() => {
+      closeSlidingMenu();
+    }, delay);
+  } else {
+    closeSlidingMenu();
+  }
   chartContainer.classList.remove("closed");
 });
 
@@ -343,6 +363,7 @@ function loadCurrentSheet() {
   } else {
     switchOtherParams(false);
   }
+  if (chartState.isDrawn()) clearChart(canvasContext);
   loadAllColumns();
   UI.highlightCurrentBtn();
   Store.updateSheet(Store.getTracker(), currentSheet);
@@ -379,7 +400,7 @@ confirmSheetDeleteBtn.addEventListener("click", () => {
   loadCurrentSheet();
 });
 
-chartState.setFont(paramsTitle.style.fontFamily);
+chartState.setFont(getComputedStyle(paramsTitle).fontFamily);
 
 window.addEventListener("resize", () => {
   document.querySelectorAll(".popup").forEach((popup) => {

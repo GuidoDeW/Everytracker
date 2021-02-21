@@ -40,7 +40,7 @@
   min-height: 100vh;
   height: 100vh;
   background-color: var(--secondary-bg);
-  transition: transform var(--intermediate-transform);
+  transition: transform var(--intermediate-transform) linear;
   border-right: 1px solid var(--dark-shade);
 }
 
@@ -259,7 +259,7 @@ label.disabled {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  transition: transform var(--intermediate-transform);
+  transition: transform var(--intermediate-transform) linear;
 }
 
 #chart-controls {
