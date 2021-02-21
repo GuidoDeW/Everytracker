@@ -10,11 +10,15 @@ export function capitalize(str) {
 export function applyInputStyle(element) {
   element.classList.add("text-ac");
   element.classList.add("fontw-700");
+  // element.classList.add("input-underline");
+  // element.classList.remove("input-rounded");
 }
 
 export function removeInputStyle(element, placeholder) {
   element.classList.remove("text-ac");
   element.classList.remove("fontw-700");
+  // element.classList.add("input-rounded");
+  // element.classList.remove("input-underline");
   element.placeholder = placeholder;
 }
 

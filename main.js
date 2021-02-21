@@ -91,7 +91,16 @@ defaultInputFields.forEach((field) => {
 });
 
 openMenuBtn.addEventListener("click", () => {
-  slidingMenu.classList.toggle("closed");
+  if (
+    slidingMenu.classList.contains("closed") &&
+    [...document.querySelectorAll(".popup")].filter((popup) => {
+      return popup.classList.contains("current-popup");
+    }).length == 0
+  ) {
+    slidingMenu.classList.remove("closed");
+  } else {
+    slidingMenu.classList.add("closed");
+  }
 });
 
 closeMenuBtn.addEventListener("click", closeSlidingMenu);
@@ -163,6 +172,16 @@ paramsOtherInterval.addEventListener("keydown", (e) => {
   }
 });
 
+function checkPopupOverlap(popup) {
+  if (
+    popup.getBoundingClientRect().left <=
+    slidingMenu.getBoundingClientRect().right
+  ) {
+    console.log("Overlap!");
+    closeSlidingMenu();
+  }
+}
+
 function displayPopup(popup, sheet, max) {
   popup.classList.add("current-popup");
   if (popup === limitPopup) {
@@ -176,19 +195,13 @@ function displayPopup(popup, sheet, max) {
     }
   }
   popup.style.transform = "translate(-50%, -50%)";
-  if (
-    !slidingMenu.classList.contains("closed") &&
-    popup.getBoundingClientRect().left <
-      slidingMenu.getBoundingClientRect().right
-  ) {
-    closeSlidingMenu();
-  }
+  checkPopupOverlap(popup);
 }
 
 function hidePopup() {
   document.querySelectorAll(".popup").forEach((popup) => {
     if (popup.classList.contains("current-popup")) {
-      popup.style.transform = "translate(-1000%, -1000%)";
+      popup.style.transform = "translate(1000%, 1000%)";
       popup.classList.remove("current-popup");
     }
   });
@@ -369,6 +382,9 @@ confirmSheetDeleteBtn.addEventListener("click", () => {
 chartState.setFont(paramsTitle.style.fontFamily);
 
 window.addEventListener("resize", () => {
+  document.querySelectorAll(".popup").forEach((popup) => {
+    checkPopupOverlap(popup);
+  });
   if (chartState.isDrawn()) drawChart(canvas, "Arial");
 });
 
