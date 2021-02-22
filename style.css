@@ -1,13 +1,13 @@
 /* Styles labelled "FW?" might be suited incorporation into the framework sheet. incrop*/
 @import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
 * {
-  font-family: "Roboto", "Arial";
+  font-family: "Roboto", "Gill Sans", Arial;
 }
 
 #params-container {
   /* background-color: var(--default-color-extra-light); */
-
-  border-bottom: 1px solid var(--dark-shade);
+  /* box-shadow: 1px 0px 3px var(--dark-shade); */
+  /* border-bottom: 1px solid var(--dark-shade); */
 }
 
 #params-title {
@@ -96,7 +96,7 @@
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(1000%, 1000%);
+  transform: translate(-50%, -50%);
   z-index: 1;
   display: flex;
   flex-direction: column;
@@ -106,6 +106,10 @@
   padding: 1rem;
   border: none;
   border-radius: 5px;
+}
+
+.popup.closed {
+  transform: translate(1000%, 1000%);
 }
 
 .popup p {
@@ -140,6 +144,12 @@
   }
 }
 
+input,
+select {
+  box-sizing: border-box;
+  height: 1.5rem;
+}
+
 .input-h3 {
   /* FW? */
   font-size: 1.17rem;
@@ -150,8 +160,9 @@
 }
 
 .input-underline {
-  border-radius: 0px 0px 0px 5px;
-  border-width: 0px 0px 1px 0px;
+  border-radius: 5px;
+  border: none;
+  box-shadow: 0px 1px 3px var(--dark-shade);
 }
 
 .input-rounded {
@@ -160,7 +171,9 @@
   /* border-width: 0px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); */
   /* border-width: 0px 0px 1px 0px; */
-  border-width: 1px;
+  border: none;
+  box-shadow: 0px 0px 3px var(--dark-shade);
+  /* border-width: 1px; */
   border-radius: 5px;
 }
 

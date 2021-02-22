@@ -36,7 +36,7 @@
 
       <div class="" id="sheet-list"></div>
     </nav>
-    <dialog id="limit-popup" class="popup">
+    <dialog id="limit-popup" class="popup closed">
       <div class="popup-close-bar">
         <i class="fas fa-times btn popup-close-btn"></i>
       </div>
@@ -45,7 +45,7 @@
         <button class="btn btn-s popup-btn no-select">Ok</button>
       </div>
     </dialog>
-    <dialog id="confirm-delete-popup" class="popup">
+    <dialog id="confirm-delete-popup" class="popup closed">
       <div class="popup-close-bar">
         <i class="fas fa-times btn popup-close-btn"></i>
       </div>
@@ -62,7 +62,7 @@
         </div>
       </div>
     </dialog>
-    <dialog id="confirm-sheet-delete-popup" class="popup">
+    <dialog id="confirm-sheet-delete-popup" class="popup closed">
       <div class="popup-close-bar">
         <i class="fas fa-times btn popup-close-btn"></i>
       </div>
@@ -91,7 +91,7 @@ N/A, or to hide them altogether.-->
       <input
         id="params-title"
         type="text"
-        class="input-h3 input-underline input-stripped px-h"
+        class="input-h3 input-rounded input-stripped px-h"
         placeholder="What do you want to track?"
       />
       <button id="open-menu-btn" class="btn btn-s btn-default my-h no-select">
@@ -99,7 +99,7 @@ N/A, or to hide them altogether.-->
       </button>
       <div
         id="input-container"
-        class="flex-row flex-jc-sb fixed-width-100 quarter-height px-1 py-1"
+        class="flex-row flex-jc-s fixed-width-100 quarter-height px-1 py-1"
       >
         <div class="flex-column flex-jc-sa flex-ac half-width mx-h">
           <label for="quantity" class="my-h no-select">Quantity</label>
@@ -123,13 +123,13 @@ N/A, or to hide them altogether.-->
             disabled="true"
           />
         </div>
-        <div class="flex-column flex-jc-sa flex-ac half-width mx-h">
+        <div class="flex-column flex-jc-s flex-ac half-width mx-h">
           <label for="interval" class="my-h no-select">Interval</label>
           <select
             id="params-interval"
             name="interval"
             type="text"
-            class="full-width input-rounded input-stripped px-h"
+            class="full-width input-rounded input-stripped px-h mb-1"
           >
             <option value="minute">minute</option>
             <option value="hour">hour</option>
@@ -141,7 +141,7 @@ N/A, or to hide them altogether.-->
           </select>
           <button
             id="apply-others-btn"
-            class="btn btn-s btn-success mt-1 mb-h params-other disabled"
+            class="btn btn-s btn-success params-other disabled"
             disabled="true"
           >
             Apply

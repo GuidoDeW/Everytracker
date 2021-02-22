@@ -214,14 +214,14 @@ function displayPopup(popup, sheet, max) {
         : "Your data sheet must contain at least one column.";
     }
   }
-  popup.style.transform = "translate(-50%, -50%)";
+  popup.classList.remove("closed");
   checkPopupOverlap(popup);
 }
 
 function hidePopup() {
   document.querySelectorAll(".popup").forEach((popup) => {
     if (popup.classList.contains("current-popup")) {
-      popup.style.transform = "translate(1000%, 1000%)";
+      popup.classList.add("closed");
       popup.classList.remove("current-popup");
     }
   });
