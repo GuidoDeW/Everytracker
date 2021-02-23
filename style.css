@@ -6,7 +6,7 @@
 
 #params-container {
   /* background-color: var(--default-color-extra-light); */
-  /* box-shadow: 1px 0px 3px var(--dark-shade); */
+  box-shadow: 1px 0px 3px var(--dark-shade);
   /* border-bottom: 1px solid var(--dark-shade); */
 }
 
@@ -192,8 +192,13 @@ input[type="number"] {
 input:disabled,
 .btn:disabled,
 label.disabled {
-  background: var(--main-bg);
+  /* background: var(--main-bg); */
   color: var(--dark-shade);
+}
+
+input:disabled,
+.btn:disabled {
+  background: var(--disabled-color);
 }
 
 /*Data column styling*/

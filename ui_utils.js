@@ -10,15 +10,11 @@ export function capitalize(str) {
 export function applyInputStyle(element) {
   element.classList.add("text-ac");
   element.classList.add("fontw-700");
-  // element.classList.add("input-underline");
-  // element.classList.remove("input-rounded");
 }
 
 export function removeInputStyle(element, placeholder) {
   element.classList.remove("text-ac");
   element.classList.remove("fontw-700");
-  // element.classList.add("input-rounded");
-  // element.classList.remove("input-underline");
   element.placeholder = placeholder;
 }
 
@@ -42,7 +38,7 @@ export function createColumnElement(id, interval, number, result, comments) {
                               </h3>
                             </div>
                             <label for="result">Result</label>
-                            <input name="result" type="number" class="data-col-result" value="${
+                            <input name="result" type="number" class="data-col-result input-rounded" value="${
                               result.length > 0 ? result : ""
                             }"/>
                             <p>Comments</p>
@@ -50,7 +46,7 @@ export function createColumnElement(id, interval, number, result, comments) {
                               name="comments"
                               cols="30"
                               rows="5"
-                              class="data-col-comments"
+                              class="data-col-comments input-rounded"
                             >${comments.length > 0 ? comments : ""}</textarea>`;
   return newColumn;
 }
