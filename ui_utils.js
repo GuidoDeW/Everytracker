@@ -4,7 +4,11 @@ export function capitalize(str) {
   return str.length > 0
     ? `${
         str.trim().split("")[0].toUpperCase() +
-        str.split("").slice(1, str.length).join("")
+        `${
+          str.trim().length > 1
+            ? str.split("").slice(1, str.length).join("")
+            : ""
+        }`
       }`
     : "";
 }
@@ -68,9 +72,9 @@ export function createSheetBtnEl(sheet, func) {
 }
 
 export function updateChartTitle(title, quantity, interval) {
-  document.getElementById("chart-title").innerText = `${capitalize(
-    title
-  )} per ${quantity > 1 ? quantity : ""} ${
+  document.getElementById("chart-title").innerText = `${
+    title.length > 0 ? capitalize(title) : `Results`
+  } per ${quantity > 1 ? quantity : ""} ${
     quantity > 1 ? `${interval}s` : interval
   }`;
 }

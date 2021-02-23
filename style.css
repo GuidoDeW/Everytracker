@@ -318,6 +318,10 @@ input:disabled,
   #sliding-menu {
     min-width: 30vw;
   }
+
+  #sliding-menu.closed {
+    transform: translateX(-30vw);
+  }
 }
 
 @media screen and (min-width: 768px) {
@@ -327,5 +331,9 @@ input:disabled,
 
   #sliding-menu {
     min-width: 20vw;
+  }
+
+  #sliding-menu.closed {
+    transform: translateX(-20vw);
   }
 }

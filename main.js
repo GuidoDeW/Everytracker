@@ -1,14 +1,3 @@
-//To do:
-// -decide whether to automatically redraw charts on sheets that were left with rendered charts, or to
-//have the user manually request a re-render any time they switch between sheets.
-//-Make chart collapsible (similar to the menu bar) and add draw and wipe buttons
-//- Redraw chart (IF chart render has been requested by user) on window resize! (/On window move?)
-
-//Get font from css, and pass down to chart state. Remove font as an argument from chart drawing function,
-//and instead get the font directly from the chart state module.
-
-//Consider using requestAnimationFrame (which can probably check for overlap between different DOM
-// elements, and adjust the next animation frame based on that input)
 import * as Store from "./classes.js";
 import * as UI from "./ui_utils.js";
 import * as chartState from "./chart_state.js";
@@ -67,7 +56,10 @@ function toggleInputStyle(e) {
   }
 }
 
-function closeSlidingMenu() {
+function closeSlidingMenu(duration) {
+  slidingMenu.style.transitionDuration = duration
+    ? `${duration}s`
+    : "var(--intermediate-transform)";
   slidingMenu.classList.add("closed");
 }
 
@@ -102,6 +94,7 @@ defaultInputFields.forEach((field) => {
 });
 
 openMenuBtn.addEventListener("click", () => {
+  slidingMenu.style.transitionDuration = "var(--intermediate-transform)";
   if (
     slidingMenu.classList.contains("closed") &&
     [...document.querySelectorAll(".popup")].filter((popup) => {
@@ -121,16 +114,20 @@ openChartBtn.addEventListener("click", () => {
     getComputedStyle(chartContainer).transitionTimingFunction === "linear" &&
     getComputedStyle(slidingMenu).transitionTimingFunction === "linear"
   ) {
-    const animationTime =
-      Number(getComputedStyle(chartContainer).transitionDuration.slice(0, -1)) *
-      1000;
-    const delay =
-      ((window.innerWidth - slidingMenu.getBoundingClientRect().width) /
-        window.innerWidth) *
-      animationTime;
+    const animationTime = Number(
+      getComputedStyle(chartContainer).transitionDuration.slice(0, -1)
+    );
+    const windowWidth = window.innerWidth;
+    const menuWidth = slidingMenu.getBoundingClientRect().width;
 
+    const delay =
+      ((windowWidth - menuWidth) / windowWidth) * animationTime * 1000;
+
+    const closeDuration = (menuWidth / windowWidth) * animationTime;
+
+    console.log(`Delay is ${delay} and duration is ${closeDuration}`);
     setTimeout(() => {
-      closeSlidingMenu();
+      closeSlidingMenu(closeDuration);
     }, delay);
   } else {
     closeSlidingMenu();
@@ -189,6 +186,18 @@ paramsQuantity.addEventListener("input", (e) => {
     currentSheet.interval
   );
   Store.updateSheet(Store.getTracker(), currentSheet);
+  document.addEventListener(
+    "click",
+    (e) => {
+      if (
+        e.target !== paramsQuantity &&
+        paramsQuantity.value.trim().length == 0
+      ) {
+        paramsQuantity.value = "1";
+      }
+    },
+    { once: true }
+  );
 });
 
 paramsInterval.addEventListener("input", (e) => {
@@ -226,7 +235,6 @@ function checkPopupOverlap(popup) {
     popup.getBoundingClientRect().left <=
     slidingMenu.getBoundingClientRect().right
   ) {
-    console.log("Overlap!");
     closeSlidingMenu();
   }
 }
@@ -370,11 +378,10 @@ function loadColumn(column) {
 }
 
 function loadAllColumns() {
-  const currentSheet = Store.getCurrentSheet();
   sheetContainer.querySelectorAll(".data-col").forEach((column) => {
     sheetContainer.removeChild(column);
   });
-  currentSheet.columns.forEach((column) => {
+  Store.getCurrentSheet().columns.forEach((column) => {
     loadColumn(column);
   });
 }
