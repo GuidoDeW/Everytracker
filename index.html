@@ -79,10 +79,6 @@
         </div>
       </div>
     </dialog>
-    <!-- Note that an alternative spatial division has been applied to the params: 
-    two juxtaposed columns, each of whose bottom elements must be toggled. Decide 
-  whethert to just render them unclickable and turn them semi-transparent when 
-N/A, or to hide them altogether.-->
     <section
       id="params-container"
       class="flex-column-all-c fixed-width-100 py-1"
@@ -153,7 +149,6 @@ N/A, or to hide them altogether.-->
       id="sheet-container"
       class="flex-row flex-jc-s flex-w fixed-width-100 my-1"
     ></section>
-    <!-- Placeholder for scrolling and layout tests -->
     <section id="chart-container" class="closed py-1">
       <div id="chart-controls">
         <div class="flex-row flex-jc-sb full-width mb-1">
@@ -176,6 +171,7 @@ N/A, or to hide them altogether.-->
           </button>
         </div>
       </div>
+      <h3 id="chart-title" class="mb-1"></h3>
       <canvas id="chart-canvas"> </canvas>
     </section>
   </body>

@@ -766,6 +766,10 @@ h6 {
   text-align: center;
 }
 
+.btn:active {
+  transform: scale(0.9);
+}
+
 .btn:not(.disabled) {
   cursor: pointer;
 }

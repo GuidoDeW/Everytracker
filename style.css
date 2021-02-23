@@ -211,9 +211,11 @@ input:disabled,
   flex-direction: column;
   flex: 0 0 25%;
   padding: 1rem;
-  /* padding: 1rem 0 1rem 1rem;
-  margin: 0 1rem 0 0; */
   max-width: 50%;
+}
+
+.data-col.newest {
+  animation: var(--swift-transform) ease-in fadein;
 }
 
 .data-col input,
@@ -222,10 +224,6 @@ input:disabled,
   border-radius: 5px;
   border-color: var(--dark-shade);
 }
-
-/* .data-col > * {
-  margin-top: 1rem;
-} */
 
 .data-col-bar {
   display: flex;
@@ -239,6 +237,15 @@ input:disabled,
 
 .data-col-interval-text > * {
   font-size: inherit;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @media (hover: hover) {

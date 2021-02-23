@@ -1,10 +1,12 @@
 import { getCurrentSheet, setCurrentSheet } from "./classes.js";
 
 export function capitalize(str) {
-  return `${
-    str.trim().split("")[0].toUpperCase() +
-    str.split("").slice(1, str.length).join("")
-  }`;
+  return str.length > 0
+    ? `${
+        str.trim().split("")[0].toUpperCase() +
+        str.split("").slice(1, str.length).join("")
+      }`
+    : "";
 }
 
 export function applyInputStyle(element) {
@@ -63,6 +65,14 @@ export function createSheetBtnEl(sheet, func) {
     func();
   });
   return sheetBtn;
+}
+
+export function updateChartTitle(title, quantity, interval) {
+  document.getElementById("chart-title").innerText = `${capitalize(
+    title
+  )} per ${quantity > 1 ? quantity : ""} ${
+    quantity > 1 ? `${interval}s` : interval
+  }`;
 }
 
 export function highlightCurrentBtn() {

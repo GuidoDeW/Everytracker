@@ -48,6 +48,7 @@ const slidingMenu = document.getElementById("sliding-menu"),
   barChartBtn = document.getElementById("bar-chart-btn"),
   lineChartBtn = document.getElementById("line-chart-btn"),
   mixedChartBtn = document.getElementById("mixed-chart-btn"),
+  charrTitle = document.getElementById("chart-title"),
   canvas = document.getElementById("chart-canvas"),
   canvasContext = canvas.getContext("2d");
 
@@ -72,13 +73,20 @@ function closeSlidingMenu() {
 
 function applyOtherInterval() {
   if (paramsOtherInterval.value.trim().length > 0) {
-    const otherInterval = UI.capitalize(paramsOtherInterval.value);
+    const otherIntervalCapitalized = UI.capitalize(paramsOtherInterval.value);
     document.querySelectorAll(".data-col").forEach((column) => {
-      column.querySelector(".data-col-interval").innerText = otherInterval;
+      column.querySelector(
+        ".data-col-interval"
+      ).innerText = otherIntervalCapitalized;
     });
     const currentSheet = Store.getCurrentSheet();
-    currentSheet.interval = otherInterval;
+    currentSheet.interval = paramsOtherInterval.value;
     currentSheet.interval_index = 6;
+    UI.updateChartTitle(
+      currentSheet.title,
+      currentSheet.quantity,
+      currentSheet.interval
+    );
     Store.updateSheet(Store.getTracker(), currentSheet);
   }
 }
@@ -147,8 +155,9 @@ paramsTitle.addEventListener("input", (e) => {
   const newTitle =
     e.target.value.trim().length > 0 ? UI.capitalize(e.target.value) : "";
   currentSheet.title = newTitle;
+  UI.updateChartTitle(newTitle, currentSheet.quantity, currentSheet.interval);
   document.getElementById(`sheet-btn-${currentSheet.id}`).innerText =
-    e.target.value.length > 0 ? newTitle : "Sheet";
+    newTitle.length > 0 ? newTitle : "Sheet";
   Store.updateSheet(Store.getTracker(), currentSheet);
 });
 
@@ -167,6 +176,21 @@ function switchOtherParams(bool) {
   }
 }
 
+paramsQuantity.addEventListener("input", (e) => {
+  const currentSheet = Store.getCurrentSheet();
+  if (e.target.value.trim().length > 0 && Number(e.target.value) <= 0) {
+    e.target.value = 1;
+  }
+  currentSheet.quantity =
+    e.target.value.trim().length == 0 ? 1 : e.target.value;
+  UI.updateChartTitle(
+    currentSheet.title,
+    e.target.value,
+    currentSheet.interval
+  );
+  Store.updateSheet(Store.getTracker(), currentSheet);
+});
+
 paramsInterval.addEventListener("input", (e) => {
   if (paramsInterval.selectedIndex < 6) {
     switchOtherParams(false);
@@ -175,6 +199,11 @@ paramsInterval.addEventListener("input", (e) => {
     currentSheet.interval_index = paramsInterval.selectedIndex;
     Store.updateSheet(Store.getTracker(), currentSheet);
     const sheetInterval = UI.capitalize(paramsInterval.value);
+    UI.updateChartTitle(
+      currentSheet.title,
+      currentSheet.quantity,
+      currentSheet.interval
+    );
     sheetContainer.querySelectorAll(".data-col").forEach((column) => {
       column.querySelector(".data-col-interval").innerText = sheetInterval;
     });
@@ -295,6 +324,7 @@ function createColumn() {
     const latestColumn = sheetContainer.querySelectorAll(".data-col")[
       sheetContainer.querySelectorAll(".data-col").length - 1
     ];
+    latestColumn.classList.add("newest");
     scroll({
       top:
         latestColumn.offsetTop -
@@ -351,7 +381,8 @@ function loadAllColumns() {
 
 function loadCurrentSheet() {
   const currentSheet = Store.getCurrentSheet();
-  paramsTitle.value = currentSheet.title;
+  const sheetTitle = currentSheet.title;
+  paramsTitle.value = sheetTitle;
   if (currentSheet.title.length > 0) {
     UI.applyInputStyle(paramsTitle);
   }
@@ -366,7 +397,8 @@ function loadCurrentSheet() {
   if (chartState.isDrawn()) clearChart(canvasContext);
   loadAllColumns();
   UI.highlightCurrentBtn();
-  Store.updateSheet(Store.getTracker(), currentSheet);
+  UI.updateChartTitle(sheetTitle, currentSheet.quantity, currentSheet.interval);
+  // Store.updateSheet(Store.getTracker(), currentSheet);
 }
 
 function loadMenu() {
