@@ -277,6 +277,12 @@ document.querySelectorAll(".popup").forEach((popup) => {
 });
 
 document.addEventListener("keydown", (e) => {
+  if (e.key == "Escape" || e.keycode == 27) {
+    hidePopup();
+  }
+});
+
+document.addEventListener("keydown", (e) => {
   if (
     (e.key == "Enter" || e.keyCode == 13) &&
     limitPopup.classList.contains("current-popup")
@@ -297,6 +303,21 @@ function removeColumn(column, bool) {
       removeColumn(column, true);
     };
     confirmDeleteBtn.addEventListener("click", popupDeleteColumn);
+    document.addEventListener("keydown", (e) => {
+      if (e.key == "Enter" || e.keyCode == 13) {
+        popupDeleteColumn();
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key == "Escape" || e.keyCode == 27) {
+        document.removeEventListener("keydown", (e) => {
+          if (e.key == "Enter" || e.keyCode == 13) {
+            popupDeleteColumn();
+          }
+        });
+      }
+    });
 
     confirmDeletePopup.querySelectorAll(".btn").forEach((btn) => {
       if (btn !== confirmDeleteBtn) {
@@ -304,6 +325,11 @@ function removeColumn(column, bool) {
           "click",
           () => {
             confirmDeleteBtn.removeEventListener("click", popupDeleteColumn);
+            document.removeEventListener("keydown", (e) => {
+              if (e.key == "Enter" || e.keycode == 13) {
+                popupDeleteColumn();
+              }
+            });
           },
           { once: true }
         );
