@@ -12,7 +12,8 @@
   --light-color: rgb(255, 255, 255);
   --default-color: rgb(100, 100, 255);
   --default-color-light: rgb(150, 150, 255);
-  --default-color-extra-light: rgb(185, 185, 255);
+  /* --default-color-extra-light: rgb(185, 185, 255); */
+  --default-color-extra-light: rgb(210, 210, 250);
   --info-color: rgb(255, 200, 50);
   --info-color-light: rgb(255, 225, 75);
   --neutral-color: rgb(180, 180, 180);
@@ -405,7 +406,6 @@ h6 {
 }
 
 /* Flexbox classes */
-
 .flex-row,
 .flex-column,
 .flex-row-all-c,

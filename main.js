@@ -37,7 +37,6 @@ const slidingMenu = document.getElementById("sliding-menu"),
   barChartBtn = document.getElementById("bar-chart-btn"),
   lineChartBtn = document.getElementById("line-chart-btn"),
   mixedChartBtn = document.getElementById("mixed-chart-btn"),
-  charrTitle = document.getElementById("chart-title"),
   canvas = document.getElementById("chart-canvas"),
   canvasContext = canvas.getContext("2d");
 
@@ -48,11 +47,9 @@ function toggleInputStyle(e) {
       e.type == "keydown" &&
       (e.key == "Enter" || e.keyCode == 13))
   ) {
-    if (paramsTitle.value.trim().length == 0) {
-      UI.removeInputStyle(paramsTitle, "What do you want to track?");
-    } else {
-      UI.applyInputStyle(paramsTitle);
-    }
+    paramsTitle.value.trim().length == 0
+      ? UI.removeInputStyle(paramsTitle, "What do you want to track?")
+      : UI.applyInputStyle(paramsTitle);
   }
 }
 
@@ -125,7 +122,6 @@ openChartBtn.addEventListener("click", () => {
 
     const closeDuration = (menuWidth / windowWidth) * animationTime;
 
-    console.log(`Delay is ${delay} and duration is ${closeDuration}`);
     setTimeout(() => {
       closeSlidingMenu(closeDuration);
     }, delay);
@@ -148,6 +144,8 @@ document.addEventListener("click", toggleInputStyle);
 paramsTitle.addEventListener("keydown", toggleInputStyle);
 
 paramsTitle.addEventListener("input", (e) => {
+  if (e.target.value.length > 15)
+    e.target.value = e.target.value.substring(0, 15);
   const currentSheet = Store.getCurrentSheet();
   const newTitle =
     e.target.value.trim().length > 0 ? UI.capitalize(e.target.value) : "";
@@ -230,12 +228,18 @@ paramsOtherInterval.addEventListener("keydown", (e) => {
   }
 });
 
+paramsOtherInterval.addEventListener("input", (e) => {
+  if (e.target.value.length > 20) {
+    e.target.value = e.target.value.substring(0, 20);
+  }
+});
+
 function checkPopupOverlap(popup) {
   if (
     popup.getBoundingClientRect().left <=
     slidingMenu.getBoundingClientRect().right
   ) {
-    closeSlidingMenu();
+    slidingMenu.classList.add("hidden");
   }
 }
 
@@ -243,8 +247,9 @@ function displayPopup(popup, sheet, max) {
   popup.classList.add("current-popup");
   if (popup === limitPopup) {
     if (sheet) {
-      limitPopup.querySelector("p").innerText =
-        "The minimal number of sheets is 1.";
+      limitPopup.querySelector("p").innerText = max
+        ? "You can save a maximal number of 60 data sheets."
+        : "The minimal number of sheets is 1.";
     } else {
       limitPopup.querySelector("p").innerText = max
         ? "You can track a maximum of 30 intervals per data sheet."
@@ -258,6 +263,7 @@ function displayPopup(popup, sheet, max) {
 function hidePopup() {
   document.querySelectorAll(".popup").forEach((popup) => {
     if (popup.classList.contains("current-popup")) {
+      slidingMenu.classList.remove("hidden");
       popup.classList.add("closed");
       popup.classList.remove("current-popup");
     }
@@ -317,7 +323,7 @@ function removeColumn(column, bool) {
 
 function createColumn() {
   const allColumns = document.querySelectorAll(".data-col");
-  if (allColumns.length >= 30) {
+  if (allColumns.length >= 31) {
     displayPopup(limitPopup, false, true);
   } else {
     Store.addColumn();
@@ -405,7 +411,6 @@ function loadCurrentSheet() {
   loadAllColumns();
   UI.highlightCurrentBtn();
   UI.updateChartTitle(sheetTitle, currentSheet.quantity, currentSheet.interval);
-  // Store.updateSheet(Store.getTracker(), currentSheet);
 }
 
 function loadMenu() {
@@ -416,18 +421,22 @@ function loadMenu() {
 }
 
 newSheetBtn.addEventListener("click", () => {
-  Store.addSheet();
-  sheetList.appendChild(
-    UI.createSheetBtnEl(Store.getCurrentSheet(), loadCurrentSheet)
-  );
-  loadCurrentSheet();
-  clearChart(canvasContext);
+  if (Store.getTracker().sheets.length <= 60) {
+    Store.addSheet();
+    sheetList.appendChild(
+      UI.createSheetBtnEl(Store.getCurrentSheet(), loadCurrentSheet)
+    );
+    loadCurrentSheet();
+    clearChart(canvasContext);
+  } else {
+    displayPopup(limitPopup, true, true);
+  }
 });
 
 deleteSheetBtn.addEventListener("click", () => {
   Store.getTracker().sheets.length > 1
     ? displayPopup(confirmSheetDeletePopup, true)
-    : displayPopup(limitPopup, true);
+    : displayPopup(limitPopup, true, false);
 });
 
 confirmSheetDeleteBtn.addEventListener("click", () => {
@@ -445,7 +454,7 @@ window.addEventListener("resize", () => {
   document.querySelectorAll(".popup").forEach((popup) => {
     checkPopupOverlap(popup);
   });
-  if (chartState.isDrawn()) drawChart(canvas, "Arial");
+  if (chartState.isDrawn()) drawChart(canvas);
 });
 
 clearChartBtn.addEventListener("click", () => {
@@ -456,19 +465,19 @@ clearChartBtn.addEventListener("click", () => {
 barChartBtn.addEventListener("click", () => {
   chartState.setBars(true);
   chartState.setLines(false);
-  drawChart(canvas, "Arial");
+  drawChart(canvas);
 });
 
 lineChartBtn.addEventListener("click", () => {
   chartState.setBars(false);
   chartState.setLines(true);
-  drawChart(canvas, "Arial");
+  drawChart(canvas);
 });
 
 mixedChartBtn.addEventListener("click", () => {
   chartState.setBars(true);
   chartState.setLines(true);
-  drawChart(canvas, "Arial");
+  drawChart(canvas);
 });
 
 loadCurrentSheet();

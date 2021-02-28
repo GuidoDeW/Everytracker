@@ -61,8 +61,7 @@ export function createSheetBtnEl(sheet, func) {
   const sheetBtn = document.createElement("button");
   const newSheetId = sheet.id;
   sheetBtn.id = `sheet-btn-${newSheetId}`;
-  sheetBtn.className =
-    "sheet-btn btn btn-s btn-default half-width sheet-link mt-1";
+  sheetBtn.className = "sheet-btn btn btn-s btn-default sheet-link mt-1";
   sheetBtn.innerText = sheet.title.length > 0 ? sheet.title : "Sheet";
   sheetBtn.addEventListener("click", () => {
     setCurrentSheet(newSheetId);

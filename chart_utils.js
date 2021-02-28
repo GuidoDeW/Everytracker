@@ -128,7 +128,7 @@ export function drawLines(
   canvasHeight,
   viewportWidth,
   breakpointWidth,
-  highestValue,
+  highest,
   arr,
   style,
   lineWidth,
@@ -142,11 +142,11 @@ export function drawLines(
   for (let i = 1; i < arr.length; i++) {
     context.moveTo(
       (i - 1) * sectionWidth + offSet,
-      canvasHeight - (arr[i - 1] / highestValue) * canvasHeight * 0.9
+      canvasHeight - (arr[i - 1] / highest) * canvasHeight * 0.9
     );
     context.lineTo(
       i * sectionWidth + offSet,
-      canvasHeight - (arr[i] / highestValue) * canvasHeight * 0.9
+      canvasHeight - (arr[i] / highest) * canvasHeight * 0.9
     );
   }
   context.stroke();

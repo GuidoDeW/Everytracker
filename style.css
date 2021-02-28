@@ -5,9 +5,7 @@
 }
 
 #params-container {
-  /* background-color: var(--default-color-extra-light); */
   box-shadow: 1px 0px 3px var(--dark-shade);
-  /* border-bottom: 1px solid var(--dark-shade); */
 }
 
 #params-title {
@@ -20,6 +18,14 @@
 
 #sliding-menu.closed {
   transform: translateX(-50vw);
+}
+
+#sliding-menu.hidden * {
+  opacity: 0;
+}
+
+#sliding-menu.hidden .btn {
+  transition: visibility 0s, opacity 0s;
 }
 
 #sliding-menu,
@@ -39,7 +45,8 @@
   min-width: 50vw;
   min-height: 100vh;
   height: 100vh;
-  background-color: var(--secondary-bg);
+  background-color: var(--default-color-extra-light);
+  /* background-color: var(--secondary-bg); */
   transition: transform var(--intermediate-transform) linear;
   border-right: 1px solid var(--dark-shade);
 }
@@ -85,6 +92,12 @@
   border-radius: 15px;
   width: 5px;
   background-color: var(--dark-shade);
+}
+
+#nav-btns-group .btn,
+.sheet-btn {
+  width: 80%;
+  max-width: 80%;
 }
 
 .sheet-btn.current {
@@ -151,7 +164,6 @@ select {
 }
 
 .input-h3 {
-  /* FW? */
   font-size: 1.17rem;
 }
 
@@ -167,13 +179,8 @@ select {
 
 .input-rounded {
   /* FW? */
-
-  /* border-width: 0px;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); */
-  /* border-width: 0px 0px 1px 0px; */
   border: none;
   box-shadow: 0px 0px 3px var(--dark-shade);
-  /* border-width: 1px; */
   border-radius: 5px;
 }
 
@@ -192,7 +199,6 @@ input[type="number"] {
 input:disabled,
 .btn:disabled,
 label.disabled {
-  /* background: var(--main-bg); */
   color: var(--dark-shade);
 }
 
@@ -288,7 +294,6 @@ input:disabled,
 }
 
 #chart-controls {
-  /* background-color: #fff; */
   display: flex;
   flex-direction: column;
   width: 90%;
@@ -301,7 +306,6 @@ input:disabled,
   width: 90vw;
   overflow-x: scroll;
   height: 300px;
-  /* margin: 1rem; */
 }
 
 #chart-container.closed {
@@ -322,6 +326,11 @@ input:disabled,
   #sliding-menu.closed {
     transform: translateX(-30vw);
   }
+
+  #nav-btns-group .btn {
+    width: 70%;
+    max-width: 70%;
+  }
 }
 
 @media screen and (min-width: 768px) {
@@ -335,5 +344,17 @@ input:disabled,
 
   #sliding-menu.closed {
     transform: translateX(-20vw);
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  #nav-btns-group .btn {
+    width: 50%;
+    max-width: 50%;
+  }
+
+  .sheet-btn {
+    width: 70%;
+    max-width: 70%;
   }
 }

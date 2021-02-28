@@ -2,7 +2,6 @@ export class Tracker {
   constructor() {
     this.new_sheet_id = 2;
     this.current_sheet_id = 1;
-    //Consider if this is necessary (benefit: save configuration for new sheets)
     this.last_title = "";
     this.last_quantity = 1;
     this.last_interval_index = 2;
@@ -20,7 +19,6 @@ export class Tracker {
 }
 
 export class DataSheet {
-  // Create DataSheet with new DataSheet(new_sheet_id), and update new_sheet_id in "API" function.
   constructor(id, title, quantity, interval_index, interval) {
     this.id = id;
     this.new_col_id = 2;
@@ -88,13 +86,9 @@ export function addSheet() {
 }
 
 export function updateSheet(tracker, sheet) {
-  //Replace old sheet with updated version
   tracker.sheets = tracker.sheets.map((item) => {
     return item.id == sheet.id ? sheet : item;
   });
-  //Update tracker props for new sheet according to current sheet param updates (if any)
-  //Condition to safeguard against updates to sheets other than the current sheet
-  //affecting new sheet parameters (less expensive than calling getCurrentSheet())
   if (sheet.id == tracker.current_sheet_id) {
     tracker.last_title = sheet.title;
     tracker.last_quantity = sheet.quantity;
@@ -109,17 +103,12 @@ export function deleteSheet(id) {
   const deleteIndex = tracker.sheets.findIndex((sheet) => {
     return sheet.id === id;
   });
-  console.log(
-    `Id of the sheet to be deleted: ${id}. Found deleteIndex: ${deleteIndex}.`
-  );
-  console.log(deleteIndex);
 
   tracker.current_sheet_id =
     deleteIndex > 0
       ? tracker.sheets[deleteIndex - 1].id
       : tracker.sheets[deleteIndex + 1].id;
   tracker.sheets.splice(deleteIndex, 1);
-  console.log(tracker.current_sheet_id);
   updateTracker(tracker);
 }
 
