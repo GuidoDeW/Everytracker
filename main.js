@@ -1,5 +1,6 @@
 import * as Store from "./classes.js";
 import * as UI from "./ui_utils.js";
+import * as deleteState from "./delete_state.js";
 import * as chartState from "./chart_state.js";
 import { clearChart } from "./chart_utils.js";
 import drawChart from "./charts.js";
@@ -248,7 +249,7 @@ function displayPopup(popup, sheet, max) {
   if (popup === limitPopup) {
     if (sheet) {
       limitPopup.querySelector("p").innerText = max
-        ? "You can save a maximal number of 60 data sheets."
+        ? "You can save a maximum of 60 data sheets."
         : "The minimal number of sheets is 1.";
     } else {
       limitPopup.querySelector("p").innerText = max
@@ -273,78 +274,55 @@ function hidePopup() {
 document.querySelectorAll(".popup").forEach((popup) => {
   popup.querySelectorAll(".btn").forEach((btn) => {
     btn.addEventListener("click", hidePopup);
+    if (popup == confirmDeletePopup && btn !== confirmDeleteBtn) {
+      btn.addEventListener("click", deleteState.setDeleteColumnId);
+    }
+    if (popup == confirmSheetDeletePopup && btn !== confirmSheetDeleteBtn) {
+      btn.addEventListener("click", deleteState.setDeleteSheetId);
+    }
   });
 });
 
-document.addEventListener("keydown", (e) => {
-  if (e.key == "Escape" || e.keycode == 27) {
-    hidePopup();
-  }
-});
+confirmDeleteBtn.addEventListener("click", removeColumn);
+confirmSheetDeleteBtn.addEventListener("click", removeSheet);
 
 document.addEventListener("keydown", (e) => {
   if (
-    (e.key == "Enter" || e.keyCode == 13) &&
-    limitPopup.classList.contains("current-popup")
+    e.key == "Enter" ||
+    e.keyCode == 13 ||
+    e.key == "Escape" ||
+    e.keyCode == 27
   ) {
+    if (e.key == "Escape" || e.keyCode == 27) {
+      deleteState.setDeleteColumnId();
+      deleteState.setDeleteSheetId();
+    } else {
+      if (confirmDeletePopup.classList.contains("current-popup")) {
+        removeColumn();
+      }
+      if (confirmSheetDeletePopup.classList.contains("current-popup")) {
+        removeSheet();
+      }
+    }
     hidePopup();
   }
 });
 
-function removeColumn(column, bool) {
-  if (document.querySelectorAll(".data-col").length === 1) {
-    displayPopup(limitPopup, false, false);
-  } else if (
-    (column.querySelector(".data-col-result").value.trim() !== "" ||
-      column.querySelector(".data-col-comments").value.trim() !== "") &&
-    !bool
-  ) {
-    const popupDeleteColumn = () => {
-      removeColumn(column, true);
-    };
-    confirmDeleteBtn.addEventListener("click", popupDeleteColumn);
-    document.addEventListener("keydown", (e) => {
-      if (e.key == "Enter" || e.keyCode == 13) {
-        popupDeleteColumn();
-      }
-    });
+function removeSheet() {
+  const deleteId = deleteState.getDeleteSheetId();
+  Store.deleteSheet(deleteId);
+  sheetList.removeChild(document.getElementById(`sheet-btn-${deleteId}`));
+  loadCurrentSheet();
+  deleteState.setDeleteSheetId();
+}
 
-    document.addEventListener("keydown", (e) => {
-      if (e.key == "Escape" || e.keyCode == 27) {
-        document.removeEventListener("keydown", (e) => {
-          if (e.key == "Enter" || e.keyCode == 13) {
-            popupDeleteColumn();
-          }
-        });
-      }
-    });
-
-    confirmDeletePopup.querySelectorAll(".btn").forEach((btn) => {
-      if (btn !== confirmDeleteBtn) {
-        btn.addEventListener(
-          "click",
-          () => {
-            confirmDeleteBtn.removeEventListener("click", popupDeleteColumn);
-            document.removeEventListener("keydown", (e) => {
-              if (e.key == "Enter" || e.keycode == 13) {
-                popupDeleteColumn();
-              }
-            });
-          },
-          { once: true }
-        );
-      }
-    });
-    displayPopup(confirmDeletePopup);
-  } else {
-    const deleteId = Number(column.id.replace("data-col-", ""));
-    Store.deleteColumn(deleteId);
-
-    sheetContainer.querySelectorAll(".data-col").forEach((column) => {
-      sheetContainer.removeChild(column);
-    });
-    loadAllColumns();
-  }
+function removeColumn() {
+  Store.deleteColumn(deleteState.getDeleteColumnId());
+  sheetContainer.querySelectorAll(".data-col").forEach((column) => {
+    sheetContainer.removeChild(column);
+  });
+  loadAllColumns();
+  deleteState.setDeleteColumnId();
 }
 
 function createColumn() {
@@ -390,7 +368,19 @@ function loadColumn(column) {
   newColumn
     .querySelector(".data-col-btn.delete")
     .addEventListener("click", () => {
-      removeColumn(newColumn, false);
+      if (Store.getCurrentSheet().columns.length > 1) {
+        deleteState.setDeleteColumnId(column.id);
+        if (
+          newColumn.querySelector(".data-col-result").value.trim() !== "" ||
+          newColumn.querySelector(".data-col-comments").value.trim() !== ""
+        ) {
+          displayPopup(confirmDeletePopup, false, false);
+        } else {
+          removeColumn();
+        }
+      } else {
+        displayPopup(limitPopup, false, false);
+      }
     });
   newColumn
     .querySelector(".data-col-btn.add")
@@ -460,18 +450,12 @@ newSheetBtn.addEventListener("click", () => {
 });
 
 deleteSheetBtn.addEventListener("click", () => {
-  Store.getTracker().sheets.length > 1
-    ? displayPopup(confirmSheetDeletePopup, true)
-    : displayPopup(limitPopup, true, false);
-});
-
-confirmSheetDeleteBtn.addEventListener("click", () => {
-  const currentSheet = Store.getCurrentSheet();
-  Store.deleteSheet(currentSheet.id);
-  sheetList.removeChild(
-    document.getElementById(`sheet-btn-${currentSheet.id}`)
-  );
-  loadCurrentSheet();
+  if (Store.getTracker().sheets.length > 1) {
+    deleteState.setDeleteSheetId(Store.getCurrentSheet().id);
+    displayPopup(confirmSheetDeletePopup, true);
+  } else {
+    displayPopup(limitPopup, true, false);
+  }
 });
 
 chartState.setFont(getComputedStyle(paramsTitle).fontFamily);
