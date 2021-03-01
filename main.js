@@ -12,6 +12,7 @@ const slidingMenu = document.getElementById("sliding-menu"),
   newSheetBtn = document.getElementById("new-sheet-btn"),
   deleteSheetBtn = document.getElementById("delete-sheet-btn"),
   openChartBtn = document.getElementById("open-chart-btn"),
+  paramsContainer = document.getElementById("params-container"),
   paramsTitle = document.getElementById("params-title"),
   paramsQuantity = document.getElementById("params-quantity"),
   paramsInterval = document.getElementById("params-interval"),
@@ -235,6 +236,14 @@ paramsOtherInterval.addEventListener("input", (e) => {
   }
 });
 
+function toggleBtnFunctions(bool) {
+  [slidingMenu, paramsContainer, sheetContainer, chartContainer].forEach(
+    (item) => {
+      item.style.pointerEvents = bool ? "all" : "none";
+    }
+  );
+}
+
 function checkPopupOverlap(popup) {
   if (
     popup.getBoundingClientRect().left <=
@@ -245,6 +254,7 @@ function checkPopupOverlap(popup) {
 }
 
 function displayPopup(popup, sheet, max) {
+  toggleBtnFunctions(false);
   popup.classList.add("current-popup");
   if (popup === limitPopup) {
     if (sheet) {
@@ -263,12 +273,13 @@ function displayPopup(popup, sheet, max) {
 
 function hidePopup() {
   document.querySelectorAll(".popup").forEach((popup) => {
-    if (popup.classList.contains("current-popup")) {
-      slidingMenu.classList.remove("hidden");
+    popup.classList.remove("current-popup");
+    if (!popup.classList.contains("closed")) {
       popup.classList.add("closed");
-      popup.classList.remove("current-popup");
     }
   });
+  slidingMenu.classList.remove("hidden");
+  toggleBtnFunctions(true);
 }
 
 document.querySelectorAll(".popup").forEach((popup) => {
@@ -299,11 +310,19 @@ document.addEventListener("keydown", (e) => {
     } else {
       if (confirmDeletePopup.classList.contains("current-popup")) {
         removeColumn();
-      }
-      if (confirmSheetDeletePopup.classList.contains("current-popup")) {
+      } else if (confirmSheetDeletePopup.classList.contains("current-popup"))
         removeSheet();
-      }
     }
+  }
+});
+
+document.addEventListener("keyup", (e) => {
+  if (
+    e.key == "Enter" ||
+    e.keyCode == 13 ||
+    e.key == "Escape" ||
+    e.keyCode == 27
+  ) {
     hidePopup();
   }
 });
@@ -450,11 +469,11 @@ newSheetBtn.addEventListener("click", () => {
 });
 
 deleteSheetBtn.addEventListener("click", () => {
-  if (Store.getTracker().sheets.length > 1) {
+  if (Store.getTracker().sheets.length <= 1) {
+    displayPopup(limitPopup, true, false);
+  } else {
     deleteState.setDeleteSheetId(Store.getCurrentSheet().id);
     displayPopup(confirmSheetDeletePopup, true);
-  } else {
-    displayPopup(limitPopup, true, false);
   }
 });
 
@@ -490,5 +509,6 @@ mixedChartBtn.addEventListener("click", () => {
   drawChart(canvas);
 });
 
+Store.updateTracker(Store.getTracker());
 loadCurrentSheet();
 loadMenu();
