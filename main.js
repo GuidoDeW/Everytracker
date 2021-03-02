@@ -159,18 +159,16 @@ paramsTitle.addEventListener("input", (e) => {
 });
 
 function switchOtherParams(bool) {
-  if (bool) {
-    allParamsOthers.forEach((param) => {
-      param.classList.remove("disabled");
-      param.removeAttribute("disabled");
-    });
-  } else {
-    allParamsOthers.forEach((param) => {
-      param.classList.add("disabled");
-      param.setAttribute("disabled", "true");
-    });
-    paramsOtherInterval.value = "";
-  }
+  bool
+    ? allParamsOthers.forEach((param) => {
+        param.classList.remove("disabled");
+        param.removeAttribute("disabled");
+      })
+    : allParamsOthers.forEach((param) => {
+        param.classList.add("disabled");
+        param.setAttribute("disabled", "true");
+      });
+  paramsOtherInterval.value = "";
 }
 
 paramsQuantity.addEventListener("input", (e) => {
@@ -327,6 +325,27 @@ document.addEventListener("keyup", (e) => {
   }
 });
 
+document.addEventListener("touchend", (e) => {
+  if (document.querySelector(".current-popup")) {
+    const touchX = e.changedTouches[0].clientX;
+    const touchY = e.changedTouches[0].clientY;
+    const popupRect = document
+      .querySelector(".current-popup")
+      .getBoundingClientRect();
+    if (
+      touchY < popupRect.top ||
+      touchX > popupRect.right ||
+      touchY > popupRect.bottom ||
+      touchX < popupRect.left
+    ) {
+      e.preventDefault();
+      deleteState.setDeleteColumnId();
+      deleteState.setDeleteSheetId();
+      hidePopup();
+    }
+  }
+});
+
 function removeSheet() {
   const deleteId = deleteState.getDeleteSheetId();
   Store.deleteSheet(deleteId);
@@ -477,8 +496,6 @@ deleteSheetBtn.addEventListener("click", () => {
   }
 });
 
-chartState.setFont(getComputedStyle(paramsTitle).fontFamily);
-
 window.addEventListener("resize", () => {
   document.querySelectorAll(".popup").forEach((popup) => {
     checkPopupOverlap(popup);
@@ -491,24 +508,25 @@ clearChartBtn.addEventListener("click", () => {
   clearChart(canvasContext);
 });
 
-barChartBtn.addEventListener("click", () => {
-  chartState.setBars(true);
-  chartState.setLines(false);
+function drawChartType(bars, lines) {
+  chartState.setBars(bars);
+  chartState.setLines(lines);
   drawChart(canvas);
+}
+
+barChartBtn.addEventListener("click", () => {
+  drawChartType(true, false);
 });
 
 lineChartBtn.addEventListener("click", () => {
-  chartState.setBars(false);
-  chartState.setLines(true);
-  drawChart(canvas);
+  drawChartType(false, true);
 });
 
 mixedChartBtn.addEventListener("click", () => {
-  chartState.setBars(true);
-  chartState.setLines(true);
-  drawChart(canvas);
+  drawChartType(true, true);
 });
 
-Store.updateTracker(Store.getTracker());
+chartState.setFont(getComputedStyle(paramsTitle).fontFamily);
+
 loadCurrentSheet();
 loadMenu();

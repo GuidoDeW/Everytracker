@@ -40,9 +40,10 @@ export class DataColumn {
 }
 
 export function getTracker() {
-  return localStorage.getItem("everytracker")
-    ? JSON.parse(localStorage.getItem("everytracker"))
-    : new Tracker();
+  if (!localStorage.getItem("everytracker")) {
+    localStorage.setItem("everytracker", JSON.stringify(new Tracker()));
+  }
+  return JSON.parse(localStorage.getItem("everytracker"));
 }
 
 // Consider if passing the updated sheet to this function as a second parameter
