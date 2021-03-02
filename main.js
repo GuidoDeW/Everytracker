@@ -78,7 +78,7 @@ function applyOtherInterval() {
       currentSheet.quantity,
       currentSheet.interval
     );
-    Store.updateSheet(Store.getTracker(), currentSheet);
+    Store.updateSheet(currentSheet);
   }
 }
 
@@ -155,7 +155,7 @@ paramsTitle.addEventListener("input", (e) => {
   UI.updateChartTitle(newTitle, currentSheet.quantity, currentSheet.interval);
   document.getElementById(`sheet-btn-${currentSheet.id}`).innerText =
     newTitle.length > 0 ? newTitle : "Sheet";
-  Store.updateSheet(Store.getTracker(), currentSheet);
+  Store.updateSheet(currentSheet);
 });
 
 function switchOtherParams(bool) {
@@ -183,7 +183,7 @@ paramsQuantity.addEventListener("input", (e) => {
     e.target.value,
     currentSheet.interval
   );
-  Store.updateSheet(Store.getTracker(), currentSheet);
+  Store.updateSheet(currentSheet);
   document.addEventListener(
     "click",
     (e) => {
@@ -204,7 +204,7 @@ paramsInterval.addEventListener("input", (e) => {
     const currentSheet = Store.getCurrentSheet();
     currentSheet.interval = e.target.value;
     currentSheet.interval_index = paramsInterval.selectedIndex;
-    Store.updateSheet(Store.getTracker(), currentSheet);
+    Store.updateSheet(currentSheet);
     const sheetInterval = UI.capitalize(paramsInterval.value);
     UI.updateChartTitle(
       currentSheet.title,

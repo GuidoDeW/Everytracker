@@ -46,9 +46,8 @@ export function getTracker() {
   return JSON.parse(localStorage.getItem("everytracker"));
 }
 
-// Consider if passing the updated sheet to this function as a second parameter
-// would decrease the net number of "requests" to the mock API
-export function updateTracker(tracker) {
+export function updateTracker(tracker, sheets) {
+  if (sheets) tracker.sheets = sheets;
   localStorage.setItem("everytracker", JSON.stringify(tracker));
 }
 
@@ -83,10 +82,11 @@ export function addSheet() {
   tracker.sheets.push(newSheet);
   tracker.current_sheet_id = newSheet.id;
   tracker.new_sheet_id++;
-  updateTracker(tracker);
+  updateTracker(tracker, tracker.sheets);
 }
 
-export function updateSheet(tracker, sheet) {
+export function updateSheet(sheet) {
+  const tracker = getTracker();
   tracker.sheets = tracker.sheets.map((item) => {
     return item.id == sheet.id ? sheet : item;
   });
@@ -96,7 +96,7 @@ export function updateSheet(tracker, sheet) {
     tracker.last_interval = sheet.interval;
     tracker.last_interval_index = sheet.interval_index;
   }
-  updateTracker(tracker);
+  updateTracker(tracker, tracker.sheets);
 }
 
 export function deleteSheet(id) {
@@ -110,7 +110,7 @@ export function deleteSheet(id) {
       ? tracker.sheets[deleteIndex - 1].id
       : tracker.sheets[deleteIndex + 1].id;
   tracker.sheets.splice(deleteIndex, 1);
-  updateTracker(tracker);
+  updateTracker(tracker, tracker.sheets);
 }
 
 export function addColumn() {
@@ -118,7 +118,7 @@ export function addColumn() {
   const newColumn = new DataColumn(currentSheet.id, currentSheet.new_col_id);
   currentSheet.columns.push(newColumn);
   currentSheet.new_col_id++;
-  updateSheet(getTracker(), currentSheet);
+  updateSheet(currentSheet);
 }
 
 export function getColumn(id) {
@@ -142,7 +142,7 @@ export function updateColumn(column) {
       currentSheet.columns.splice(index, 1, column);
     }
   });
-  updateSheet(getTracker(), currentSheet);
+  updateSheet(currentSheet);
 }
 
 export function deleteColumn(id) {
@@ -150,7 +150,7 @@ export function deleteColumn(id) {
   currentSheet.columns = currentSheet.columns.filter((column) => {
     return column.id !== id;
   });
-  updateSheet(getTracker(), currentSheet);
+  updateSheet(currentSheet);
 }
 
 export function updateSheetProp(key, value) {
@@ -162,7 +162,7 @@ export function updateSheetProp(key, value) {
   ) {
     currentSheet[key] = value;
   }
-  updateSheet(getTracker(), currentSheet);
+  updateSheet(currentSheet);
 }
 
 export function getAllResults() {

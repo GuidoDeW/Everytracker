@@ -1,5 +1,5 @@
 //To do: save params to tracker. Enable or disable "other" category on DOM load based on presence of "other" value
-import * as Store from "./classes.js";
+import * as Store from "../classes.js";
 
 const slidingMenu = document.getElementById("sliding-menu"),
   openMenuBtn = document.getElementById("open-menu-btn"),
