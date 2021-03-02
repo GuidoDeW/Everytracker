@@ -47,7 +47,7 @@
   height: 100vh;
   background-color: var(--default-color-extra-light);
   /* background-color: var(--secondary-bg); */
-  transition: transform var(--intermediate-transform) linear;
+  transition: transform var(--intermediate-transform) ease-in-out;
   border-right: 1px solid var(--dark-shade);
 }
 
@@ -291,7 +291,7 @@ input:disabled,
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  transition: transform var(--intermediate-transform) linear;
+  transition: transform var(--intermediate-transform);
 }
 
 #chart-controls {

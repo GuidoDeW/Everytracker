@@ -16,6 +16,7 @@ export function capitalize(str) {
 export function applyInputStyle(element) {
   element.classList.add("text-ac");
   element.classList.add("fontw-700");
+  element.value = capitalize(element.value);
 }
 
 export function removeInputStyle(element, placeholder) {
@@ -72,7 +73,7 @@ export function createSheetBtnEl(sheet, func) {
 
 export function updateChartTitle(title, quantity, interval) {
   document.getElementById("chart-title").innerText = `${
-    title.length > 0 ? capitalize(title) : `Results`
+    title.length > 0 ? title : `Results`
   } per ${quantity > 1 ? quantity : ""} ${
     quantity > 1 ? `${interval}s` : interval
   }`;

@@ -42,12 +42,18 @@ const slidingMenu = document.getElementById("sliding-menu"),
   canvas = document.getElementById("chart-canvas"),
   canvasContext = canvas.getContext("2d");
 
+function checkEnterKey(e) {
+  return e.key == "Enter" || e.keyCode == 13;
+}
+
+function checkEscapeKey(e) {
+  return e.key == "Escape" || e.keyCode == 27;
+}
+
 function toggleInputStyle(e) {
   if (
     e.target !== paramsTitle ||
-    (e.target === paramsTitle &&
-      e.type == "keydown" &&
-      (e.key == "Enter" || e.keyCode == 13))
+    (e.target === paramsTitle && checkEnterKey(e))
   ) {
     paramsTitle.value.trim().length == 0
       ? UI.removeInputStyle(paramsTitle, "What do you want to track?")
@@ -84,7 +90,7 @@ function applyOtherInterval() {
 
 defaultInputFields.forEach((field) => {
   field.addEventListener("keydown", (e) => {
-    if (e.key == "Enter" || e.keyCode === 13) {
+    if (checkEnterKey(e)) {
       defaultInputFields.indexOf(e.target) < defaultInputFields.length - 1
         ? defaultInputFields[defaultInputFields.indexOf(e.target) + 1].focus()
         : e.target.blur();
@@ -109,28 +115,32 @@ openMenuBtn.addEventListener("click", () => {
 closeMenuBtn.addEventListener("click", closeSlidingMenu);
 
 openChartBtn.addEventListener("click", () => {
-  if (
-    getComputedStyle(chartContainer).transitionTimingFunction === "linear" &&
-    getComputedStyle(slidingMenu).transitionTimingFunction === "linear"
-  ) {
-    const animationTime = Number(
-      getComputedStyle(chartContainer).transitionDuration.slice(0, -1)
-    );
-    const windowWidth = window.innerWidth;
-    const menuWidth = slidingMenu.getBoundingClientRect().width;
+  const originalChartStyle = getComputedStyle(chartContainer)
+    .transitionTimingFunction;
+  const originalMenuStyle = getComputedStyle(slidingMenu)
+    .transitionTimingFunction;
+  chartContainer.style.transitionTimingFunction = "linear";
+  slidingMenu.style.transitionTimingFunction = "linear";
+  const animationTime = Number(
+    getComputedStyle(chartContainer).transitionDuration.slice(0, -1)
+  );
 
-    const delay =
-      ((windowWidth - menuWidth) / windowWidth) * animationTime * 1000;
+  const windowWidth = window.innerWidth;
+  const menuWidth = slidingMenu.getBoundingClientRect().width;
 
-    const closeDuration = (menuWidth / windowWidth) * animationTime;
+  const delay =
+    ((windowWidth - menuWidth) / windowWidth) * animationTime * 1000;
 
-    setTimeout(() => {
-      closeSlidingMenu(closeDuration);
-    }, delay);
-  } else {
-    closeSlidingMenu();
-  }
+  const closeDuration = (menuWidth / windowWidth) * animationTime;
   chartContainer.classList.remove("closed");
+  setTimeout(() => {
+    closeSlidingMenu(closeDuration);
+  }, delay);
+
+  setTimeout(() => {
+    chartContainer.style.transitionTimingFunction = originalChartStyle;
+    slidingMenu.style.transitionTimingFunction = originalMenuStyle;
+  }, animationTime * 1000);
 });
 
 hideChartBtn.addEventListener("click", () => {
@@ -223,7 +233,7 @@ paramsInterval.addEventListener("input", (e) => {
 applyOthersBtn.addEventListener("click", applyOtherInterval);
 
 paramsOtherInterval.addEventListener("keydown", (e) => {
-  if (e.key == "Enter" || e.keyCode == 13) {
+  if (checkEnterKey(e)) {
     applyOtherInterval();
   }
 });
@@ -296,13 +306,8 @@ confirmDeleteBtn.addEventListener("click", removeColumn);
 confirmSheetDeleteBtn.addEventListener("click", removeSheet);
 
 document.addEventListener("keydown", (e) => {
-  if (
-    e.key == "Enter" ||
-    e.keyCode == 13 ||
-    e.key == "Escape" ||
-    e.keyCode == 27
-  ) {
-    if (e.key == "Escape" || e.keyCode == 27) {
+  if (checkEnterKey(e) || checkEscapeKey(e)) {
+    if (checkEscapeKey(e)) {
       deleteState.setDeleteColumnId();
       deleteState.setDeleteSheetId();
     } else {
@@ -315,12 +320,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 document.addEventListener("keyup", (e) => {
-  if (
-    e.key == "Enter" ||
-    e.keyCode == 13 ||
-    e.key == "Escape" ||
-    e.keyCode == 27
-  ) {
+  if (checkEnterKey(e) || checkEscapeKey(e)) {
     hidePopup();
   }
 });
@@ -359,7 +359,7 @@ function removeColumn() {
   sheetContainer.querySelectorAll(".data-col").forEach((column) => {
     sheetContainer.removeChild(column);
   });
-  loadAllColumns();
+  loadAllColumns(Store.getCurrentSheet());
   deleteState.setDeleteColumnId();
 }
 
@@ -437,11 +437,11 @@ function loadColumn(column) {
   sheetContainer.appendChild(newColumn);
 }
 
-function loadAllColumns() {
+function loadAllColumns(sheet) {
   sheetContainer.querySelectorAll(".data-col").forEach((column) => {
     sheetContainer.removeChild(column);
   });
-  Store.getCurrentSheet().columns.forEach((column) => {
+  sheet.columns.forEach((column) => {
     loadColumn(column);
   });
 }
@@ -461,8 +461,8 @@ function loadCurrentSheet() {
   } else {
     switchOtherParams(false);
   }
-  if (chartState.isDrawn()) clearChart(canvasContext);
-  loadAllColumns();
+  if (chartState.isDrawn()) resetChart();
+  loadAllColumns(currentSheet);
   UI.highlightCurrentBtn();
   UI.updateChartTitle(sheetTitle, currentSheet.quantity, currentSheet.interval);
 }
@@ -481,7 +481,7 @@ newSheetBtn.addEventListener("click", () => {
       UI.createSheetBtnEl(Store.getCurrentSheet(), loadCurrentSheet)
     );
     loadCurrentSheet();
-    clearChart(canvasContext);
+    resetChart();
   } else {
     displayPopup(limitPopup, true, true);
   }
@@ -497,16 +497,17 @@ deleteSheetBtn.addEventListener("click", () => {
 });
 
 window.addEventListener("resize", () => {
-  document.querySelectorAll(".popup").forEach((popup) => {
-    checkPopupOverlap(popup);
-  });
+  if (document.querySelector(".current-popup"))
+    checkPopupOverlap(document.querySelector(".current-popup"));
   if (chartState.isDrawn()) drawChart(canvas);
 });
 
-clearChartBtn.addEventListener("click", () => {
+function resetChart() {
   chartState.setDrawn(false);
   clearChart(canvasContext);
-});
+}
+
+clearChartBtn.addEventListener("click", resetChart);
 
 function drawChartType(bars, lines) {
   chartState.setBars(bars);
