@@ -361,6 +361,7 @@ function removeColumn() {
   });
   loadAllColumns(Store.getCurrentSheet());
   deleteState.setDeleteColumnId();
+  if (chartState.isDrawn()) clearChart(canvasContext);
 }
 
 function createColumn() {
@@ -387,6 +388,7 @@ function createColumn() {
         (window.innerHeight - latestColumn.getBoundingClientRect().height),
       behavior: "smooth",
     });
+    if (chartState.isDrawn()) clearChart(canvasContext);
   }
 }
 
