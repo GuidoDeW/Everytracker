@@ -1,5 +1,3 @@
-import { getFont as getChartFont } from "./chart_state.js";
-
 export function unBlur(canvas) {
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
@@ -78,7 +76,7 @@ export function drawGrid(
 
   context.font = `${
     viewportWidth <= breakpointWidth ? 10 : 12
-  }px ${getChartFont()}`;
+  }px Lucida Console, Courier, Monaco`;
   context.strokeStyle = style;
 
   context.beginPath();

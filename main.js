@@ -528,7 +528,5 @@ mixedChartBtn.addEventListener("click", () => {
   drawChartType(true, true);
 });
 
-chartState.setFont(getComputedStyle(paramsTitle).fontFamily);
-
 loadCurrentSheet();
 loadMenu();
