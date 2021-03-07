@@ -115,6 +115,7 @@ openMenuBtn.addEventListener("click", () => {
 closeMenuBtn.addEventListener("click", closeSlidingMenu);
 
 openChartBtn.addEventListener("click", () => {
+  if (chartState.isDrawn()) drawChart(canvas);
   const originalChartStyle = getComputedStyle(chartContainer)
     .transitionTimingFunction;
   const originalMenuStyle = getComputedStyle(slidingMenu)
@@ -361,7 +362,6 @@ function removeColumn() {
   });
   loadAllColumns(Store.getCurrentSheet());
   deleteState.setDeleteColumnId();
-  if (chartState.isDrawn()) clearChart(canvasContext);
 }
 
 function createColumn() {
@@ -388,7 +388,6 @@ function createColumn() {
         (window.innerHeight - latestColumn.getBoundingClientRect().height),
       behavior: "smooth",
     });
-    if (chartState.isDrawn()) clearChart(canvasContext);
   }
 }
 
