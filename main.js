@@ -370,9 +370,8 @@ function createColumn() {
     displayPopup(limitPopup, false, true);
   } else {
     Store.addColumn();
-    const newColumn = Store.getCurrentSheet().columns[
-      Store.getCurrentSheet().columns.length - 1
-    ];
+    const currentSheetColumns = Store.getCurrentSheet().columns;
+    const newColumn = currentSheetColumns[currentSheetColumns.length - 1];
     allColumns.forEach((item) => {
       item.querySelector(".data-col-btn.add").style.visibility = "hidden";
     });
@@ -430,7 +429,11 @@ function loadColumn(column) {
   newColumn
     .querySelector(".data-col-comments")
     .addEventListener("input", (e) => {
-      Store.updateColumnProp(column.id, "comments", e.target.value);
+      if (e.target.value.length >= 120) {
+        e.target.value = e.target.value.slice(0, 120);
+      } else {
+        Store.updateColumnProp(column.id, "comments", e.target.value);
+      }
     });
   allLoadedColumns.forEach((column) => {
     column.querySelector(".data-col-btn.add").style.visibility = "hidden";
