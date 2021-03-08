@@ -3,7 +3,13 @@
   font-family: "Roboto", "Gill Sans", Arial;
 }
 
+body {
+  background-color: rgb(245, 245, 245);
+}
+
 #params-container {
+  background-color: var(--main-bg);
+  /* background-color: transparent; */
   box-shadow: 1px 0px 3px var(--dark-shade);
 }
 
@@ -45,7 +51,6 @@
   min-height: 100vh;
   height: 100vh;
   background-color: var(--default-color-extra-light);
-  /* background-color: var(--secondary-bg); */
   transition: transform var(--intermediate-transform) ease-in-out;
   border-right: 1px solid var(--dark-shade);
 }
@@ -210,6 +215,8 @@ input:disabled,
 /*Data column styling*/
 #sheet-container {
   padding: 0 1rem 0 1rem;
+  background-color: transparent;
+  /* background-color: var(--main-bg); */
 }
 
 .data-col {
