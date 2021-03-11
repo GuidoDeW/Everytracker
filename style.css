@@ -89,7 +89,7 @@ body {
 }
 
 #sheet-list::-webkit-scrollbar {
-  width: 5px;
+  width: 2px;
 }
 
 #sheet-list::-webkit-scrollbar-thumb {
