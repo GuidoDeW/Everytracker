@@ -10,7 +10,6 @@ body {
 
 #params-container {
   background-color: var(--main-bg);
-  /* background-color: transparent; */
   box-shadow: 1px 0px 3px var(--dark-shade);
 }
 
@@ -215,7 +214,6 @@ input:disabled,
 #sheet-container {
   padding: 0 1rem 0 1rem;
   background-color: transparent;
-  /* background-color: var(--main-bg); */
 }
 
 .data-col {
