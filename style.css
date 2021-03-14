@@ -162,6 +162,10 @@ body {
   }
 }
 
+input {
+  background-color: var(--main-bg);
+}
+
 input,
 select {
   box-sizing: border-box;
