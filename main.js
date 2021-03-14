@@ -96,6 +96,22 @@ defaultInputFields.forEach((field) => {
         : e.target.blur();
     }
   });
+  field.addEventListener("focus", () => {
+    if (
+      slidingMenu.getBoundingClientRect().right >
+      field.getBoundingClientRect().left
+    )
+      slidingMenu.classList.add("hidden");
+  });
+});
+
+document.addEventListener("click", (e) => {
+  if (
+    !defaultInputFields.includes(e.target) &&
+    !document.querySelector(".current-popup")
+  ) {
+    slidingMenu.classList.remove("hidden");
+  }
 });
 
 openMenuBtn.addEventListener("click", () => {
