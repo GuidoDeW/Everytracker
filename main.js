@@ -68,6 +68,22 @@ function closeSlidingMenu(duration) {
   slidingMenu.classList.add("closed");
 }
 
+openMenuBtn.addEventListener("click", () => {
+  slidingMenu.style.transitionDuration = "var(--intermediate-transform)";
+  if (
+    slidingMenu.classList.contains("closed") &&
+    [...document.querySelectorAll(".popup")].filter((popup) => {
+      return popup.classList.contains("current-popup");
+    }).length == 0
+  ) {
+    slidingMenu.classList.remove("closed");
+  } else {
+    slidingMenu.classList.add("closed");
+  }
+});
+
+closeMenuBtn.addEventListener("click", closeSlidingMenu);
+
 function applyOtherInterval() {
   if (paramsOtherInterval.value.trim().length > 0) {
     const otherIntervalCapitalized = UI.capitalize(paramsOtherInterval.value);
@@ -88,6 +104,13 @@ function applyOtherInterval() {
   }
 }
 
+function checkInputOverlap(e) {
+  slidingMenu.getBoundingClientRect().right >
+  e.target.getBoundingClientRect().left
+    ? slidingMenu.classList.add("hidden")
+    : slidingMenu.classList.remove("hidden");
+}
+
 defaultInputFields.forEach((field) => {
   field.addEventListener("keydown", (e) => {
     if (checkEnterKey(e)) {
@@ -96,39 +119,20 @@ defaultInputFields.forEach((field) => {
         : e.target.blur();
     }
   });
-  field.addEventListener("focus", () => {
-    if (
-      slidingMenu.getBoundingClientRect().right >
-      field.getBoundingClientRect().left
-    )
-      slidingMenu.classList.add("hidden");
-  });
+  field.addEventListener("focus", checkInputOverlap);
 });
 
 document.addEventListener("click", (e) => {
   if (
-    !defaultInputFields.includes(e.target) &&
-    !document.querySelector(".current-popup")
-  ) {
+    !(
+      defaultInputFields.includes(e.target) ||
+      e.target.classList.contains("data-col-result") ||
+      e.target.classList.contains("data-col-comments") ||
+      document.querySelector(".current-popup")
+    )
+  )
     slidingMenu.classList.remove("hidden");
-  }
 });
-
-openMenuBtn.addEventListener("click", () => {
-  slidingMenu.style.transitionDuration = "var(--intermediate-transform)";
-  if (
-    slidingMenu.classList.contains("closed") &&
-    [...document.querySelectorAll(".popup")].filter((popup) => {
-      return popup.classList.contains("current-popup");
-    }).length == 0
-  ) {
-    slidingMenu.classList.remove("closed");
-  } else {
-    slidingMenu.classList.add("closed");
-  }
-});
-
-closeMenuBtn.addEventListener("click", closeSlidingMenu);
 
 openChartBtn.addEventListener("click", () => {
   if (chartState.isDrawn()) drawChart(canvas);
@@ -415,10 +419,23 @@ function loadColumn(column) {
     column.result,
     column.comments
   );
-  newColumn.querySelector(".data-col-result").addEventListener("input", (e) => {
+
+  const colResult = newColumn.querySelector(".data-col-result");
+  const colComments = newColumn.querySelector(".data-col-comments");
+
+  colResult.addEventListener("input", (e) => {
     if (Number(e.target.value) >= 1000000000) e.target.value = 1000000000;
     if (Number(e.target.value) < 0) e.target.value = 0;
+    Store.updateColumnProp(column.id, "result", e.target.value);
   });
+
+  colResult.addEventListener("keydown", (e) => {
+    if (checkEnterKey(e)) {
+      e.preventDefault();
+      colComments.focus();
+    }
+  });
+
   newColumn
     .querySelector(".data-col-btn.delete")
     .addEventListener("click", () => {
@@ -436,24 +453,26 @@ function loadColumn(column) {
         displayPopup(limitPopup, false, false);
       }
     });
+
   newColumn
     .querySelector(".data-col-btn.add")
     .addEventListener("click", createColumn);
-  newColumn.querySelector(".data-col-result").addEventListener("input", (e) => {
-    Store.updateColumnProp(column.id, "result", e.target.value);
+  colComments.addEventListener("input", (e) => {
+    if (e.target.value.length >= 120) {
+      e.target.value = e.target.value.slice(0, 120);
+    } else {
+      Store.updateColumnProp(column.id, "comments", e.target.value);
+    }
   });
-  newColumn
-    .querySelector(".data-col-comments")
-    .addEventListener("input", (e) => {
-      if (e.target.value.length >= 120) {
-        e.target.value = e.target.value.slice(0, 120);
-      } else {
-        Store.updateColumnProp(column.id, "comments", e.target.value);
-      }
-    });
+
+  [colResult, colComments].forEach((field) => {
+    field.addEventListener("focus", checkInputOverlap);
+  });
+
   allLoadedColumns.forEach((column) => {
     column.querySelector(".data-col-btn.add").style.visibility = "hidden";
   });
+
   sheetContainer.appendChild(newColumn);
 }
 
