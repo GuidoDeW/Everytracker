@@ -162,12 +162,9 @@ body {
   }
 }
 
-input {
-  background-color: var(--main-bg);
-}
-
 input,
 select {
+  background-color: var(--main-bg);
   box-sizing: border-box;
   height: 1.5rem;
 }
