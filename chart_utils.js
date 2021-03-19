@@ -64,13 +64,11 @@ export function drawGrid(
   viewportWidth,
   breakpointWidth,
   highest,
-  number,
   style
 ) {
   const legendNums = [];
-  if (number > 10) {
-    number = 10;
-  }
+  const number = highest < 10 ? Math.round(highest) : 10;
+
   let mostDigits = 0;
 
   for (let i = 0; i <= number; i++) {
@@ -81,7 +79,7 @@ export function drawGrid(
     legendNums.push(numText);
   }
 
-  const ratio = getRatio(number);
+  const ratio = getRatio(highest);
 
   context.font = `${
     viewportWidth <= breakpointWidth ? 10 : 12
@@ -114,7 +112,7 @@ export function drawBars(
   strokeStyle,
   sectionWidth
 ) {
-  const ratio = getRatio(arr.length);
+  const ratio = getRatio(highest);
   context.fillStyle = fillStyle;
   context.strokeStyle = strokeStyle;
 
@@ -142,7 +140,7 @@ export function drawLines(
   lineWidth,
   sectionWidth
 ) {
-  const ratio = getRatio(arr.length);
+  const ratio = getRatio(highest);
   context.beginPath();
   context.strokeStyle = style;
   context.lineWidth = `${lineWidth}`;
