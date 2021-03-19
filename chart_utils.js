@@ -29,6 +29,10 @@ function buildGrid(context, color, clearSpace, drawY) {
   context.lineTo(context.canvas.width, drawY);
 }
 
+function getRatio(number) {
+  return number > 10 ? 0.9 : number / (number + 1);
+}
+
 function getSignificantDecs(num, max) {
   let rounded;
   for (let i = 0; i <= max; i++) {
@@ -42,9 +46,9 @@ function getSignificantDecs(num, max) {
 }
 
 function styleNumber(num) {
-  const magnitude = Math.floor(Math.log10(num));
+  const magnitude = Math.log10(Math.floor(num) + 1);
   if (magnitude < 3) {
-    return `${num}`;
+    return `${getSignificantDecs(num, 2)}`;
   } else {
     const factor =
       (num / Math.pow(10, magnitude)) * Math.pow(10, magnitude % 3);
@@ -64,15 +68,20 @@ export function drawGrid(
   style
 ) {
   const legendNums = [];
+  if (number > 10) {
+    number = 10;
+  }
   let mostDigits = 0;
 
   for (let i = 0; i <= number; i++) {
-    const numText = styleNumber(Math.round((highest / number) * i));
+    const numText = styleNumber((highest / number) * i);
     if (numText.length > mostDigits) {
       mostDigits = numText.length;
     }
     legendNums.push(numText);
   }
+
+  const ratio = getRatio(number);
 
   context.font = `${
     viewportWidth <= breakpointWidth ? 10 : 12
@@ -80,8 +89,8 @@ export function drawGrid(
   context.strokeStyle = style;
 
   context.beginPath();
-  for (let j = 0; j <= 10; j++) {
-    const drawY = canvasHeight - ((canvasHeight * 0.9) / number) * j;
+  for (let j = 0; j <= number; j++) {
+    const drawY = canvasHeight - ((canvasHeight * ratio) / number) * j;
 
     if (viewportWidth >= breakpointWidth) {
       const spaces = " ".repeat(mostDigits - legendNums[j].length);
@@ -105,12 +114,13 @@ export function drawBars(
   strokeStyle,
   sectionWidth
 ) {
+  const ratio = getRatio(arr.length);
   context.fillStyle = fillStyle;
   context.strokeStyle = strokeStyle;
 
   for (let i = 0; i < arr.length; i++) {
     const resultValue = arr[i];
-    const barHeight = (resultValue / highest) * canvasHeight * 0.9;
+    const barHeight = (resultValue / highest) * canvasHeight * ratio;
     const barX =
       viewportWidth >= breakpointWidth
         ? (i + 1) * sectionWidth
@@ -132,6 +142,7 @@ export function drawLines(
   lineWidth,
   sectionWidth
 ) {
+  const ratio = getRatio(arr.length);
   context.beginPath();
   context.strokeStyle = style;
   context.lineWidth = `${lineWidth}`;
@@ -140,11 +151,11 @@ export function drawLines(
   for (let i = 1; i < arr.length; i++) {
     context.moveTo(
       (i - 1) * sectionWidth + offSet,
-      canvasHeight - (arr[i - 1] / highest) * canvasHeight * 0.9
+      canvasHeight - (arr[i - 1] / highest) * canvasHeight * ratio
     );
     context.lineTo(
       i * sectionWidth + offSet,
-      canvasHeight - (arr[i] / highest) * canvasHeight * 0.9
+      canvasHeight - (arr[i] / highest) * canvasHeight * ratio
     );
   }
   context.stroke();

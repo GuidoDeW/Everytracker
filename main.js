@@ -134,8 +134,13 @@ document.addEventListener("click", (e) => {
     slidingMenu.classList.remove("hidden");
 });
 
+function countCols() {
+  return document.querySelectorAll(".data-col").length;
+}
+
 openChartBtn.addEventListener("click", () => {
-  if (chartState.isDrawn()) drawChart(canvas);
+  if (chartState.isDrawn())
+    drawChart(canvas, countCols());
   const originalChartStyle = getComputedStyle(chartContainer)
     .transitionTimingFunction;
   const originalMenuStyle = getComputedStyle(slidingMenu)
@@ -538,7 +543,8 @@ deleteSheetBtn.addEventListener("click", () => {
 window.addEventListener("resize", () => {
   if (document.querySelector(".current-popup"))
     checkPopupOverlap(document.querySelector(".current-popup"));
-  if (chartState.isDrawn()) drawChart(canvas);
+  if (chartState.isDrawn())
+    drawChart(canvas, countCols());
 });
 
 function resetChart() {
@@ -551,7 +557,7 @@ clearChartBtn.addEventListener("click", resetChart);
 function drawChartType(bars, lines) {
   chartState.setBars(bars);
   chartState.setLines(lines);
-  drawChart(canvas);
+  drawChart(canvas, countCols());
 }
 
 barChartBtn.addEventListener("click", () => {

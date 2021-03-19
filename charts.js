@@ -9,7 +9,7 @@ import {
   drawLines,
 } from "./chart_utils.js";
 
-export default function drawChart(canvas) {
+export default function drawChart(canvas, number) {
   const canvasContext = canvas.getContext("2d");
   const results = getAllResults();
   unBlur(canvas);
@@ -45,7 +45,7 @@ export default function drawChart(canvas) {
     getHighestValue(results),
   ];
 
-  drawGrid(...sharedArgs, 10, "rgb(0, 0, 0, 0.5)");
+  drawGrid(...sharedArgs, number, "rgb(0, 0, 0, 0.5)");
 
   if (chartState.hasBars()) {
     drawBars(
