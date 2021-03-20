@@ -47,7 +47,7 @@ function getSignificantDecs(num, max) {
 
 function styleNumber(num) {
   const magnitude = Math.log10(Math.floor(num) + 1);
-  if (magnitude < 3) {
+  if (magnitude <= 3) {
     return `${getSignificantDecs(num, 2)}`;
   } else {
     const factor =
