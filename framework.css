@@ -1,25 +1,25 @@
 :root {
   font-size: 16px;
   /*Color vars*/
-  --main-bg: rgba(255, 255, 255);
-  --dark-shade: rgba(0, 0, 0, 0.5);
-  --light-shade: rgba(255, 255, 255, 0.5);
-  --light-shade-thick: rgba(255, 255, 255, 0.8);
-  --disabled-color: rgb(200, 200, 200, 0.5);
-  --secondary-bg: rgb(225, 225, 225);
-  --dark-text: rgb(0, 0, 0);
-  --light-color: rgb(255, 255, 255);
-  --default-color: rgb(100, 100, 255);
-  --default-color-light: rgb(150, 150, 255);
-  --default-color-extra-light: rgb(210, 210, 250);
-  --info-color: rgb(255, 200, 50);
-  --info-color-light: rgb(255, 225, 75);
-  --neutral-color: rgb(180, 180, 180);
-  --neutral-color-light: rgb(200, 200, 200);
-  --warning-color: rgb(255, 50, 50);
-  --warning-color-light: rgb(255, 100, 100);
-  --succes-color: rgb(50, 200, 50);
-  --succes-color-light: rgba(100, 200, 100);
+  --main-bg: 255, 255, 255;
+  --dark-shade: 0, 0, 0, 0.5;
+  --light-shade: 255, 255, 255, 0.5;
+  --light-shade-thick: 255, 255, 255, 0.8;
+  --disabled-color: 200, 200, 200, 0.5;
+  --secondary-bg: 225, 225, 225;
+  --dark-text: 0, 0, 0;
+  --light-color: 255, 255, 255;
+  --default-color: 100, 100, 255;
+  --default-color-light: 150, 150, 255;
+  --default-color-extra-light: 210, 210, 250;
+  --info-color: 255, 200, 50;
+  --info-color-light: 255, 225, 75;
+  --neutral-color: 180, 180, 180;
+  --neutral-color-light: 200, 200, 200;
+  --warning-color: 255, 50, 50;
+  --warning-color-light: 255, 100, 100;
+  --succes-color: 50, 200, 50;
+  --succes-color-light: 100, 200, 100;
   /*Transition vars*/
   --swift-color-change: 0.2s;
   --intermediate-color-change: 0.5s;
@@ -519,11 +519,11 @@ h6 {
 
 /* Color classes */
 .light-text {
-  color: var(--light-color);
+  color: rgba(var(--light-color));
 }
 
 .dark-text {
-  color: var(--dark-text);
+  color: rgba(var(--dark-text));
 }
 
 /* List classes*/
@@ -787,57 +787,57 @@ h6 {
 }
 
 .btn-light {
-  background-color: var(--light-bg);
-  color: var(--dark-text);
+  background-color: rgba(var(--light-bg));
+  color: rgba(var(--dark-text));
 }
 
 .btn-light:hover {
-  background-color: var(--select-bg);
+  background-color: rgba(var(--select-bg));
 }
 
 .btn-default {
-  background-color: var(--default-color);
-  color: var(--light-color);
+  background-color: rgba(var(--default-color));
+  color: rgba(var(--light-color));
 }
 
 .btn-default:hover {
-  background-color: var(--default-color-light);
+  background-color: rgba(var(--default-color-light));
 }
 
 .btn-neutral {
-  background-color: var(--neutral-color);
-  color: var(--light-color);
+  background-color: rgba(var(--neutral-color));
+  color: rgba(var(--light-color));
 }
 
 .btn-neutral:hover {
-  background-color: var(--neutral-color-light);
+  background-color: rgba(var(--neutral-color-light));
 }
 
 .btn-info {
-  background-color: var(--info-color);
-  color: var(--light-color);
+  background-color: rgba(var(--info-color));
+  color: rgba(var(--light-color));
 }
 
 .btn-info:hover {
-  background-color: var(--info-color-light);
+  background-color: rgba(var(--info-color-light));
 }
 
 .btn-warning {
-  background-color: var(--warning-color);
-  color: var(--light-color);
+  background-color: rgba(var(--warning-color));
+  color: rgba(var(--light-color));
 }
 
 .btn-warning:hover {
-  background-color: var(--warning-color-light);
+  background-color: rgba(var(--warning-color-light));
 }
 
 .btn-success {
-  background-color: var(--succes-color);
-  color: var(--light-color);
+  background-color: rgba(var(--succes-color));
+  color: rgba(var(--light-color));
 }
 
 .btn-success:hover {
-  background-color: var(--succes-color-light);
+  background-color: rgba(var(--succes-color-light));
 }
 /* Transition classes */
 .swift-color-change {
