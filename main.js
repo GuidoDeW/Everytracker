@@ -234,17 +234,33 @@ paramsInterval.addEventListener("click", () => {
   displayPopup(intervalMenu, false, false);
 });
 
+document.addEventListener("click", (e) => {
+  if (
+    intervalMenu.classList.contains("current-popup") &&
+    e.target !== paramsInterval
+  ) {
+    hidePopup();
+  }
+});
+
+document.addEventListener("scroll", () => {
+  if (intervalMenu.classList.contains("current-popup")) {
+    if (paramsInterval.getBoundingClientRect().bottom <= 0) {
+      hidePopup();
+    }
+  }
+});
+
 intervalOptions.forEach((option) => {
   option.addEventListener("click", () => {
     const optionIndex = [...intervalOptions].indexOf(option);
     const newText = option.innerText;
-
+    paramsInterval.innerText = newText;
     if (optionIndex < 6) {
       switchOtherParams(false);
       const currentSheet = Store.getCurrentSheet();
       currentSheet.interval = newText;
       currentSheet.interval_index = optionIndex;
-      paramsInterval.innerText = newText;
       Store.updateSheet(currentSheet);
       UI.updateChartTitle(
         currentSheet.title,
@@ -259,31 +275,7 @@ intervalOptions.forEach((option) => {
       switchOtherParams(true);
       paramsOtherInterval.focus();
     }
-
-    hidePopup(intervalMenu);
   });
-});
-
-paramsInterval.addEventListener("input", (e) => {
-  if (paramsInterval.selectedIndex < 6) {
-    switchOtherParams(false);
-    const currentSheet = Store.getCurrentSheet();
-    currentSheet.interval = e.target.value;
-    currentSheet.interval_index = paramsInterval.selectedIndex;
-    Store.updateSheet(currentSheet);
-    const sheetInterval = UI.capitalize(paramsInterval.value);
-    UI.updateChartTitle(
-      currentSheet.title,
-      currentSheet.quantity,
-      currentSheet.interval
-    );
-    sheetContainer.querySelectorAll(".data-col").forEach((column) => {
-      column.querySelector(".data-col-interval").innerText = sheetInterval;
-    });
-  } else {
-    switchOtherParams(true);
-    paramsOtherInterval.focus();
-  }
 });
 
 applyOthersBtn.addEventListener("click", applyOtherInterval);
@@ -342,12 +334,11 @@ function hidePopup() {
       popup.classList.add("closed");
     }
   });
-  //Consider removal
   slidingMenu.classList.remove("hidden");
   toggleBtnFunctions(true);
 }
 
-document.querySelectorAll(".popup").forEach((popup) => {
+document.querySelectorAll(".popup-warning").forEach((popup) => {
   popup.querySelectorAll(".btn").forEach((btn) => {
     btn.addEventListener("click", hidePopup);
     if (popup == confirmDeletePopup && btn !== confirmDeleteBtn) {

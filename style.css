@@ -122,9 +122,6 @@ body {
 
 .popup {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -134,9 +131,14 @@ body {
   border-style: solid;
   border-radius: 5px;
   z-index: 2;
+  opacity: 1;
+  transition: opacity var(--swift-color-change) 0s;
 }
 
 .popup-warning {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   background-color: rgba(var(--warning-color));
   border-color:  rgba(var(--warning-color-light));
 }
@@ -148,6 +150,8 @@ body {
 
 .popup.closed {
   transform: translate(1000%, 1000%);
+  opacity: 0;
+  transition: all 0s;
 }
 
 .popup p {
@@ -260,8 +264,10 @@ input:disabled {
   border-color: rgba(var(--dark-shade-thin));
 }
 
-#interval-menu {
-
+#interval-menu:not(.closed) {
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 #interval-menu ul {
@@ -270,8 +276,13 @@ input:disabled {
 
 #interval-menu ul li {
   text-align: center;
-  min-width: 10vw;
+  min-width: 50vw;
+  max-width: 50vw;
   transition: all var(--swift-color-change) 0s;
+}
+
+#interval-menu ul li:not(:last-child) {
+  border-bottom: 1px solid rgba(var(--default-color-light));
 }
 
 #sheet-container {
@@ -391,6 +402,11 @@ input:disabled {
     width: 70%;
     max-width: 70%;
   }
+
+  #interval-menu ul li {
+    min-width: 25vw;
+    max-width: 25vw;
+  }
 }
 
 @media screen and (min-width: 768px) {
@@ -404,6 +420,11 @@ input:disabled {
 
   #sliding-menu.closed {
     transform: translateX(-20vw);
+  }
+
+  #interval-menu ul li {
+    min-width: 20vw;
+    max-width: 20vw;
   }
 }
 
