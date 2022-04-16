@@ -3,6 +3,7 @@
   /*Color vars*/
   --main-bg: 255, 255, 255;
   --dark-shade: 0, 0, 0, 0.5;
+  --dark-shade-thin: 0, 0, 0, 0.2;
   --light-shade: 255, 255, 255, 0.5;
   --light-shade-thick: 255, 255, 255, 0.8;
   --disabled-color: 200, 200, 200, 0.5;
@@ -791,17 +792,9 @@ h6 {
   color: rgba(var(--dark-text));
 }
 
-.btn-light:hover {
-  background-color: rgba(var(--select-bg));
-}
-
 .btn-default {
   background-color: rgba(var(--default-color));
   color: rgba(var(--light-color));
-}
-
-.btn-default:hover {
-  background-color: rgba(var(--default-color-light));
 }
 
 .btn-neutral {
@@ -809,17 +802,9 @@ h6 {
   color: rgba(var(--light-color));
 }
 
-.btn-neutral:hover {
-  background-color: rgba(var(--neutral-color-light));
-}
-
 .btn-info {
   background-color: rgba(var(--info-color));
   color: rgba(var(--light-color));
-}
-
-.btn-info:hover {
-  background-color: rgba(var(--info-color-light));
 }
 
 .btn-warning {
@@ -827,17 +812,40 @@ h6 {
   color: rgba(var(--light-color));
 }
 
-.btn-warning:hover {
-  background-color: rgba(var(--warning-color-light));
-}
-
 .btn-success {
   background-color: rgba(var(--succes-color));
   color: rgba(var(--light-color));
 }
 
-.btn-success:hover {
-  background-color: rgba(var(--succes-color-light));
+
+
+@media(hover: hover) {
+  .btn-light:hover {
+    background-color: rgba(var(--select-bg));
+  }
+
+  .btn-default:hover {
+    background-color: rgba(var(--default-color-light));
+  }
+  
+  .btn-neutral:hover {
+    background-color: rgba(var(--neutral-color-light));
+  }
+  
+  .btn-info:hover {
+    background-color: rgba(var(--info-color-light));
+  }
+
+  .btn-warning:hover {
+    background-color: rgba(var(--warning-color-light));
+  }
+  .btn-success:hover {
+    background-color: rgba(var(--succes-color-light));
+  }
+  
+  .btn-rotate:hover {
+    transform: rotateZ(-90deg)
+  }
 }
 /* Transition classes */
 .swift-color-change {

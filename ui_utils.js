@@ -45,7 +45,7 @@ export function createColumnElement(id, interval, number, result, comments) {
                               </h3>
                             </div>
                             <label for="result">Result</label>
-                            <input name="result" type="number" class="data-col-result input-rounded" value="${
+                            <input name="result" type="number" class="data-col-result input-rounded px-h" value="${
                               result.length > 0 ? result : ""
                             }"/>
                             <p>Comments</p>
@@ -53,7 +53,7 @@ export function createColumnElement(id, interval, number, result, comments) {
                               name="comments"
                               cols="30"
                               rows="5"
-                              class="data-col-comments input-rounded"
+                              class="data-col-comments input-rounded px-h py-h"
                             >${comments.length > 0 ? comments : ""}</textarea>`;
   return newColumn;
 }

@@ -92,7 +92,7 @@
       <div class="flex-row full-width flex-jc-e">
         <i
           id="close-menu-btn"
-          class="fas fa-times fa-2x btn mx-h my-h light-text"
+          class="fas fa-times fa-2x btn btn-rotate mx-h my-h"
         ></i>
       </div>
       <div id="nav-btns-group" class="mt-1">
@@ -115,7 +115,7 @@
       </div>
       <p>Your data sheet must contain at least one column.</p>
       <div class="popup-btn-container">
-        <button class="btn btn-s popup-btn no-select">Ok</button>
+        <button class="btn btn-m popup-btn no-select">Ok</button>
       </div>
     </dialog>
     <dialog id="confirm-delete-popup" class="popup closed">
@@ -127,10 +127,10 @@
         Are you sure you want to remove it?
       </p>
       <div class="popup-btn-container">
-        <div id="confirm-delete-btn" class="btn btn-s popup-btn no-select">
+        <div id="confirm-delete-btn" class="btn btn-m popup-btn no-select">
           Yes
         </div>
-        <div id="cancel-delete-btn" class="btn btn-s popup-btn no-select">
+        <div id="cancel-delete-btn" class="btn btn-m popup-btn no-select">
           No
         </div>
       </div>
@@ -143,11 +143,11 @@
       <div class="popup-btn-container">
         <div
           id="confirm-sheet-delete-btn"
-          class="btn btn-s popup-btn no-select"
+          class="btn btn-m popup-btn no-select"
         >
           Yes
         </div>
-        <div id="cancel-sheet-delete-btn" class="btn btn-s popup-btn no-select">
+        <div id="cancel-sheet-delete-btn" class="btn btn-m popup-btn no-select">
           No
         </div>
       </div>
@@ -156,7 +156,7 @@
       id="params-container"
       class="flex-column-all-c fixed-width-100 py-1"
     >
-      <h2 class="mb-1">EveryTracker</h2>
+      <h2 id="app-title" class="mb-1 no-select">EveryTracker</h2>
 
       <input
         id="params-title"
@@ -221,7 +221,7 @@
     </section>
     <section
       id="sheet-container"
-      class="flex-row flex-jc-s flex-w fixed-width-100 my-1"
+      class="flex-row flex-jc-s flex-w fixed-width-100 mb-1"
     ></section>
     <section id="chart-container" class="closed py-1">
       <div id="chart-controls">
