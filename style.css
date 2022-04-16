@@ -121,8 +121,6 @@ body {
 }
 
 .popup {
-  background-color: rgba(var(--warning-color));
-  border: 3px solid rgba(var(--warning-color-light));
   position: fixed;
   top: 50%;
   left: 50%;
@@ -132,10 +130,20 @@ body {
   justify-content: center;
   align-items: center;
   max-width: 90vw;
-  padding: 1rem;
-  /* border: none; */
+  border-width: 3px;
+  border-style: solid;
   border-radius: 5px;
   z-index: 2;
+}
+
+.popup-warning {
+  background-color: rgba(var(--warning-color));
+  border-color:  rgba(var(--warning-color-light));
+}
+
+.popup-default {
+  background-color: rgba(var(--default-color));
+  border-color:  rgba(var(--default-color-light));
 }
 
 .popup.closed {
@@ -173,6 +181,14 @@ body {
 
 /*Non-sticky hover states*/
 @media (hover: hover) {
+  #params-interval:hover, .interval-option:hover {
+    cursor: pointer;
+  }
+
+  .interval-option:hover {
+    background: rgba(var(--default-color-light));
+  }
+
   .popup-btn:hover  {
     color: rgba(var(--dark-text), 0.5);
   }
@@ -185,10 +201,15 @@ body {
 
 
 input,
-select {
+#params-interval {
   background-color: rgba(var(--main-bg));
   box-sizing: border-box;
   height: 1.5rem;
+  max-height: 1.5rem;
+}
+
+#params-interval {
+  text-align: center;
 }
 
 .input-h3 {
@@ -237,6 +258,20 @@ input:disabled,
 
 input:disabled {
   border-color: rgba(var(--dark-shade-thin));
+}
+
+#interval-menu {
+
+}
+
+#interval-menu ul {
+  list-style: none;
+}
+
+#interval-menu ul li {
+  text-align: center;
+  min-width: 10vw;
+  transition: all var(--swift-color-change) 0s;
 }
 
 #sheet-container {

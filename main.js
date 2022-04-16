@@ -16,6 +16,8 @@ const slidingMenu = document.getElementById("sliding-menu"),
   paramsTitle = document.getElementById("params-title"),
   paramsQuantity = document.getElementById("params-quantity"),
   paramsInterval = document.getElementById("params-interval"),
+  intervalMenu = document.getElementById("interval-menu"),
+  intervalOptions = document.querySelectorAll(".interval-option"),
   paramsOtherInterval = document.getElementById("params-other-interval"),
   defaultInputFields = [
     paramsTitle,
@@ -88,9 +90,8 @@ function applyOtherInterval() {
   if (paramsOtherInterval.value.trim().length > 0) {
     const otherIntervalCapitalized = UI.capitalize(paramsOtherInterval.value);
     document.querySelectorAll(".data-col").forEach((column) => {
-      column.querySelector(
-        ".data-col-interval"
-      ).innerText = otherIntervalCapitalized;
+      column.querySelector(".data-col-interval").innerText =
+        otherIntervalCapitalized;
     });
     const currentSheet = Store.getCurrentSheet();
     currentSheet.interval = paramsOtherInterval.value;
@@ -136,10 +137,10 @@ document.addEventListener("click", (e) => {
 
 openChartBtn.addEventListener("click", () => {
   if (chartState.isDrawn()) drawChart(canvas);
-  const originalChartStyle = getComputedStyle(chartContainer)
-    .transitionTimingFunction;
-  const originalMenuStyle = getComputedStyle(slidingMenu)
-    .transitionTimingFunction;
+  const originalChartStyle =
+    getComputedStyle(chartContainer).transitionTimingFunction;
+  const originalMenuStyle =
+    getComputedStyle(slidingMenu).transitionTimingFunction;
   chartContainer.style.transitionTimingFunction = "linear";
   slidingMenu.style.transitionTimingFunction = "linear";
   const animationTime = Number(
@@ -229,6 +230,40 @@ paramsQuantity.addEventListener("input", (e) => {
   );
 });
 
+paramsInterval.addEventListener("click", () => {
+  displayPopup(intervalMenu, false, false);
+});
+
+intervalOptions.forEach((option) => {
+  option.addEventListener("click", () => {
+    const optionIndex = [...intervalOptions].indexOf(option);
+    const newText = option.innerText;
+
+    if (optionIndex < 6) {
+      switchOtherParams(false);
+      const currentSheet = Store.getCurrentSheet();
+      currentSheet.interval = newText;
+      currentSheet.interval_index = optionIndex;
+      paramsInterval.innerText = newText;
+      Store.updateSheet(currentSheet);
+      UI.updateChartTitle(
+        currentSheet.title,
+        currentSheet.quantity,
+        currentSheet.interval
+      );
+      sheetContainer.querySelectorAll(".data-col").forEach((column) => {
+        column.querySelector(".data-col-interval").innerText =
+          UI.capitalize(newText);
+      });
+    } else {
+      switchOtherParams(true);
+      paramsOtherInterval.focus();
+    }
+
+    hidePopup(intervalMenu);
+  });
+});
+
 paramsInterval.addEventListener("input", (e) => {
   if (paramsInterval.selectedIndex < 6) {
     switchOtherParams(false);
@@ -307,6 +342,7 @@ function hidePopup() {
       popup.classList.add("closed");
     }
   });
+  //Consider removal
   slidingMenu.classList.remove("hidden");
   toggleBtnFunctions(true);
 }
@@ -397,9 +433,10 @@ function createColumn() {
     });
 
     loadColumn(newColumn);
-    const latestColumn = sheetContainer.querySelectorAll(".data-col")[
-      sheetContainer.querySelectorAll(".data-col").length - 1
-    ];
+    const latestColumn =
+      sheetContainer.querySelectorAll(".data-col")[
+        sheetContainer.querySelectorAll(".data-col").length - 1
+      ];
     latestColumn.classList.add("newest");
     scroll({
       top:
@@ -489,6 +526,7 @@ function loadCurrentSheet() {
   const currentSheet = Store.getCurrentSheet();
   const sheetTitle = currentSheet.title;
   paramsTitle.value = sheetTitle;
+  paramsInterval.innerText = currentSheet.interval;
   if (currentSheet.title.length > 0) {
     UI.applyInputStyle(paramsTitle);
   }

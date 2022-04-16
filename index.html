@@ -99,17 +99,28 @@
         <button id="new-sheet-btn" class="btn btn-s btn-success">
           New sheet
         </button>
-        <button id="delete-sheet-btn" class="btn btn-s btn-warning mt-1">
-          Delete sheet
-        </button>
         <button id="open-chart-btn" class="btn btn-s btn-default mt-1">
           Results chart
+        </button>
+        <button id="delete-sheet-btn" class="btn btn-s btn-warning mt-1">
+          Delete sheet
         </button>
       </div>
 
       <div class="" id="sheet-list"></div>
     </nav>
-    <dialog id="limit-popup" class="popup closed">
+    <div id="interval-menu" class="popup popup-default closed">
+      <ul>
+        <li id="interval-1" class="py-h interval-option">minute</li>
+        <li id="interval-2" class="py-h interval-option">hour</li>
+        <li id="interval-3" class="py-h interval-option">day</li>
+        <li id="interval-4" class="py-h interval-option">week</li>
+        <li id="interval-5" class="py-h interval-option">month</li>
+        <li id="interval-6" class="py-h interval-option">year</li>
+        <li id="interval-7" class="py-h interval-option">other...</li>
+      </ul>
+    </div>
+    <dialog id="limit-popup" class="popup popup-warning px-1 py-1 closed">
       <div class="popup-close-bar">
         <i class="fas fa-times btn popup-close-btn"></i>
       </div>
@@ -118,7 +129,10 @@
         <button class="btn btn-m popup-btn no-select">Ok</button>
       </div>
     </dialog>
-    <dialog id="confirm-delete-popup" class="popup closed">
+    <dialog
+      id="confirm-delete-popup"
+      class="popup popup-warning px-1 py-1 closed"
+    >
       <div class="popup-close-bar">
         <i class="fas fa-times btn popup-close-btn"></i>
       </div>
@@ -135,7 +149,10 @@
         </div>
       </div>
     </dialog>
-    <dialog id="confirm-sheet-delete-popup" class="popup closed">
+    <dialog
+      id="confirm-sheet-delete-popup"
+      class="popup popup-warning px-1 py-1 closed"
+    >
       <div class="popup-close-bar">
         <i class="fas fa-times btn popup-close-btn"></i>
       </div>
@@ -195,20 +212,19 @@
         </div>
         <div class="flex-column flex-jc-s flex-ac half-width mx-h">
           <label for="interval" class="my-h no-select">Interval</label>
-          <select
+          <div
             id="params-interval"
-            name="interval"
-            type="text"
-            class="full-width input-rounded input-stripped px-h mb-1"
+            class="full-width input-rounded input-stripped px-h mb-1 no-select"
           >
-            <option value="minute">minute</option>
+            minute
+            <!-- <option value="minute">minute</option>
             <option value="hour">hour</option>
             <option value="day">day</option>
             <option value="week">week</option>
             <option value="month">month</option>
             <option value="year">year</option>
-            <option value="other">other...</option>
-          </select>
+            <option value="other">other...</option> -->
+          </div>
           <button
             id="apply-others-btn"
             class="btn btn-s btn-success params-other disabled"
