@@ -18,6 +18,7 @@ const slidingMenu = document.getElementById("sliding-menu"),
   paramsInterval = document.getElementById("params-interval"),
   intervalMenu = document.getElementById("interval-menu"),
   intervalOptions = document.querySelectorAll(".interval-option"),
+  intervalLabel = document.getElementById("interval-label"),
   paramsOtherInterval = document.getElementById("params-other-interval"),
   defaultInputFields = [
     paramsTitle,
@@ -63,25 +64,31 @@ function toggleInputStyle(e) {
   }
 }
 
+function toggleStyleClass(element, styleClass, bool) {
+  bool
+    ? element.classList.add(styleClass)
+    : element.classList.remove(styleClass);
+}
+
 function closeSlidingMenu(duration) {
   slidingMenu.style.transitionDuration = duration
     ? `${duration}s`
     : "var(--intermediate-transform)";
-  slidingMenu.classList.add("closed");
+  toggleStyleClass(slidingMenu, "closed", true);
 }
 
 openMenuBtn.addEventListener("click", () => {
   slidingMenu.style.transitionDuration = "var(--intermediate-transform)";
-  if (
+  toggleStyleClass(
+    slidingMenu,
+    "closed",
     slidingMenu.classList.contains("closed") &&
-    [...document.querySelectorAll(".popup")].filter((popup) => {
-      return popup.classList.contains("current-popup");
-    }).length == 0
-  ) {
-    slidingMenu.classList.remove("closed");
-  } else {
-    slidingMenu.classList.add("closed");
-  }
+      [...document.querySelectorAll(".popup")].filter((popup) => {
+        return popup.classList.contains("current-popup");
+      }).length != 0
+      ? true
+      : false
+  );
 });
 
 closeMenuBtn.addEventListener("click", closeSlidingMenu);
@@ -106,10 +113,14 @@ function applyOtherInterval() {
 }
 
 function checkInputOverlap(e) {
-  slidingMenu.getBoundingClientRect().right >
-  e.target.getBoundingClientRect().left
-    ? slidingMenu.classList.add("hidden")
-    : slidingMenu.classList.remove("hidden");
+  toggleStyleClass(
+    slidingMenu,
+    "hidden",
+    slidingMenu.getBoundingClientRect().right >
+      e.target.getBoundingClientRect().left
+      ? true
+      : false
+  );
 }
 
 defaultInputFields.forEach((field) => {
@@ -132,7 +143,7 @@ document.addEventListener("click", (e) => {
       document.querySelector(".current-popup")
     )
   )
-    slidingMenu.classList.remove("hidden");
+    toggleStyleClass(slidingMenu, "hidden", false);
 });
 
 openChartBtn.addEventListener("click", () => {
@@ -154,7 +165,7 @@ openChartBtn.addEventListener("click", () => {
     ((windowWidth - menuWidth) / windowWidth) * animationTime * 1000;
 
   const closeDuration = (menuWidth / windowWidth) * animationTime;
-  chartContainer.classList.remove("closed");
+  toggleStyleClass(chartContainer, "closed", false);
   setTimeout(() => {
     closeSlidingMenu(closeDuration);
   }, delay);
@@ -166,7 +177,7 @@ openChartBtn.addEventListener("click", () => {
 });
 
 hideChartBtn.addEventListener("click", () => {
-  chartContainer.classList.add("closed");
+  toggleStyleClass(chartContainer, "closed", true);
 });
 
 paramsTitle.addEventListener("focus", (e) => {
@@ -191,23 +202,28 @@ paramsTitle.addEventListener("input", (e) => {
 });
 
 function switchOtherParams(bool) {
-  bool
-    ? allParamsOthers.forEach((param) => {
-        param.classList.remove("disabled");
-        param.removeAttribute("disabled");
-      })
-    : allParamsOthers.forEach((param) => {
-        param.classList.add("disabled");
-        param.setAttribute("disabled", "true");
-      });
+  if (bool) {
+    allParamsOthers.forEach((param) => {
+      toggleStyleClass(param, "disabled", false);
+      param.removeAttribute("disabled");
+    });
+    toggleStyleClass(intervalLabel, "disabled", true);
+  } else {
+    allParamsOthers.forEach((param) => {
+      toggleStyleClass(param, "disabled", true);
+      param.setAttribute("disabled", "true");
+    });
+    toggleStyleClass(intervalLabel, "disabled", false);
+  }
   paramsOtherInterval.value = "";
 }
 
 paramsQuantity.addEventListener("input", (e) => {
   const currentSheet = Store.getCurrentSheet();
-  if (e.target.value.trim().length > 0 && Number(e.target.value) <= 0) {
+  if (e.target.value.trim().length > 0 && Number(e.target.value) <= 0)
     e.target.value = 1;
-  }
+  if (e.target.value.trim().length > 0 && Number(e.target.value) > 100000)
+    e.target.value = 100000;
   currentSheet.quantity =
     e.target.value.trim().length == 0 ? 1 : e.target.value;
   UI.updateChartTitle(
@@ -222,9 +238,8 @@ paramsQuantity.addEventListener("input", (e) => {
       if (
         e.target !== paramsQuantity &&
         paramsQuantity.value.trim().length == 0
-      ) {
+      )
         paramsQuantity.value = "1";
-      }
     },
     { once: true }
   );
@@ -238,16 +253,13 @@ document.addEventListener("click", (e) => {
   if (
     intervalMenu.classList.contains("current-popup") &&
     e.target !== paramsInterval
-  ) {
+  )
     hidePopup();
-  }
 });
 
 document.addEventListener("scroll", () => {
   if (intervalMenu.classList.contains("current-popup")) {
-    if (paramsInterval.getBoundingClientRect().bottom <= 0) {
-      hidePopup();
-    }
+    if (paramsInterval.getBoundingClientRect().bottom <= 0) hidePopup();
   }
 });
 
@@ -281,9 +293,7 @@ intervalOptions.forEach((option) => {
 applyOthersBtn.addEventListener("click", applyOtherInterval);
 
 paramsOtherInterval.addEventListener("keydown", (e) => {
-  if (checkEnterKey(e)) {
-    applyOtherInterval();
-  }
+  if (checkEnterKey(e)) applyOtherInterval();
 });
 
 paramsOtherInterval.addEventListener("input", (e) => {
@@ -304,14 +314,13 @@ function checkPopupOverlap(popup) {
   if (
     popup.getBoundingClientRect().left <=
     slidingMenu.getBoundingClientRect().right
-  ) {
-    slidingMenu.classList.add("hidden");
-  }
+  )
+    toggleStyleClass(slidingMenu, "hidden", true);
 }
 
 function displayPopup(popup, sheet, max) {
   toggleBtnFunctions(false);
-  popup.classList.add("current-popup");
+  toggleStyleClass(popup, "current-popup", true);
   if (popup === limitPopup) {
     if (sheet) {
       limitPopup.querySelector("p").innerText = max
@@ -323,30 +332,27 @@ function displayPopup(popup, sheet, max) {
         : "Your data sheet must contain at least one column.";
     }
   }
-  popup.classList.remove("closed");
+  toggleStyleClass(popup, "closed", false);
   checkPopupOverlap(popup);
 }
 
 function hidePopup() {
   document.querySelectorAll(".popup").forEach((popup) => {
     popup.classList.remove("current-popup");
-    if (!popup.classList.contains("closed")) {
-      popup.classList.add("closed");
-    }
+    if (!popup.classList.contains("closed"))
+      toggleStyleClass(popup, "closed", true);
   });
-  slidingMenu.classList.remove("hidden");
+  toggleStyleClass(slidingMenu, "hidden", false);
   toggleBtnFunctions(true);
 }
 
 document.querySelectorAll(".popup-warning").forEach((popup) => {
   popup.querySelectorAll(".btn").forEach((btn) => {
     btn.addEventListener("click", hidePopup);
-    if (popup == confirmDeletePopup && btn !== confirmDeleteBtn) {
+    if (popup == confirmDeletePopup && btn !== confirmDeleteBtn)
       btn.addEventListener("click", deleteState.setDeleteColumnId);
-    }
-    if (popup == confirmSheetDeletePopup && btn !== confirmSheetDeleteBtn) {
+    if (popup == confirmSheetDeletePopup && btn !== confirmSheetDeleteBtn)
       btn.addEventListener("click", deleteState.setDeleteSheetId);
-    }
   });
 });
 
@@ -368,9 +374,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 document.addEventListener("keyup", (e) => {
-  if (checkEnterKey(e) || checkEscapeKey(e)) {
-    hidePopup();
-  }
+  if (checkEnterKey(e) || checkEscapeKey(e)) hidePopup();
 });
 
 document.addEventListener("touchend", (e) => {
@@ -420,6 +424,7 @@ function createColumn() {
     const currentSheetColumns = Store.getCurrentSheet().columns;
     const newColumn = currentSheetColumns[currentSheetColumns.length - 1];
     allColumns.forEach((item) => {
+      toggleStyleClass(item, "newest", false);
       item.querySelector(".data-col-btn.add").style.visibility = "hidden";
     });
 
@@ -428,7 +433,8 @@ function createColumn() {
       sheetContainer.querySelectorAll(".data-col")[
         sheetContainer.querySelectorAll(".data-col").length - 1
       ];
-    latestColumn.classList.add("newest");
+    toggleStyleClass(latestColumn, "newest", true);
+
     scroll({
       top:
         latestColumn.offsetTop -
@@ -469,14 +475,10 @@ function loadColumn(column) {
     .addEventListener("click", () => {
       if (Store.getCurrentSheet().columns.length > 1) {
         deleteState.setDeleteColumnId(column.id);
-        if (
-          newColumn.querySelector(".data-col-result").value.trim() !== "" ||
-          newColumn.querySelector(".data-col-comments").value.trim() !== ""
-        ) {
-          displayPopup(confirmDeletePopup, false, false);
-        } else {
-          removeColumn();
-        }
+        newColumn.querySelector(".data-col-result").value.trim() !== "" ||
+        newColumn.querySelector(".data-col-comments").value.trim() !== ""
+          ? displayPopup(confirmDeletePopup, false, false)
+          : removeColumn();
       } else {
         displayPopup(limitPopup, false, false);
       }
@@ -486,11 +488,9 @@ function loadColumn(column) {
     .querySelector(".data-col-btn.add")
     .addEventListener("click", createColumn);
   colComments.addEventListener("input", (e) => {
-    if (e.target.value.length >= 120) {
-      e.target.value = e.target.value.slice(0, 120);
-    } else {
-      Store.updateColumnProp(column.id, "comments", e.target.value);
-    }
+    e.target.value.length >= 120
+      ? (e.target.value = e.target.value.slice(0, 120))
+      : Store.updateColumnProp(column.id, "comments", e.target.value);
   });
 
   [colResult, colComments].forEach((field) => {
@@ -518,9 +518,8 @@ function loadCurrentSheet() {
   const sheetTitle = currentSheet.title;
   paramsTitle.value = sheetTitle;
   paramsInterval.innerText = currentSheet.interval;
-  if (currentSheet.title.length > 0) {
-    UI.applyInputStyle(paramsTitle);
-  }
+  if (currentSheet.title.length > 0) UI.applyInputStyle(paramsTitle);
+
   paramsQuantity.value = currentSheet.quantity;
   paramsInterval.selectedIndex = currentSheet.interval_index;
   if (currentSheet.interval_index == 6) {
