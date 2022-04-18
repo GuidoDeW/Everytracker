@@ -19,14 +19,14 @@ const slidingMenu = document.getElementById("sliding-menu"),
   intervalMenu = document.getElementById("interval-menu"),
   intervalOptions = document.querySelectorAll(".interval-option"),
   intervalLabel = document.getElementById("interval-label"),
-  paramsOtherInterval = document.getElementById("params-other-interval"),
+  paramsCustomInterval = document.getElementById("params-custom-interval"),
   defaultInputFields = [
     paramsTitle,
     paramsQuantity,
     paramsInterval,
-    paramsOtherInterval,
+    paramsCustomInterval,
   ],
-  allParamsOthers = document.querySelectorAll(".params-other"),
+  allParamsOthers = document.querySelectorAll(".params-custom"),
   applyOthersBtn = document.getElementById("apply-others-btn"),
   sheetContainer = document.getElementById("sheet-container"),
   limitPopup = document.getElementById("limit-popup"),
@@ -94,14 +94,14 @@ openMenuBtn.addEventListener("click", () => {
 closeMenuBtn.addEventListener("click", closeSlidingMenu);
 
 function applyOtherInterval() {
-  if (paramsOtherInterval.value.trim().length > 0) {
-    const otherIntervalCapitalized = UI.capitalize(paramsOtherInterval.value);
+  if (paramsCustomInterval.value.trim().length > 0) {
+    const otherIntervalCapitalized = UI.capitalize(paramsCustomInterval.value);
     document.querySelectorAll(".data-col").forEach((column) => {
       column.querySelector(".data-col-interval").innerText =
         otherIntervalCapitalized;
     });
     const currentSheet = Store.getCurrentSheet();
-    currentSheet.interval = paramsOtherInterval.value;
+    currentSheet.interval = paramsCustomInterval.value;
     currentSheet.interval_index = 6;
     UI.updateChartTitle(
       currentSheet.title,
@@ -112,12 +112,12 @@ function applyOtherInterval() {
   }
 }
 
-function checkInputOverlap(e) {
+function checkMenuOverlap(element) {
   toggleStyleClass(
     slidingMenu,
     "hidden",
     slidingMenu.getBoundingClientRect().right >
-      e.target.getBoundingClientRect().left
+      element.getBoundingClientRect().left
       ? true
       : false
   );
@@ -131,7 +131,9 @@ defaultInputFields.forEach((field) => {
         : e.target.blur();
     }
   });
-  field.addEventListener("focus", checkInputOverlap);
+  field.addEventListener("focus", (e) => {
+    checkMenuOverlap(e.target);
+  });
 });
 
 document.addEventListener("click", (e) => {
@@ -215,7 +217,7 @@ function switchOtherParams(bool) {
     });
     toggleStyleClass(intervalLabel, "disabled", false);
   }
-  paramsOtherInterval.value = "";
+  paramsCustomInterval.value = "";
 }
 
 paramsQuantity.addEventListener("input", (e) => {
@@ -285,18 +287,18 @@ intervalOptions.forEach((option) => {
       });
     } else {
       switchOtherParams(true);
-      paramsOtherInterval.focus();
+      paramsCustomInterval.focus();
     }
   });
 });
 
 applyOthersBtn.addEventListener("click", applyOtherInterval);
 
-paramsOtherInterval.addEventListener("keydown", (e) => {
+paramsCustomInterval.addEventListener("keydown", (e) => {
   if (checkEnterKey(e)) applyOtherInterval();
 });
 
-paramsOtherInterval.addEventListener("input", (e) => {
+paramsCustomInterval.addEventListener("input", (e) => {
   if (e.target.value.length > 20) {
     e.target.value = e.target.value.substring(0, 20);
   }
@@ -308,14 +310,6 @@ function toggleBtnFunctions(bool) {
       item.style.pointerEvents = bool ? "all" : "none";
     }
   );
-}
-
-function checkPopupOverlap(popup) {
-  if (
-    popup.getBoundingClientRect().left <=
-    slidingMenu.getBoundingClientRect().right
-  )
-    toggleStyleClass(slidingMenu, "hidden", true);
 }
 
 function displayPopup(popup, sheet, max) {
@@ -333,7 +327,7 @@ function displayPopup(popup, sheet, max) {
     }
   }
   toggleStyleClass(popup, "closed", false);
-  checkPopupOverlap(popup);
+  checkMenuOverlap(popup);
 }
 
 function hidePopup() {
@@ -494,7 +488,9 @@ function loadColumn(column) {
   });
 
   [colResult, colComments].forEach((field) => {
-    field.addEventListener("focus", checkInputOverlap);
+    field.addEventListener("focus", (e) => {
+      checkMenuOverlap(e.target);
+    });
   });
 
   allLoadedColumns.forEach((column) => {
@@ -524,7 +520,7 @@ function loadCurrentSheet() {
   paramsInterval.selectedIndex = currentSheet.interval_index;
   if (currentSheet.interval_index == 6) {
     switchOtherParams(true);
-    paramsOtherInterval.value = currentSheet.interval;
+    paramsCustomInterval.value = currentSheet.interval;
   } else {
     switchOtherParams(false);
   }
@@ -565,7 +561,7 @@ deleteSheetBtn.addEventListener("click", () => {
 
 window.addEventListener("resize", () => {
   if (document.querySelector(".current-popup"))
-    checkPopupOverlap(document.querySelector(".current-popup"));
+    checkMenuOverlap(document.querySelector(".current-popup"));
   if (chartState.isDrawn()) drawChart(canvas);
 });
 

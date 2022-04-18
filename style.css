@@ -320,6 +320,8 @@ input:disabled {
   }
 }
 
+
+
 .data-col-btn.add {
   font-size: 1.2rem;
   color: rgba(var(--succes-color));
