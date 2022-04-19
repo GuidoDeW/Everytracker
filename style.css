@@ -197,16 +197,11 @@ body {
 }
 
 
-input,
-#params-interval {
+input {
   background-color: rgba(var(--main-bg));
   box-sizing: border-box;
   height: 1.5rem;
   max-height: 1.5rem;
-}
-
-#params-interval {
-  text-align: center;
 }
 
 .input-h3 {

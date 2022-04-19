@@ -25,6 +25,12 @@ export function removeInputStyle(element, placeholder) {
   element.placeholder = placeholder;
 }
 
+export function toggleStyleClass(element, styleClass, bool) {
+  bool
+    ? element.classList.add(styleClass)
+    : element.classList.remove(styleClass);
+}
+
 export function createColumnElement(id, interval, number, result, comments) {
   const newColumn = document.createElement("div");
   newColumn.id = `data-col-${id}`;

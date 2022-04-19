@@ -26,7 +26,7 @@ const slidingMenu = document.getElementById("sliding-menu"),
     paramsInterval,
     paramsCustomInterval,
   ],
-  allParamsOthers = document.querySelectorAll(".params-custom"),
+  allParamsCustom = document.querySelectorAll(".params-custom"),
   applyOthersBtn = document.getElementById("apply-others-btn"),
   sheetContainer = document.getElementById("sheet-container"),
   limitPopup = document.getElementById("limit-popup"),
@@ -64,22 +64,16 @@ function toggleInputStyle(e) {
   }
 }
 
-function toggleStyleClass(element, styleClass, bool) {
-  bool
-    ? element.classList.add(styleClass)
-    : element.classList.remove(styleClass);
-}
-
 function closeSlidingMenu(duration) {
   slidingMenu.style.transitionDuration = duration
     ? `${duration}s`
     : "var(--intermediate-transform)";
-  toggleStyleClass(slidingMenu, "closed", true);
+  UI.toggleStyleClass(slidingMenu, "closed", true);
 }
 
 openMenuBtn.addEventListener("click", () => {
   slidingMenu.style.transitionDuration = "var(--intermediate-transform)";
-  toggleStyleClass(
+  UI.toggleStyleClass(
     slidingMenu,
     "closed",
     slidingMenu.classList.contains("closed") &&
@@ -113,7 +107,7 @@ function applyOtherInterval() {
 }
 
 function checkMenuOverlap(element) {
-  toggleStyleClass(
+  UI.toggleStyleClass(
     slidingMenu,
     "hidden",
     slidingMenu.getBoundingClientRect().right >
@@ -145,7 +139,7 @@ document.addEventListener("click", (e) => {
       document.querySelector(".current-popup")
     )
   )
-    toggleStyleClass(slidingMenu, "hidden", false);
+    UI.toggleStyleClass(slidingMenu, "hidden", false);
 });
 
 openChartBtn.addEventListener("click", () => {
@@ -167,7 +161,7 @@ openChartBtn.addEventListener("click", () => {
     ((windowWidth - menuWidth) / windowWidth) * animationTime * 1000;
 
   const closeDuration = (menuWidth / windowWidth) * animationTime;
-  toggleStyleClass(chartContainer, "closed", false);
+  UI.toggleStyleClass(chartContainer, "closed", false);
   setTimeout(() => {
     closeSlidingMenu(closeDuration);
   }, delay);
@@ -179,7 +173,7 @@ openChartBtn.addEventListener("click", () => {
 });
 
 hideChartBtn.addEventListener("click", () => {
-  toggleStyleClass(chartContainer, "closed", true);
+  UI.toggleStyleClass(chartContainer, "closed", true);
 });
 
 paramsTitle.addEventListener("focus", (e) => {
@@ -203,19 +197,19 @@ paramsTitle.addEventListener("input", (e) => {
   Store.updateSheet(currentSheet);
 });
 
-function switchOtherParams(bool) {
+function switchCustomParams(bool) {
   if (bool) {
-    allParamsOthers.forEach((param) => {
-      toggleStyleClass(param, "disabled", false);
+    allParamsCustom.forEach((param) => {
+      UI.toggleStyleClass(param, "disabled", false);
       param.removeAttribute("disabled");
     });
-    toggleStyleClass(intervalLabel, "disabled", true);
+    UI.toggleStyleClass(intervalLabel, "disabled", true);
   } else {
-    allParamsOthers.forEach((param) => {
-      toggleStyleClass(param, "disabled", true);
+    allParamsCustom.forEach((param) => {
+      UI.toggleStyleClass(param, "disabled", true);
       param.setAttribute("disabled", "true");
     });
-    toggleStyleClass(intervalLabel, "disabled", false);
+    UI.toggleStyleClass(intervalLabel, "disabled", false);
   }
   paramsCustomInterval.value = "";
 }
@@ -271,7 +265,7 @@ intervalOptions.forEach((option) => {
     const newText = option.innerText;
     paramsInterval.innerText = newText;
     if (optionIndex < 6) {
-      switchOtherParams(false);
+      switchCustomParams(false);
       const currentSheet = Store.getCurrentSheet();
       currentSheet.interval = newText;
       currentSheet.interval_index = optionIndex;
@@ -286,7 +280,7 @@ intervalOptions.forEach((option) => {
           UI.capitalize(newText);
       });
     } else {
-      switchOtherParams(true);
+      switchCustomParams(true);
       paramsCustomInterval.focus();
     }
   });
@@ -314,7 +308,7 @@ function toggleBtnFunctions(bool) {
 
 function displayPopup(popup, sheet, max) {
   toggleBtnFunctions(false);
-  toggleStyleClass(popup, "current-popup", true);
+  UI.toggleStyleClass(popup, "current-popup", true);
   if (popup === limitPopup) {
     if (sheet) {
       limitPopup.querySelector("p").innerText = max
@@ -326,17 +320,17 @@ function displayPopup(popup, sheet, max) {
         : "Your data sheet must contain at least one column.";
     }
   }
-  toggleStyleClass(popup, "closed", false);
+  UI.toggleStyleClass(popup, "closed", false);
   checkMenuOverlap(popup);
 }
 
 function hidePopup() {
   document.querySelectorAll(".popup").forEach((popup) => {
-    popup.classList.remove("current-popup");
+    UI.toggleStyleClass(popup, "current-popup", false);
     if (!popup.classList.contains("closed"))
-      toggleStyleClass(popup, "closed", true);
+      UI.toggleStyleClass(popup, "closed", true);
   });
-  toggleStyleClass(slidingMenu, "hidden", false);
+  UI.toggleStyleClass(slidingMenu, "hidden", false);
   toggleBtnFunctions(true);
 }
 
@@ -418,7 +412,7 @@ function createColumn() {
     const currentSheetColumns = Store.getCurrentSheet().columns;
     const newColumn = currentSheetColumns[currentSheetColumns.length - 1];
     allColumns.forEach((item) => {
-      toggleStyleClass(item, "newest", false);
+      UI.toggleStyleClass(item, "newest", false);
       item.querySelector(".data-col-btn.add").style.visibility = "hidden";
     });
 
@@ -427,7 +421,7 @@ function createColumn() {
       sheetContainer.querySelectorAll(".data-col")[
         sheetContainer.querySelectorAll(".data-col").length - 1
       ];
-    toggleStyleClass(latestColumn, "newest", true);
+    UI.toggleStyleClass(latestColumn, "newest", true);
 
     scroll({
       top:
@@ -519,10 +513,10 @@ function loadCurrentSheet() {
   paramsQuantity.value = currentSheet.quantity;
   paramsInterval.selectedIndex = currentSheet.interval_index;
   if (currentSheet.interval_index == 6) {
-    switchOtherParams(true);
+    switchCustomParams(true);
     paramsCustomInterval.value = currentSheet.interval;
   } else {
-    switchOtherParams(false);
+    switchCustomParams(false);
   }
   if (chartState.isDrawn()) resetChart();
   loadAllColumns(currentSheet);
