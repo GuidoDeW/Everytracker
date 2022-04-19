@@ -13,22 +13,22 @@ export function capitalize(str) {
     : "";
 }
 
-export function applyInputStyle(element) {
-  element.classList.add("text-ac");
-  element.classList.add("fontw-700");
-  element.value = capitalize(element.value);
-}
-
-export function removeInputStyle(element, placeholder) {
-  element.classList.remove("text-ac");
-  element.classList.remove("fontw-700");
-  element.placeholder = placeholder;
-}
-
 export function toggleStyleClass(element, styleClass, bool) {
   bool
     ? element.classList.add(styleClass)
     : element.classList.remove(styleClass);
+}
+
+export function applyInputStyle(element) {
+  toggleStyleClass(element, "text-ac", true);
+  toggleStyleClass(element, "fontw-700", true);
+  element.value = capitalize(element.value);
+}
+
+export function removeInputStyle(element, dummyText) {
+  toggleStyleClass(element, "text-ac", false);
+  toggleStyleClass(element, "fontw-700", false);
+  element.placeholder = dummyText;
 }
 
 export function createColumnElement(id, interval, number, result, comments) {
@@ -88,7 +88,7 @@ export function updateChartTitle(title, quantity, interval) {
 export function highlightCurrentBtn() {
   document.querySelectorAll(".sheet-btn").forEach((btn) => {
     Number(btn.id.replace("sheet-btn-", "")) == getCurrentSheet().id
-      ? btn.classList.add("current")
-      : btn.classList.remove("current");
+      ? toggleStyleClass(btn, "current", true)
+      : toggleStyleClass(btn, "current", false);
   });
 }

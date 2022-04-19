@@ -5,6 +5,8 @@ import * as chartState from "./chart_state.js";
 import { clearChart } from "./chart_utils.js";
 import drawChart from "./charts.js";
 
+//Problem: when navigating through params with enter key, hidden menu reappears regardless of overlap
+
 const slidingMenu = document.getElementById("sliding-menu"),
   openMenuBtn = document.getElementById("open-menu-btn"),
   closeMenuBtn = document.getElementById("close-menu-btn"),
@@ -20,12 +22,7 @@ const slidingMenu = document.getElementById("sliding-menu"),
   intervalOptions = document.querySelectorAll(".interval-option"),
   intervalLabel = document.getElementById("interval-label"),
   paramsCustomInterval = document.getElementById("params-custom-interval"),
-  defaultInputFields = [
-    paramsTitle,
-    paramsQuantity,
-    paramsInterval,
-    paramsCustomInterval,
-  ],
+  defaultInputFields = [paramsTitle, paramsQuantity, paramsCustomInterval],
   allParamsCustom = document.querySelectorAll(".params-custom"),
   applyOthersBtn = document.getElementById("apply-others-btn"),
   sheetContainer = document.getElementById("sheet-container"),
@@ -53,12 +50,16 @@ function checkEscapeKey(e) {
   return e.key == "Escape" || e.keyCode == 27;
 }
 
+function containsText(element) {
+  return element.value.trim().length > 0;
+}
+
 function toggleInputStyle(e) {
   if (
     e.target !== paramsTitle ||
     (e.target === paramsTitle && checkEnterKey(e))
   ) {
-    paramsTitle.value.trim().length == 0
+    !containsText(paramsTitle)
       ? UI.removeInputStyle(paramsTitle, "What do you want to track?")
       : UI.applyInputStyle(paramsTitle);
   }
@@ -88,7 +89,7 @@ openMenuBtn.addEventListener("click", () => {
 closeMenuBtn.addEventListener("click", closeSlidingMenu);
 
 function applyOtherInterval() {
-  if (paramsCustomInterval.value.trim().length > 0) {
+  if (containsText(paramsCustomInterval)) {
     const otherIntervalCapitalized = UI.capitalize(paramsCustomInterval.value);
     document.querySelectorAll(".data-col").forEach((column) => {
       column.querySelector(".data-col-interval").innerText =
@@ -123,6 +124,9 @@ defaultInputFields.forEach((field) => {
       defaultInputFields.indexOf(e.target) < defaultInputFields.length - 1
         ? defaultInputFields[defaultInputFields.indexOf(e.target) + 1].focus()
         : e.target.blur();
+      if (field === paramsQuantity && !containsText(field)) field.value = "1";
+      if (field === paramsCustomInterval && !containsText(field))
+        field.value = "interval";
     }
   });
   field.addEventListener("focus", (e) => {
@@ -134,6 +138,7 @@ document.addEventListener("click", (e) => {
   if (
     !(
       defaultInputFields.includes(e.target) ||
+      e.target === paramsInterval ||
       e.target.classList.contains("data-col-result") ||
       e.target.classList.contains("data-col-comments") ||
       document.querySelector(".current-popup")
@@ -188,8 +193,7 @@ paramsTitle.addEventListener("input", (e) => {
   if (e.target.value.length > 15)
     e.target.value = e.target.value.substring(0, 15);
   const currentSheet = Store.getCurrentSheet();
-  const newTitle =
-    e.target.value.trim().length > 0 ? UI.capitalize(e.target.value) : "";
+  const newTitle = containsText(e.target) ? "" : UI.capitalize(e.target.value);
   currentSheet.title = newTitle;
   UI.updateChartTitle(newTitle, currentSheet.quantity, currentSheet.interval);
   document.getElementById(`sheet-btn-${currentSheet.id}`).innerText =
@@ -216,12 +220,10 @@ function switchCustomParams(bool) {
 
 paramsQuantity.addEventListener("input", (e) => {
   const currentSheet = Store.getCurrentSheet();
-  if (e.target.value.trim().length > 0 && Number(e.target.value) <= 0)
-    e.target.value = 1;
-  if (e.target.value.trim().length > 0 && Number(e.target.value) > 100000)
+  if (containsText(e.target) && Number(e.target.value) <= 0) e.target.value = 1;
+  if (containsText(e.target) && Number(e.target.value) > 100000)
     e.target.value = 100000;
-  currentSheet.quantity =
-    e.target.value.trim().length == 0 ? 1 : e.target.value;
+  currentSheet.quantity = containsText(e.target) ? e.target.value : 1;
   UI.updateChartTitle(
     currentSheet.title,
     e.target.value,
@@ -231,10 +233,7 @@ paramsQuantity.addEventListener("input", (e) => {
   document.addEventListener(
     "click",
     (e) => {
-      if (
-        e.target !== paramsQuantity &&
-        paramsQuantity.value.trim().length == 0
-      )
+      if (!(e.target === paramsQuantity || containsText(paramsQuantity)))
         paramsQuantity.value = "1";
     },
     { once: true }
@@ -254,9 +253,11 @@ document.addEventListener("click", (e) => {
 });
 
 document.addEventListener("scroll", () => {
-  if (intervalMenu.classList.contains("current-popup")) {
-    if (paramsInterval.getBoundingClientRect().bottom <= 0) hidePopup();
-  }
+  if (
+    intervalMenu.classList.contains("current-popup") &&
+    paramsInterval.getBoundingClientRect().bottom <= 0
+  )
+    hidePopup();
 });
 
 intervalOptions.forEach((option) => {
@@ -293,9 +294,8 @@ paramsCustomInterval.addEventListener("keydown", (e) => {
 });
 
 paramsCustomInterval.addEventListener("input", (e) => {
-  if (e.target.value.length > 20) {
+  if (e.target.value.length > 20)
     e.target.value = e.target.value.substring(0, 20);
-  }
 });
 
 function toggleBtnFunctions(bool) {
@@ -316,7 +316,7 @@ function displayPopup(popup, sheet, max) {
         : "The minimal number of sheets is 1.";
     } else {
       limitPopup.querySelector("p").innerText = max
-        ? "You can track a maximum of 30 intervals per data sheet."
+        ? "You can track a maximum of 30 items per data sheet."
         : "Your data sheet must contain at least one column.";
     }
   }
@@ -388,8 +388,8 @@ document.addEventListener("touchend", (e) => {
 
 function removeSheet() {
   const deleteId = deleteState.getDeleteSheetId();
-  Store.deleteSheet(deleteId);
   sheetList.removeChild(document.getElementById(`sheet-btn-${deleteId}`));
+  Store.deleteSheet(deleteId);
   loadCurrentSheet();
   deleteState.setDeleteSheetId();
 }
@@ -405,7 +405,7 @@ function removeColumn() {
 
 function createColumn() {
   const allColumns = document.querySelectorAll(".data-col");
-  if (allColumns.length >= 31) {
+  if (allColumns.length >= 30) {
     displayPopup(limitPopup, false, true);
   } else {
     Store.addColumn();
@@ -418,9 +418,7 @@ function createColumn() {
 
     loadColumn(newColumn);
     const latestColumn =
-      sheetContainer.querySelectorAll(".data-col")[
-        sheetContainer.querySelectorAll(".data-col").length - 1
-      ];
+      sheetContainer.querySelectorAll(".data-col")[allColumns.length];
     UI.toggleStyleClass(latestColumn, "newest", true);
 
     scroll({

@@ -40,9 +40,8 @@ export class DataColumn {
 }
 
 export function getTracker() {
-  if (!localStorage.getItem("everytracker")) {
+  if (!localStorage.getItem("everytracker"))
     localStorage.setItem("everytracker", JSON.stringify(new Tracker()));
-  }
   return JSON.parse(localStorage.getItem("everytracker"));
 }
 
@@ -129,18 +128,15 @@ export function getColumn(id) {
 
 export function updateColumnProp(id, key, value) {
   const column = getColumn(id);
-  if (column.hasOwnProperty(key) && key !== "sheet_id" && key !== "id") {
+  if (column.hasOwnProperty(key) && key !== "sheet_id" && key !== "id")
     column[key] = value;
-  }
   updateColumn(column);
 }
 
 export function updateColumn(column) {
   const currentSheet = getCurrentSheet();
   currentSheet.columns.forEach((item, index) => {
-    if (item.id === column.id) {
-      currentSheet.columns.splice(index, 1, column);
-    }
+    if (item.id === column.id) currentSheet.columns.splice(index, 1, column);
   });
   updateSheet(currentSheet);
 }
@@ -155,13 +151,8 @@ export function deleteColumn(id) {
 
 export function updateSheetProp(key, value) {
   const currentSheet = getCurrentSheet();
-  if (
-    currentSheet.hasOwnProperty(key) &&
-    key !== "id" &&
-    key !== "new_col_id"
-  ) {
+  if (currentSheet.hasOwnProperty(key) && key !== "id" && key !== "new_col_id")
     currentSheet[key] = value;
-  }
   updateSheet(currentSheet);
 }
 
