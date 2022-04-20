@@ -5,8 +5,6 @@ import * as chartState from "./chart_state.js";
 import { clearChart } from "./chart_utils.js";
 import drawChart from "./charts.js";
 
-//Problem: when navigating through params with enter key, hidden menu reappears regardless of overlap
-
 const slidingMenu = document.getElementById("sliding-menu"),
   openMenuBtn = document.getElementById("open-menu-btn"),
   closeMenuBtn = document.getElementById("close-menu-btn"),
@@ -201,7 +199,7 @@ paramsTitle.addEventListener("input", (e) => {
   if (e.target.value.length > 15)
     e.target.value = e.target.value.substring(0, 15);
   const currentSheet = Store.getCurrentSheet();
-  const newTitle = containsText(e.target) ? "" : UI.capitalize(e.target.value);
+  const newTitle = containsText(e.target) ? UI.capitalize(e.target.value) : "";
   currentSheet.title = newTitle;
   UI.updateChartTitle(newTitle, currentSheet.quantity, currentSheet.interval);
   document.getElementById(`sheet-btn-${currentSheet.id}`).innerText =

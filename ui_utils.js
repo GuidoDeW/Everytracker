@@ -59,6 +59,7 @@ export function createColumnElement(id, interval, number, result, comments) {
                               name="comments"
                               cols="30"
                               rows="5"
+                              maxlength="120"
                               class="data-col-comments input-rounded px-h py-h"
                             >${comments.length > 0 ? comments : ""}</textarea>`;
   return newColumn;
