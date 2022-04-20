@@ -107,30 +107,38 @@ function applyOtherInterval() {
   }
 }
 
+function hideMenu(bool) {
+  UI.toggleStyleClass(slidingMenu, "hidden", bool);
+}
+
 function checkMenuOverlap(element) {
-  UI.toggleStyleClass(
-    slidingMenu,
-    "hidden",
+  hideMenu(
     slidingMenu.getBoundingClientRect().right >
       element.getBoundingClientRect().left
-      ? true
-      : false
   );
 }
 
 defaultInputFields.forEach((field) => {
   field.addEventListener("keydown", (e) => {
     if (checkEnterKey(e)) {
-      defaultInputFields.indexOf(e.target) < defaultInputFields.length - 1
-        ? defaultInputFields[defaultInputFields.indexOf(e.target) + 1].focus()
-        : e.target.blur();
+      if (
+        defaultInputFields.indexOf(e.target) <
+        defaultInputFields.length - 1
+      ) {
+        defaultInputFields[defaultInputFields.indexOf(e.target) + 1].focus();
+      } else {
+        e.target.blur();
+        hideMenu(false);
+      }
+
       if (field === paramsQuantity && !containsText(field)) field.value = "1";
       if (field === paramsCustomInterval && !containsText(field))
         field.value = "interval";
     }
   });
-  field.addEventListener("focus", (e) => {
-    checkMenuOverlap(e.target);
+
+  field.addEventListener("focus", () => {
+    checkMenuOverlap(field);
   });
 });
 
@@ -144,7 +152,7 @@ document.addEventListener("click", (e) => {
       document.querySelector(".current-popup")
     )
   )
-    UI.toggleStyleClass(slidingMenu, "hidden", false);
+    hideMenu(false);
 });
 
 openChartBtn.addEventListener("click", () => {
@@ -330,7 +338,7 @@ function hidePopup() {
     if (!popup.classList.contains("closed"))
       UI.toggleStyleClass(popup, "closed", true);
   });
-  UI.toggleStyleClass(slidingMenu, "hidden", false);
+  hideMenu(false);
   toggleBtnFunctions(true);
 }
 
@@ -362,7 +370,11 @@ document.addEventListener("keydown", (e) => {
 });
 
 document.addEventListener("keyup", (e) => {
-  if (checkEnterKey(e) || checkEscapeKey(e)) hidePopup();
+  if (
+    document.querySelector(".current-popup") &&
+    (checkEnterKey(e) || checkEscapeKey(e))
+  )
+    hidePopup();
 });
 
 document.addEventListener("touchend", (e) => {
@@ -552,6 +564,13 @@ deleteSheetBtn.addEventListener("click", () => {
 });
 
 window.addEventListener("resize", () => {
+  if (
+    [...document.querySelectorAll(".data-col"), ...defaultInputFields].includes(
+      document.activeElement
+    )
+  )
+    checkMenuOverlap(document.activeElement);
+
   if (document.querySelector(".current-popup"))
     checkMenuOverlap(document.querySelector(".current-popup"));
   if (chartState.isDrawn()) drawChart(canvas);
