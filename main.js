@@ -6,7 +6,7 @@ import { clearChart } from "./chart_utils.js";
 import drawChart from "./charts.js";
 
 const slidingMenu = document.getElementById("sliding-menu"),
-  openMenuBtn = document.getElementById("open-menu-btn"),
+  toggleMenuBtn = document.getElementById("toggle-menu-btn"),
   closeMenuBtn = document.getElementById("close-menu-btn"),
   sheetList = document.getElementById("sheet-list"),
   newSheetBtn = document.getElementById("new-sheet-btn"),
@@ -70,17 +70,12 @@ function closeSlidingMenu(duration) {
   UI.toggleStyleClass(slidingMenu, "closed", true);
 }
 
-openMenuBtn.addEventListener("click", () => {
+toggleMenuBtn.addEventListener("click", () => {
   slidingMenu.style.transitionDuration = "var(--intermediate-transform)";
   UI.toggleStyleClass(
     slidingMenu,
     "closed",
-    slidingMenu.classList.contains("closed") &&
-      [...document.querySelectorAll(".popup")].filter((popup) => {
-        return popup.classList.contains("current-popup");
-      }).length != 0
-      ? true
-      : false
+    !slidingMenu.classList.contains("closed")
   );
 });
 
@@ -116,6 +111,12 @@ function checkMenuOverlap(element) {
   );
 }
 
+function fillEmptyField(field, text) {
+  if (!containsText(field)) {
+    field.value = text;
+  }
+}
+
 defaultInputFields.forEach((field) => {
   field.addEventListener("keydown", (e) => {
     if (checkEnterKey(e)) {
@@ -128,9 +129,10 @@ defaultInputFields.forEach((field) => {
         ? nextField.focus()
         : hideMenu(false);
 
-      if (field === paramsQuantity && !containsText(field)) field.value = "1";
-      if (field === paramsCustomInterval && !containsText(field))
-        field.value = "interval";
+      if (field === paramsQuantity) fillEmptyField(paramsQuantity, "1");
+
+      if (field === paramsCustomInterval)
+        fillEmptyField(paramsCustomInterval, "interval");
     }
   });
 
@@ -220,8 +222,8 @@ function switchCustomParams(bool) {
     });
 
     UI.toggleStyleClass(intervalLabel, "disabled", false);
+    paramsCustomInterval.value = "";
   }
-  paramsCustomInterval.value = "";
 }
 
 paramsQuantity.addEventListener("input", (e) => {
@@ -236,30 +238,22 @@ paramsQuantity.addEventListener("input", (e) => {
     currentSheet.interval
   );
   Store.updateSheet(currentSheet);
-  document.addEventListener(
-    "click",
-    (e) => {
-      if (!(e.target === paramsQuantity || containsText(paramsQuantity)))
-        paramsQuantity.value = "1";
-    },
-    { once: true }
-  );
 });
 
 paramsInterval.addEventListener("click", () => {
   displayPopup(intervalMenu, false, false);
 });
 
-window.addEventListener("click", (e) => {
+document.addEventListener("click", (e) => {
   if (
     !(
       paramsCustomInterval.classList.contains("disabled") ||
       e.target === paramsCustomInterval ||
-      e.target === intervalOptions[6] ||
-      containsText(paramsCustomInterval)
+      e.target === intervalOptions[6]
     )
   )
-    paramsCustomInterval.value = "interval";
+    fillEmptyField(paramsCustomInterval, "interval");
+  if (e.target !== paramsQuantity) fillEmptyField(paramsQuantity, "1");
 });
 
 document.addEventListener("click", (e) => {
@@ -483,8 +477,8 @@ function loadColumn(column) {
     .addEventListener("click", () => {
       if (Store.getCurrentSheet().columns.length > 1) {
         deleteState.setDeleteColumnId(column.id);
-        newColumn.querySelector(".data-col-result").value.trim() !== "" ||
-        newColumn.querySelector(".data-col-comments").value.trim() !== ""
+        containsText(newColumn.querySelector(".data-col-result")) ||
+        containsText(newColumn.querySelector(".data-col-comments"))
           ? displayPopup(confirmDeletePopup, false, false)
           : removeColumn();
       } else {
@@ -593,13 +587,13 @@ function resetChart() {
   clearChart(canvasContext);
 }
 
-clearChartBtn.addEventListener("click", resetChart);
-
 function drawChartType(bars, lines) {
   chartState.setBars(bars);
   chartState.setLines(lines);
   drawChart(canvas);
 }
+
+clearChartBtn.addEventListener("click", resetChart);
 
 barChartBtn.addEventListener("click", () => {
   drawChartType(true, false);
