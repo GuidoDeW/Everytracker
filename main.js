@@ -119,15 +119,14 @@ function checkMenuOverlap(element) {
 defaultInputFields.forEach((field) => {
   field.addEventListener("keydown", (e) => {
     if (checkEnterKey(e)) {
-      if (
-        defaultInputFields.indexOf(e.target) <
-        defaultInputFields.length - 1
-      ) {
-        defaultInputFields[defaultInputFields.indexOf(e.target) + 1].focus();
-      } else {
-        e.target.blur();
-        hideMenu(false);
-      }
+      e.target.blur();
+      const nextField =
+        defaultInputFields[defaultInputFields.indexOf(e.target) + 1];
+
+      defaultInputFields.indexOf(e.target) < defaultInputFields.length - 1 &&
+      !nextField.classList.contains("disabled")
+        ? nextField.focus()
+        : hideMenu(false);
 
       if (field === paramsQuantity && !containsText(field)) field.value = "1";
       if (field === paramsCustomInterval && !containsText(field))
@@ -219,6 +218,7 @@ function switchCustomParams(bool) {
       UI.toggleStyleClass(param, "disabled", true);
       param.setAttribute("disabled", "true");
     });
+
     UI.toggleStyleClass(intervalLabel, "disabled", false);
   }
   paramsCustomInterval.value = "";
@@ -248,6 +248,18 @@ paramsQuantity.addEventListener("input", (e) => {
 
 paramsInterval.addEventListener("click", () => {
   displayPopup(intervalMenu, false, false);
+});
+
+window.addEventListener("click", (e) => {
+  if (
+    !(
+      paramsCustomInterval.classList.contains("disabled") ||
+      e.target === paramsCustomInterval ||
+      e.target === intervalOptions[6] ||
+      containsText(paramsCustomInterval)
+    )
+  )
+    paramsCustomInterval.value = "interval";
 });
 
 document.addEventListener("click", (e) => {
@@ -523,7 +535,9 @@ function loadCurrentSheet() {
   if (currentSheet.interval_index == 6) {
     switchCustomParams(true);
     paramsCustomInterval.value = currentSheet.interval;
+    paramsInterval.innerText = "custom";
   } else {
+    paramsInterval.innerText = currentSheet.interval;
     switchCustomParams(false);
   }
   if (chartState.isDrawn()) resetChart();
