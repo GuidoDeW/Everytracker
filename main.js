@@ -360,16 +360,16 @@ confirmDeleteBtn.addEventListener("click", removeColumn);
 confirmSheetDeleteBtn.addEventListener("click", removeSheet);
 
 document.addEventListener("keydown", (e) => {
-  if (checkEnterKey(e) || checkEscapeKey(e)) {
-    if (checkEscapeKey(e)) {
-      deleteState.setDeleteColumnId();
-      deleteState.setDeleteSheetId();
-    } else {
-      if (confirmDeletePopup.classList.contains("current-popup")) {
-        removeColumn();
-      } else if (confirmSheetDeletePopup.classList.contains("current-popup"))
-        removeSheet();
-    }
+  const enterPressed = checkEnterKey(e);
+  const escapePressed = checkEscapeKey(e);
+  if (escapePressed) {
+    deleteState.setDeleteColumnId();
+    deleteState.setDeleteSheetId();
+  } else if (enterPressed) {
+    if (confirmDeletePopup.classList.contains("current-popup")) {
+      removeColumn();
+    } else if (confirmSheetDeletePopup.classList.contains("current-popup"))
+      removeSheet();
   }
 });
 
