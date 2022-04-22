@@ -276,7 +276,7 @@ intervalOptions.forEach((option) => {
   option.addEventListener("click", () => {
     const optionIndex = [...intervalOptions].indexOf(option);
     const newText = option.innerText;
-    paramsInterval.innerText = newText;
+    paramsInterval.value = newText;
     if (optionIndex < 6) {
       switchCustomParams(false);
       const currentSheet = Store.getCurrentSheet();
@@ -521,17 +521,16 @@ function loadCurrentSheet() {
   const currentSheet = Store.getCurrentSheet();
   const sheetTitle = currentSheet.title;
   paramsTitle.value = sheetTitle;
-  paramsInterval.innerText = currentSheet.interval;
+  paramsInterval.value = currentSheet.interval;
   if (currentSheet.title.length > 0) UI.applyInputStyle(paramsTitle);
-
   paramsQuantity.value = currentSheet.quantity;
-  paramsInterval.selectedIndex = currentSheet.interval_index;
+
   if (currentSheet.interval_index == 6) {
     switchCustomParams(true);
     paramsCustomInterval.value = currentSheet.interval;
-    paramsInterval.innerText = "custom";
+    paramsInterval.value = "custom";
   } else {
-    paramsInterval.innerText = currentSheet.interval;
+    paramsInterval.value = currentSheet.interval;
     switchCustomParams(false);
   }
   if (chartState.isDrawn()) resetChart();
